@@ -51,8 +51,8 @@ public class TupleAlignmentGraphSerializer
 					started = true;
 					return "";
 				}
-				int la = graph.above;
-				int lb = graph.below;
+				int la = graph.la( );
+				int lb = graph.lb( );
 
 				for ( ; a <= la; a++ ) {
 					for ( ; b <= lb; b++ ) {

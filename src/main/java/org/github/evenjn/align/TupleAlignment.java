@@ -233,8 +233,7 @@ public class TupleAlignment {
 
 		int la = above.size( );
 		int lb = below.size( );
-		graph.above = la;
-		graph.below = lb;
+		graph.set( la, lb );
 
 		for ( int a = 0; a <= la; a++ ) {
 			for ( int b = 0; b <= lb; b++ ) {
