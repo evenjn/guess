@@ -129,11 +129,13 @@ import org.github.evenjn.yarn.Tuple;
  *
  */
 public class TupleAlignment {
-
+	
+	
+	
 	public static <SymbolAbove, SymbolBelow>
 			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>
 			createAlphabet(
-					Cursable<Bi<Tuple<? extends SymbolAbove>, Tuple<SymbolBelow>>> data,
+					Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 					int min_below,
 					int max_below,
 					Progress mexus ) {
@@ -147,7 +149,7 @@ public class TupleAlignment {
 					new TupleAlignmentAlphabet<>( );
 			HashSet<TupleAlignmentPair<SymbolAbove, SymbolBelow>> observed_so_far =
 					new HashSet<>( );
-			for ( Bi<Tuple<? extends SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
+			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
 					.wrap( data ).once( hook ) ) {
 				if ( mexus != null ) {
 					mexus.step( );

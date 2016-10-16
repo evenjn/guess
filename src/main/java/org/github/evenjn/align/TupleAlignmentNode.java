@@ -50,12 +50,12 @@ public class TupleAlignmentNode {
 	/**
 	 * Marks whether the node is an initial node.
 	 */
-	boolean is_reachable_from_beginning;
+	public boolean is_reachable_from_beginning;
 	
 	/**
 	 * Marks whether the node is a final node.
 	 */
-	boolean is_reachable_from_end;
+	public boolean is_reachable_from_end;
 	
 	/**
 	 * The row-index of this node in the tuple-alignment-graph matrix.

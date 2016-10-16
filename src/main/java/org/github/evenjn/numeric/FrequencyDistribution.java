@@ -23,14 +23,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.github.evenjn.yarn.Bi;
 
-
-public class FrequencyDistribution<T> implements Consumer<T> {
+public class FrequencyDistribution<T> implements
+		Consumer<T> {
 
 	private int total = 0;
-	private HashMap<T, Integer> map;
+
+	private HashMap<T, Integer> map = new HashMap<>( );
 
 	public Iterable<Bi<T, Integer>> data( ) {
 		ArrayList<Bi<T, Integer>> data = new ArrayList<>( );
@@ -46,41 +48,44 @@ public class FrequencyDistribution<T> implements Consumer<T> {
 		} );
 		return data;
 	}
-	
-	public String toString() {
+
+	public String toString( ) {
+		return toString( x -> x.toString( ) );
+	}
+
+	public String toString( Function<T, String> labelizer ) {
 		SixCharFormat fun = new SixCharFormat( false );
 		double denominator = total;
 		StringBuilder sb = new StringBuilder( );
-		for (Bi<T, Integer> d : data()) {
+		for ( Bi<T, Integer> d : data( ) ) {
 			int len = 0;
 			double n = d.second;
-			String percent = fun.apply( n/denominator );
+			sb.append( fun.apply( n ) ).append( " " );
+			String percent = fun.apply( n / denominator );
 			sb.append( percent ).append( "%" );
 			len = percent.length( ) + 1;
-			while (len < 10) {
+			while ( len < 10 ) {
 				sb.append( " " );
 				len++;
 			}
-			int black = (int)Math.floor( 40 * (n / denominator) );
+			int black = (int) Math.floor( 40 * ( n / denominator ) );
 			int white = 39 - black;
 
-			while (len < 10 + white) {
+			while ( len < 10 + white ) {
 				sb.append( " " );
 				len++;
 			}
 			sb.append( "*" );
-			while (len < 10 + 40) {
+			while ( len < 10 + 40 ) {
 				sb.append( "-" );
 				len++;
 			}
 			sb.append( "| " );
-			sb.append( d.first.toString( ) );
+			sb.append( labelizer.apply( d.first ) );
+			sb.append( "\n" );
 		}
 		return sb.toString( );
 	}
-	
-
-
 
 	public int getTotal( ) {
 		return total;
@@ -105,7 +110,7 @@ public class FrequencyDistribution<T> implements Consumer<T> {
 	@Override
 	public void accept( T t ) {
 		Integer integer = map.get( t );
-		if (integer == null) {
+		if ( integer == null ) {
 			integer = 0;
 		}
 		total++;

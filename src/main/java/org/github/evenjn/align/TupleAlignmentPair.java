@@ -17,6 +17,8 @@
  */
 package org.github.evenjn.align;
 
+import java.util.function.Function;
+
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.AutoHook;
@@ -39,16 +41,21 @@ public class TupleAlignmentPair<SymbolAbove, SymbolBelow> {
 		return ( 17 * above.hashCode( ) ) + below.hashCode( );
 	}
 
-	public String print( ) {
+	public String print(Function<? super SymbolAbove, String> sa_label, Function<? super SymbolBelow, String> sb_label  ) {
+
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			StringBuilder sb = new StringBuilder( );
-			sb.append( above.toString( ) );
-			sb.append( " [" );
+			sb.append( sa_label.apply( above ) );
+			sb.append( " +> [" );
 			for ( SymbolBelow b : below.once( ) ) {
-				sb.append( " " ).append( b.toString( ) );
+				sb.append( " " ).append( sb_label.apply( b ) );
 			}
 			sb.append( " ]" );
 			return sb.toString( );
 		}
+	}
+
+	public String print( ) {
+		return print( Object::toString, Object::toString );
 	}
 }
