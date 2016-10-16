@@ -17,26 +17,45 @@
  */
 package org.github.evenjn.guess.benchmark;
 
+import java.util.HashMap;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.TrainingDatum;
+import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.numeric.FrequencyDistribution;
+import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 
-/**
- * A blind guesser ignores all features but the target, and predicts always
- * the most frequent target value.
- */
-public class BlindGuesserTrainer<I, O> implements
+public class CheatingMapleTrainer<I, O> implements
 		Trainer<I, O> {
+
+	public CheatingMapleTrainer(O last) {
+		this.last = last;
+	}
+
+	private final O last;
 
 	@Override
 	public Function<I, O> train( Cursable<? extends TrainingDatum<I, O>> data ) {
-		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
-		KnittingCursable.wrap( data ).map( d -> d.getGold( ) ).consume( fd );
-		return x -> fd.getMostFrequent( );
+		HashMap<I, O> cheat_sheet = new HashMap<>( );
+
+		try ( AutoHook hook = new BasicAutoHook( ) ) {
+			for ( TrainingDatum<I, O> td : KnittingCursable.wrap( data ).once( hook ) ) {
+				cheat_sheet.put( td.getInput( ), td.getGold( ) );
+			}
+		}
+		return new Function<I, O>( ) {
+
+			@Override
+			public O apply(
+					I t ) {
+				O o = cheat_sheet.get( t );
+				if ( o == null )
+					return last;
+				return o;
+			}
+		};
 	}
 
 }

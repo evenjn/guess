@@ -22,21 +22,41 @@ import java.util.function.Function;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.TrainingDatum;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Tuple;
 
-/**
- * A blind guesser ignores all features but the target, and predicts always
- * the most frequent target value.
- */
-public class BlindGuesserTrainer<I, O> implements
-		Trainer<I, O> {
+public class BlindMapleTrainer<I, O> implements
+		Trainer<Tuple<I>, Tuple<O>> {
+
+	public BlindMapleTrainer(
+			Cursable<? extends I> above_alphabet,
+			Cursable<? extends O> below_alphabet) {
+	}
 
 	@Override
-	public Function<I, O> train( Cursable<? extends TrainingDatum<I, O>> data ) {
-		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
-		KnittingCursable.wrap( data ).map( d -> d.getGold( ) ).consume( fd );
-		return x -> fd.getMostFrequent( );
+	public Function<Tuple<I>, Tuple<O>> train(
+			Cursable<? extends TrainingDatum<Tuple<I>, Tuple<O>>> data ) {
+		O mostFrequent =
+				KnittingCursable.wrap( data )
+						.flatmapCursable( d -> KnittingTuple.wrap( d.getGold( ) ) )
+						.consume( new FrequencyDistribution<>( ) )
+						.getMostFrequent( );
+
+		return x -> new Tuple<O>( ) {
+
+			@Override
+			public O get( int index ) {
+				x.get( index );
+				return mostFrequent;
+			}
+
+			@Override
+			public int size( ) {
+				return x.size( );
+			}
+		};
 	}
 
 }

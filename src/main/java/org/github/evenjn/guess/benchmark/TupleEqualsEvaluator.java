@@ -79,7 +79,12 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 				int distance = koo.distance( go );
 				total_distance += distance;
 				int size_go = kgo.size( );
-				total_elements += size_go;
+				int size_oo = koo.size( );
+				/**
+				 * Taking the largest size guarantees that the relative distance is
+				 * always in the interval [0,1]
+				 */
+				total_elements += ( size_go > size_oo ) ? size_go : size_oo;
 				if ( distance == 0 ) {
 					positive++;
 				}
