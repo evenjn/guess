@@ -46,6 +46,10 @@ public class PercentPrinter implements
 		return form.format( object );
 	}
 
+	public static String printRatioAsPercent( int digits, double ratio ) {
+		return new PercentPrinter( digits ).form.format( ratio );
+	}
+
 	public static String printRatioAsPercent( int digits, long fraction,
 			long total ) {
 		double ratio = fraction;
