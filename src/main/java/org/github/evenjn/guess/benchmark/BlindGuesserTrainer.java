@@ -20,10 +20,11 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.guess.TrainingDatum;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Di;
+import org.github.evenjn.yarn.Progress;
 
 /**
  * A blind guesser ignores all features but the target, and predicts always
@@ -33,9 +34,10 @@ public class BlindGuesserTrainer<I, O> implements
 		Trainer<I, O> {
 
 	@Override
-	public Function<I, O> train( Cursable<? extends TrainingDatum<I, O>> data ) {
+	public Function<I, O> train( Progress progress,
+			Cursable<Di<I, O>> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
-		KnittingCursable.wrap( data ).map( d -> d.getGold( ) ).consume( fd );
+		KnittingCursable.wrap( data ).map( d -> d.back( ) ).tap( fd ).consume( );
 		return x -> fd.getMostFrequent( );
 	}
 

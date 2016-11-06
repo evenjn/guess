@@ -29,9 +29,9 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>
 		implements
 		Tuple<TupleAlignmentPair<SymbolAbove, SymbolBelow>> {
 
-	public int record_max_length_above = 0;
-	public int record_max_length_below = 0;
-	public int record_max_number_of_edges = 0 ;
+	int record_max_length_above = 0;
+	int record_max_length_below = 0;
+	int record_max_number_of_edges = 0 ;
 	
 	private Vector<TupleAlignmentPair<SymbolAbove, SymbolBelow>> alphabet =
 			new Vector<>( );

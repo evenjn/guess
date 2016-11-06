@@ -17,13 +17,12 @@
  */
 package org.github.evenjn.numeric;
 
+import java.util.Iterator;
 import java.util.function.Function;
 
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursor;
-import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.Itterable;
-import org.github.evenjn.yarn.Itterator;
 import org.github.evenjn.yarn.PastTheEndException;
 
 public class NumericUtils {
@@ -141,6 +140,10 @@ public class NumericUtils {
 		return result;
 	}
 	
+	private static <T> Iterator<T> asIterator(Cursor<T> cursor) {
+		return KnittingCursor.wrap(cursor).once().iterator();
+	}
+	
 	/**
 	 * Returns all pairs [ 0 0 ] [ 0 1 ] [ 0 2 ] .. [ 0 ( max - 1 ) ] [ 1 0 ] [ 1
 	 * 1 ] [ 1 2 ] .. [ 1 ( max - 1 ) ] [ ( max - 1 ) 0 ] [ ( max - 1 ) 1 ] [ (
@@ -148,15 +151,15 @@ public class NumericUtils {
 	 * 
 	 * 
 	 */
-	public static Itterable<Bi<Integer, Integer>> birange( final int max ) {
-		return new Itterable<Bi<Integer, Integer>>( ) {
+	public static Iterable<Bi<Integer, Integer>> birange( final int max ) {
+		return new Iterable<Bi<Integer, Integer>>( ) {
 
 			@Override
-			public Itterator<Bi<Integer, Integer>> pull( ) {
+			public Iterator<Bi<Integer, Integer>> iterator( ) {
 				final Bi<Integer, Integer> bi = new Bi<Integer, Integer>( );
 				bi.first = 0;
 				bi.second = -1;
-				return new Itterator<Bi<Integer, Integer>>( ) {
+				return asIterator( new Cursor<Bi<Integer, Integer>>( ) {
 
 					@Override
 					public Bi<Integer, Integer> next( )
@@ -174,7 +177,7 @@ public class NumericUtils {
 						return bi;
 					}
 
-				};
+				} );
 
 			}
 		};
@@ -186,16 +189,16 @@ public class NumericUtils {
 	 * Range generators
 	 */
 
-	public static Itterable<Integer> range( final int to ) {
+	public static Iterable<Integer> range( final int to ) {
 		return range( 0, to );
 	}
 
-	public static Itterable<Integer> range( final int from, final int to ) {
-		return new Itterable<Integer>( ) {
+	public static Iterable<Integer> range( final int from, final int to ) {
+		return new Iterable<Integer>( ) {
 
 			@Override
-			public Itterator<Integer> pull( ) {
-				return new Itterator<Integer>( ) {
+			public Iterator<Integer> iterator( ) {
+				return asIterator(new Cursor<Integer>( ) {
 
 					private int current = from;
 
@@ -206,21 +209,21 @@ public class NumericUtils {
 							throw PastTheEndException.neo;
 						return current++;
 					}
-				};
+				} );
 			}
 		};
 	}
 
-	public static Itterable<Long> range( final long to ) {
+	public static Iterable<Long> range( final long to ) {
 		return range( 0, to );
 	}
 
-	public static Itterable<Long> range( final long from, final long to ) {
-		return new Itterable<Long>( ) {
+	public static Iterable<Long> range( final long from, final long to ) {
+		return new Iterable<Long>( ) {
 
 			@Override
-			public Itterator<Long> pull( ) {
-				return new Itterator<Long>( ) {
+			public Iterator<Long> iterator( ) {
+				return asIterator( new Cursor<Long>( ) {
 
 					private long current = from;
 
@@ -231,7 +234,7 @@ public class NumericUtils {
 							throw PastTheEndException.neo;
 						return current++;
 					}
-				};
+				} );
 			}
 		};
 	}

@@ -20,10 +20,10 @@ package org.github.evenjn.align;
 import java.util.HashSet;
 
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.AutoHook;
-import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.Tuple;
@@ -150,7 +150,7 @@ public class TupleAlignment {
 			HashSet<TupleAlignmentPair<SymbolAbove, SymbolBelow>> observed_so_far =
 					new HashSet<>( );
 			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
-					.wrap( data ).once( hook ) ) {
+					.wrap( data ).pull( hook ).once( ) ) {
 				if ( mexus != null ) {
 					mexus.step( );
 				}
@@ -186,7 +186,7 @@ public class TupleAlignment {
 								int x = ie[e_i][0];
 								int y = ie[e_i][1];
 								SymbolAbove suba = ka.get( x );
-								KnittingTuple<SymbolBelow> subb = kb.sub( y, b - y );
+								KnittingTuple<SymbolBelow> subb = kb.head( y, b - y );
 
 								TupleAlignmentPair<SymbolAbove, SymbolBelow> pair =
 										new TupleAlignmentPair<>( );
@@ -250,7 +250,7 @@ public class TupleAlignment {
 					int y = ie[e_i][1];
 
 					SymbolAbove key = ka.get( x );
-					KnittingTuple<SymbolBelow> sub = kb.sub( y, b - y );
+					KnittingTuple<SymbolBelow> sub = kb.head( y, b - y );
 					ie[e_i][2] = alphabet.encode( key, sub );
 				}
 			}

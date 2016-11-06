@@ -17,10 +17,17 @@
  */
 package org.github.evenjn.numeric;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.github.evenjn.knit.KnittingCursor;
+import org.github.evenjn.knit.KnittingTuple;
 
 public class FrequencyDistribution<T> implements
 		Consumer<T> {
@@ -76,4 +83,40 @@ public class FrequencyDistribution<T> implements
 		total++;
 		map.put( t, integer + 1 );
 	}
+
+	public KnittingCursor<FrequencyData<T>> data( ) {
+		Function<Map.Entry<T, Integer>, FrequencyData<T>> mapper =
+				new Function<Map.Entry<T, Integer>, FrequencyData<T>>( ) {
+
+					@Override
+					public FrequencyData<T> apply( Entry<T, Integer> t ) {
+						FrequencyData<T> box = new FrequencyData<>( );
+						box.first = t.getKey( );
+						box.second = t.getValue( );
+						return box;
+					}
+				};
+		return KnittingCursor.wrap( map.entrySet( ) ).map( mapper );
+	}
+	
+	public Optional<Integer> getFrequency( T object ) {
+		return Optional.ofNullable( map.get( object ) );
+	}
+
+	public KnittingTuple<FrequencyData<T>> dataSorted( boolean descending ) {
+		Vector<FrequencyData<T>> result = new Vector<>( );
+		KnittingCursor<FrequencyData<T>> iterator = data( );
+		for ( FrequencyData<T> data : iterator.once( ) ) {
+			result.add( data );
+		}
+
+		if (descending) {
+			Collections.sort( result, (o1, o2) -> Integer.compare( o2.second, o1.second ) );
+		}
+		else {
+			Collections.sort( result, (o1, o2) -> Integer.compare( o1.second, o2.second ) );
+		}
+		return KnittingTuple.wrap( result );
+	}
+
 }

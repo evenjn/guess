@@ -19,8 +19,6 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.guess.benchmark.BenchmarkDatum;
-import org.github.evenjn.guess.benchmark.BenchmarkProblem;
 import org.github.evenjn.guess.benchmark.generator.MapleAbsorbData;
 import org.github.evenjn.guess.benchmark.generator.MapleAbsorbDuplicateData;
 import org.github.evenjn.guess.benchmark.generator.MapleConstantData;
@@ -59,7 +57,7 @@ public class TestUtils {
 				@Override
 				public String apply( Tuple<Boolean> t ) {
 					StringBuilder sb = new StringBuilder( );
-					for ( Boolean b : KnittingTuple.wrap( t ).once( ) ) {
+					for ( Boolean b : KnittingTuple.wrap( t ).asIterable( ) ) {
 						sb.append( b ? "1" : "0" );
 					}
 					return sb.toString( );

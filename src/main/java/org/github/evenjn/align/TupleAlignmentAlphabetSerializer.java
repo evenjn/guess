@@ -52,8 +52,7 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 		
 		return new Cursor<String>( ) {
 
-			private KnittingCursor<TupleAlignmentPair<SymbolAbove, SymbolBelow>> outer =
-					iterator.pull( );
+			private KnittingCursor<TupleAlignmentPair<SymbolAbove, SymbolBelow>> outer = iterator.asCursor( );
 
 			private boolean first = true;
 
@@ -76,7 +75,7 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 				builder.append( id );
 				builder.append( "," );
 				builder.append( a_serializer.apply( next.above ) );
-				for ( SymbolBelow sb : next.below.pull( ).once( ) ) {
+				for ( SymbolBelow sb : next.below.asIterable( ) ) {
 					builder.append( "," );
 					builder.append( b_serializer.apply( sb ) );
 				}

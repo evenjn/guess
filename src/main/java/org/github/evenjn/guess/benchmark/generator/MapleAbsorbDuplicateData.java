@@ -22,7 +22,7 @@ import java.util.Vector;
 
 import org.github.evenjn.guess.benchmark.BenchmarkDatum;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.Itterator;
+import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.PastTheEndException;
 import org.github.evenjn.yarn.Tuple;
 
@@ -33,7 +33,7 @@ import org.github.evenjn.yarn.Tuple;
  * 
  */
 public class MapleAbsorbDuplicateData implements
-		Itterator<BenchmarkDatum<Tuple<Boolean>, Tuple<Boolean>>> {
+		Cursor<BenchmarkDatum<Tuple<Boolean>, Tuple<Boolean>>> {
 
 	final long seed = 1848174;
 

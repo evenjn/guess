@@ -17,18 +17,20 @@
  */
 package org.github.evenjn.guess;
 
+import java.util.function.BiFunction;
+
+import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
+import org.github.evenjn.yarn.Progress;
 
-public interface TrainingDatum<I, O> extends Di<I, O> {
+/**
+ * A Teacher is a system that produces a discriminative model.
+ * 
+ * Produces a function that returns the probability of Output conditional to
+ * Input.
+ */
+public interface Teacher<I, O> {
 
-	I getInput( );
+	BiFunction<I, O, Double> teach( Progress progress, Cursable<Di<I, O>> data );
 
-	O getGold( );
-	
-	default I front() {
-		return getInput( );
-	}
-	default O back() {
-		return getGold();
-	}
 }

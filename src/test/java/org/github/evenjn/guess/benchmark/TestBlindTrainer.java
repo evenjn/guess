@@ -18,9 +18,6 @@
 package org.github.evenjn.guess.benchmark;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.guess.benchmark.BenchmarkTrial;
-import org.github.evenjn.guess.benchmark.BlindMapleTrainer;
-import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;
 
@@ -37,7 +34,7 @@ public class TestBlindTrainer {
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
 		BlindMapleTrainer<Boolean, Boolean> trainer = new BlindMapleTrainer<>(
-				TestUtils.boolean_alphabet, TestUtils.boolean_alphabet );
+				TestUtils.boolean_alphabet.asCursable( ), TestUtils.boolean_alphabet.asCursable( ) );
 		return trainer;
 	}
 

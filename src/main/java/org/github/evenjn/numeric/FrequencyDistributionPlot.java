@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.knit.Bi;
 
 public class FrequencyDistributionPlot<K> {
 

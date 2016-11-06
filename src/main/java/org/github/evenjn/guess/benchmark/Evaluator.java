@@ -19,17 +19,16 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.guess.TrainingDatum;
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Di;
 
 public interface Evaluator<I, O> {
 
 	void evaluate(
 			Function<I, O> function,
-			Cursable<? extends TrainingDatum<I, O>> data );
+			Cursable<Di<I, O>> data );
 
 	String printEvaluation( );
 
 	void reset( );
-
 }

@@ -96,11 +96,11 @@ public class BenchmarkTrial<I, O> {
 			KnittingCursable<BenchmarkDatum<I, O>> training_data =
 					KnittingCursable.wrap( problem.data( ) );
 			Function<I, O> guesser = trainer.train(
-					training_data.map( x -> x.asBadTeacherWouldTell( ) ),
-					factory.apply( hook )
+					factory.apply( hook ),
+					training_data.map( x -> x.asBadTeacherWouldTell( ) )
 					);
 			evaluator.reset( );
-			evaluator.evaluate( guesser, training_data );
+			evaluator.evaluate( guesser, training_data.map( x->x ) );
 			System.out.println( evaluator.printEvaluation( ) );
 
 			StringBuilder sb = new StringBuilder( );

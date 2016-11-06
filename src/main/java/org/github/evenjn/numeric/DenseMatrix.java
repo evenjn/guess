@@ -115,10 +115,10 @@ public class DenseMatrix<T extends Number> implements
 
 	public String toString( ) {
 		Cursor<String> rows =
-				KnittingCursor.wrap( NumericUtils.range( sizex ).pull( ) ).map(
+				KnittingCursor.wrap( NumericUtils.range( sizex ) ).map(
 						x -> "row " + x );
 		Cursor<String> cols =
-				KnittingCursor.wrap( NumericUtils.range( sizey ).pull( ) ).map(
+				KnittingCursor.wrap( NumericUtils.range( sizey ) ).map(
 						x -> "column " + x );
 
 		String print =

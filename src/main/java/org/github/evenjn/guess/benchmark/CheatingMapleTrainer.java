@@ -21,11 +21,12 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.guess.TrainingDatum;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Di;
+import org.github.evenjn.yarn.Progress;
 
 public class CheatingMapleTrainer<I, O> implements
 		Trainer<I, O> {
@@ -37,12 +38,14 @@ public class CheatingMapleTrainer<I, O> implements
 	private final O last;
 
 	@Override
-	public Function<I, O> train( Cursable<? extends TrainingDatum<I, O>> data ) {
+	public Function<I, O> train(
+			Progress progress,
+			Cursable<Di<I, O>> data ) {
 		HashMap<I, O> cheat_sheet = new HashMap<>( );
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			for ( TrainingDatum<I, O> td : KnittingCursable.wrap( data ).once( hook ) ) {
-				cheat_sheet.put( td.getInput( ), td.getGold( ) );
+			for ( Di<I, O> td : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
+				cheat_sheet.put( td.front( ), td.back( ) );
 			}
 		}
 		return new Function<I, O>( ) {

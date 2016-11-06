@@ -46,8 +46,8 @@ public class TupleAlignmentPair<SymbolAbove, SymbolBelow> {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			StringBuilder sb = new StringBuilder( );
 			sb.append( sa_label.apply( above ) );
-			sb.append( " +> [" );
-			for ( SymbolBelow b : below.once( ) ) {
+			sb.append( " >-> [" );
+			for ( SymbolBelow b : below.asIterable( ) ) {
 				sb.append( " " ).append( sb_label.apply( b ) );
 			}
 			sb.append( " ]" );

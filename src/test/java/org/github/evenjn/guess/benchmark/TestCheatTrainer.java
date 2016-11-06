@@ -18,9 +18,6 @@
 package org.github.evenjn.guess.benchmark;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.guess.benchmark.BenchmarkTrial;
-import org.github.evenjn.guess.benchmark.CheatingMapleTrainer;
-import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;

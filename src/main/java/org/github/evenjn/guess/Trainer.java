@@ -20,17 +20,14 @@ package org.github.evenjn.guess;
 import java.util.function.Function;
 
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Progress;
 
+/**
+ * A Trainer is a system that produces a discriminant function.
+ */
 public interface Trainer<I, O> {
 
-	Function<I, O> train(
-			Cursable<? extends TrainingDatum<I, O>> data );
-
-	default Function<I, O> train(
-			Cursable<? extends TrainingDatum<I, O>> data,
-			Progress progress ) {
-		return train( data );
-	}
+	Function<I, O> train( Progress progress, Cursable<Di<I, O>> data );
 
 }

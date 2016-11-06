@@ -19,12 +19,12 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.guess.TrainingDatum;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
@@ -42,7 +42,7 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 			Builder<K, T, I, O>
 			builder(
 					Function<I, O> guesser,
-					Cursable<? extends TrainingDatum<I, O>> data ) {
+					Cursable<Di<I, O>> data ) {
 		return new Builder<>( guesser, data );
 	}
 
@@ -50,10 +50,10 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 
 		private Function<I, O> guesser;
 
-		private Cursable<? extends TrainingDatum<I, O>> data;
+		private Cursable<Di<I, O>> data;
 
 		public Builder(Function<I, O> guesser,
-				Cursable<? extends TrainingDatum<I, O>> data) {
+				Cursable<Di<I, O>> data) {
 			this.guesser = guesser;
 			this.data = data;
 		}
@@ -68,11 +68,11 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 
 	public void evaluate(
 			Function<I, O> guesser,
-			Cursable<? extends TrainingDatum<I, O>> data ) {
+			Cursable<Di<I, O>> data ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			for ( TrainingDatum<I, O> k : KnittingCursable.wrap( data ).once( hook ) ) {
-				I i = k.getInput( );
-				Tuple<? extends T> oo = k.getGold( );
+			for ( Di<I, O> k : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
+				I i = k.front( );
+				Tuple<? extends T> oo = k.back( );
 				Tuple<? extends T> go = guesser.apply( i );
 				KnittingTuple<T> kgo = KnittingTuple.wrap( go ).map( x -> x );
 				KnittingTuple<T> koo = KnittingTuple.wrap( oo ).map( x -> x );
