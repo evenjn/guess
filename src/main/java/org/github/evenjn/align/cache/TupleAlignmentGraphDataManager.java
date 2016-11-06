@@ -17,7 +17,6 @@
  */
 package org.github.evenjn.align.cache;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -28,6 +27,10 @@ import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.TupleAlignmentGraph;
 import org.github.evenjn.align.TupleAlignmentNode;
 import org.github.evenjn.align.TupleAlignmentPair;
+import org.github.evenjn.align.ape.TupleAlignmentAlphabet;
+import org.github.evenjn.align.ape.TupleAlignmentAlphabetBuilder;
+import org.github.evenjn.align.ape.TupleAlignmentAlphabetDeserializer;
+import org.github.evenjn.align.ape.TupleAlignmentAlphabetSerializer;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
@@ -57,11 +60,11 @@ import org.github.evenjn.yarn.Tuple;
  */
 public class TupleAlignmentGraphDataManager<I, O> {
 
-	int record_max_length_above = 0;
+	private int record_max_length_above = 0;
 
-	int record_max_length_below = 0;
+	private int record_max_length_below = 0;
 
-	int record_max_number_of_edges = 0;
+	private int record_max_number_of_edges = 0;
 	
 	private boolean enable_cache;
 
@@ -451,10 +454,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			int record_max_length_above = 0;
 			int record_max_length_below = 0;
 			int record_max_number_of_edges = 0;
-			TupleAlignmentAlphabet<I, O> alphabet =
-					new TupleAlignmentAlphabet<>( );
-			HashSet<TupleAlignmentPair<I, O>> observed_so_far =
-					new HashSet<>( );
+			TupleAlignmentAlphabetBuilder<I, O> builder =
+					new TupleAlignmentAlphabetBuilder<>( );
 			for ( Bi<Tuple<I>, Tuple<O>> datum : KnittingCursable
 					.wrap( data ).pull( hook ).once( ) ) {
 				if ( mexus != null ) {
@@ -493,15 +494,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 								int y = ie[e_i][1];
 								I suba = ka.get( x );
 								KnittingTuple<O> subb = kb.head( y, b - y );
-
-								TupleAlignmentPair<I, O> pair =
-										new TupleAlignmentPair<>( );
-								pair.above = suba;
-								pair.below = subb;
-								if ( !observed_so_far.contains( pair ) ) {
-									observed_so_far.add( pair );
-									alphabet.add( pair );
-								}
+								builder.record( suba, subb );
 
 							}
 						}
@@ -518,8 +511,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			this.record_max_length_above = record_max_length_above;
 			this.record_max_length_below = record_max_length_below;
 			this.record_max_number_of_edges = record_max_number_of_edges;
-
-			return alphabet;
+			return builder.build( );
 		}
 	}
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.cache;
+package org.github.evenjn.align.ape;
 
 import java.util.function.Function;
 
@@ -54,6 +54,9 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 			@Override
 			public String next( )
 					throws PastTheEndException {
+				if (id >= alphabet.size( )) {
+					throw PastTheEndException.neo;
+				}
 				TupleAlignmentPair<SymbolAbove, SymbolBelow> next = alphabet.get( id );
 				StringBuilder builder = new StringBuilder( );
 				builder.append( id );

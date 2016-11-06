@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.cache;
+package org.github.evenjn.align.ape;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +43,7 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 	private HashMap<TupleAlignmentPair<SymbolAbove, SymbolBelow>, Integer> encode_map =
 			new HashMap<>( );
 
-	void add( TupleAlignmentPair<SymbolAbove, SymbolBelow> pair ) {
+	int add( TupleAlignmentPair<SymbolAbove, SymbolBelow> pair ) {
 		alphabet_above.add( pair.above );
 		sequences_below.add( pair.below );
 		encode_map.put( pair, alphabet.size( ) );
@@ -56,6 +56,7 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 			above_set.add( pair.above );
 		}
 		m.add( pair.below );
+		return alphabet.size( );
 	}
 
 	public Set<SymbolAbove> above( ) {
