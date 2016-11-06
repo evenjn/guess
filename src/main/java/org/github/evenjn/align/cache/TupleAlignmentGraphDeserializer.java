@@ -15,11 +15,13 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.cache;
 
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
+import org.github.evenjn.align.TupleAlignmentGraph;
+import org.github.evenjn.align.TupleAlignmentNode;
 import org.github.evenjn.yarn.SkipException;
 import org.github.evenjn.yarn.SkipFold;
 

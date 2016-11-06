@@ -17,15 +17,9 @@
  */
 package org.github.evenjn.align;
 
-import java.util.HashSet;
+import java.util.function.BiFunction;
 
-import org.github.evenjn.knit.BasicAutoHook;
-import org.github.evenjn.knit.Bi;
-import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.AutoHook;
-import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.Tuple;
 
 /*
@@ -128,99 +122,12 @@ import org.github.evenjn.yarn.Tuple;
  * many edges as there are elements in the string below. 
  *
  */
-public class TupleAlignment {
-	
-	
-	
-	public static <SymbolAbove, SymbolBelow>
-			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>
-			createAlphabet(
-					Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-					int min_below,
-					int max_below,
-					Progress mexus ) {
-
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-
-			int record_max_length_above = 0;
-			int record_max_length_below = 0;
-			int record_max_number_of_edges = 0;
-			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> alphabet =
-					new TupleAlignmentAlphabet<>( );
-			HashSet<TupleAlignmentPair<SymbolAbove, SymbolBelow>> observed_so_far =
-					new HashSet<>( );
-			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
-					.wrap( data ).pull( hook ).once( ) ) {
-				if ( mexus != null ) {
-					mexus.step( );
-				}
-				KnittingTuple<? extends SymbolAbove> ka =
-						KnittingTuple.wrap( datum.first );
-				KnittingTuple<SymbolBelow> kb = KnittingTuple.wrap( datum.second );
-
-				int la = ka.size( );
-				int lb = kb.size( );
-
-				if ( record_max_length_above < la ) {
-					record_max_length_above = la;
-				}
-
-				if ( record_max_length_below < lb ) {
-					record_max_length_below = lb;
-				}
-
-				try {
-					TupleAlignmentNode[][] matrix =
-							pathMatrix( ka.size( ), kb.size( ), min_below, max_below );
-					int current_number_of_edges = 0;
-					for ( int a = 0; a <= la; a++ ) {
-						for ( int b = 0; b <= lb; b++ ) {
-							if ( matrix[a][b] == null || ( a == 0 && b == 0 ) ) {
-								continue;
-							}
-							int[][] ie = matrix[a][b].incoming_edges;
-							int no_ie = matrix[a][b].number_of_incoming_edges;
-							current_number_of_edges = current_number_of_edges + no_ie;
-
-							for ( int e_i = 0; e_i < no_ie; e_i++ ) {
-								int x = ie[e_i][0];
-								int y = ie[e_i][1];
-								SymbolAbove suba = ka.get( x );
-								KnittingTuple<SymbolBelow> subb = kb.head( y, b - y );
-
-								TupleAlignmentPair<SymbolAbove, SymbolBelow> pair =
-										new TupleAlignmentPair<>( );
-								pair.above = suba;
-								pair.below = subb;
-								if ( !observed_so_far.contains( pair ) ) {
-									observed_so_far.add( pair );
-									alphabet.add( pair );
-								}
-
-							}
-						}
-					}
-					if ( record_max_number_of_edges < current_number_of_edges ) {
-						record_max_number_of_edges = current_number_of_edges;
-					}
-				}
-				catch ( NotAlignableException e ) {
-					// simply ignore them.
-				}
-			}
-
-			alphabet.record_max_length_above = record_max_length_above;
-			alphabet.record_max_length_below = record_max_length_below;
-			alphabet.record_max_number_of_edges = record_max_number_of_edges;
-
-			return alphabet;
-		}
-	}
+public class TupleAligner {
 
 	public static <SymbolAbove, SymbolBelow>
 			TupleAlignmentGraph
-			coalign(
-					TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> alphabet,
+			align(
+					BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer> pair_encoder,
 					Tuple<? extends SymbolAbove> above,
 					Tuple<SymbolBelow> below,
 					int min_below,
@@ -251,7 +158,7 @@ public class TupleAlignment {
 
 					SymbolAbove key = ka.get( x );
 					KnittingTuple<SymbolBelow> sub = kb.head( y, b - y );
-					ie[e_i][2] = alphabet.encode( key, sub );
+					ie[e_i][2] = pair_encoder.apply( key, sub );
 				}
 			}
 		}

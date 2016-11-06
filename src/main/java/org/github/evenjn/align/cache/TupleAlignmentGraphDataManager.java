@@ -15,15 +15,24 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.cache;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
+import org.github.evenjn.align.NotAlignableException;
+import org.github.evenjn.align.TupleAligner;
+import org.github.evenjn.align.TupleAlignmentGraph;
+import org.github.evenjn.align.TupleAlignmentNode;
+import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.knit.KnittingCursor;
+import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
@@ -48,6 +57,12 @@ import org.github.evenjn.yarn.Tuple;
  */
 public class TupleAlignmentGraphDataManager<I, O> {
 
+	int record_max_length_above = 0;
+
+	int record_max_length_below = 0;
+
+	int record_max_number_of_edges = 0;
+	
 	private boolean enable_cache;
 
 	private boolean refresh_cache;
@@ -153,14 +168,14 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	 * @return the maximum number of input symbols observed in the cached data.
 	 */
 	public int getMaxLenghtAbove( ) {
-		return getAlphabet( ).record_max_length_above;
+		return record_max_length_above;
 	}
 
 	/**
 	 * @return the maximum number of output symbols observed in the cached data.
 	 */
 	public int getMaxLenghtBelow( ) {
-		return getAlphabet( ).record_max_length_below;
+		return record_max_length_below;
 	}
 
 	/**
@@ -168,7 +183,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	 *         observed in the cached data.
 	 */
 	public int getMaxNumberOfEdges( ) {
-		return getAlphabet( ).record_max_number_of_edges;
+		return record_max_number_of_edges;
 	}
 
 	public TupleAlignmentGraphDataManager<I, O> load(
@@ -205,7 +220,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			}
 
 			coalignment_alphabet =
-					TupleAlignment.createAlphabet( map, min_below, max_below,
+					createAlphabet( map, min_below, max_below,
 							child_progress );
 
 			if ( progress != null ) {
@@ -279,8 +294,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 								Di<Tuple<I>, Tuple<O>> x )
 								throws SkipException {
 							try {
-								return TupleAlignment.coalign(
-										alphabet,
+								return TupleAligner.align(
+										(a, b) -> alphabet.encode( a, b ),
 										x.front( ),
 										x.back( ),
 										min_below,
@@ -309,9 +324,19 @@ public class TupleAlignmentGraphDataManager<I, O> {
 				}
 
 				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
-					graphs_to_write
-							.pull( hook2 )
-							.unfoldCursable( x -> new TupleAlignmentGraphSerializer( x ) )
+
+					StringBuilder header = new StringBuilder( );
+					header.append( record_max_length_above );
+					header.append( "," );
+					header.append( record_max_length_below );
+					header.append( "," );
+					header.append( record_max_number_of_edges );
+
+					KnittingCursor.on( header.toString( ) ).chain(
+							graphs_to_write
+									.pull( hook2 )
+									.unfoldCursable(
+											x -> new TupleAlignmentGraphSerializer( x ) ) )
 							.consume( putter_coalignment_graphs );
 				}
 				if ( progress != null ) {
@@ -321,14 +346,26 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		}
 
 		if ( enable_cache ) {
+
+			try ( AutoHook hook = new BasicAutoHook( ) ) {
+
+				Pattern splitter = Pattern.compile( "," );
+
+				String[] split = splitter.split(
+						KnittingCursable.wrap( reader_coalignment_graphs ).head( 0, 1 ).one( hook ) );
+				record_max_length_above = Integer.parseInt( split[0] );
+				record_max_length_below = Integer.parseInt( split[1] );
+				record_max_number_of_edges = Integer.parseInt( split[2] );
+			}
 			/*
 			 * de-serialize them from the reader.
 			 */
 			graphs = KnittingCursable
 					.wrap( reader_coalignment_graphs )
+					.headless( 1 )
 					.skipfold( ( ) -> new TupleAlignmentGraphDeserializer(
-							alphabet.record_max_length_above,
-							alphabet.record_max_length_below ) );
+							record_max_length_above,
+							record_max_length_below ) );
 		}
 		return graphs;
 	}
@@ -402,4 +439,87 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		return fd_pair;
 	}
 
+	private TupleAlignmentAlphabet<I, O>
+			createAlphabet(
+					Cursable<Bi<Tuple<I>, Tuple<O>>> data,
+					int min_below,
+					int max_below,
+					Progress mexus ) {
+
+		try ( AutoHook hook = new BasicAutoHook( ) ) {
+
+			int record_max_length_above = 0;
+			int record_max_length_below = 0;
+			int record_max_number_of_edges = 0;
+			TupleAlignmentAlphabet<I, O> alphabet =
+					new TupleAlignmentAlphabet<>( );
+			HashSet<TupleAlignmentPair<I, O>> observed_so_far =
+					new HashSet<>( );
+			for ( Bi<Tuple<I>, Tuple<O>> datum : KnittingCursable
+					.wrap( data ).pull( hook ).once( ) ) {
+				if ( mexus != null ) {
+					mexus.step( );
+				}
+				KnittingTuple<? extends I> ka =
+						KnittingTuple.wrap( datum.first );
+				KnittingTuple<O> kb = KnittingTuple.wrap( datum.second );
+
+				int la = ka.size( );
+				int lb = kb.size( );
+
+				if ( record_max_length_above < la ) {
+					record_max_length_above = la;
+				}
+
+				if ( record_max_length_below < lb ) {
+					record_max_length_below = lb;
+				}
+
+				try {
+					TupleAlignmentNode[][] matrix =
+							TupleAligner.pathMatrix( ka.size( ), kb.size( ), min_below, max_below );
+					int current_number_of_edges = 0;
+					for ( int a = 0; a <= la; a++ ) {
+						for ( int b = 0; b <= lb; b++ ) {
+							if ( matrix[a][b] == null || ( a == 0 && b == 0 ) ) {
+								continue;
+							}
+							int[][] ie = matrix[a][b].incoming_edges;
+							int no_ie = matrix[a][b].number_of_incoming_edges;
+							current_number_of_edges = current_number_of_edges + no_ie;
+
+							for ( int e_i = 0; e_i < no_ie; e_i++ ) {
+								int x = ie[e_i][0];
+								int y = ie[e_i][1];
+								I suba = ka.get( x );
+								KnittingTuple<O> subb = kb.head( y, b - y );
+
+								TupleAlignmentPair<I, O> pair =
+										new TupleAlignmentPair<>( );
+								pair.above = suba;
+								pair.below = subb;
+								if ( !observed_so_far.contains( pair ) ) {
+									observed_so_far.add( pair );
+									alphabet.add( pair );
+								}
+
+							}
+						}
+					}
+					if ( record_max_number_of_edges < current_number_of_edges ) {
+						record_max_number_of_edges = current_number_of_edges;
+					}
+				}
+				catch ( NotAlignableException e ) {
+					// simply ignore them.
+				}
+			}
+
+			this.record_max_length_above = record_max_length_above;
+			this.record_max_length_below = record_max_length_below;
+			this.record_max_number_of_edges = record_max_number_of_edges;
+
+			return alphabet;
+		}
+	}
 }

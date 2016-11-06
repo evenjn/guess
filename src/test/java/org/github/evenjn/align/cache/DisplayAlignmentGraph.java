@@ -15,10 +15,10 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.align.cache;
 
 import org.github.evenjn.align.NotAlignableException;
-import org.github.evenjn.align.TupleAlignment;
+import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.TupleAlignmentGraph;
 
 public class DisplayAlignmentGraph {
@@ -29,7 +29,7 @@ public class DisplayAlignmentGraph {
 		String below = "taks";
 		try {
 			TupleAlignmentGraph.printCompleteEdgeMatrix(
-					TupleAlignment.pathMatrix( above.length( ), below.length( ), 0, 2 ),
+					TupleAligner.pathMatrix( above.length( ), below.length( ), 0, 2 ),
 					above.length( ), below.length( ) );
 		}
 		catch ( NotAlignableException e ) {

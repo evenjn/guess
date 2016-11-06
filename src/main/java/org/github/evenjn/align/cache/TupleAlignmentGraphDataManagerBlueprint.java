@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.cache;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

@@ -41,7 +41,7 @@ public class TestUtils {
 					String label,
 					Cursable<BenchmarkDatum<Tuple<Boolean>, Tuple<Boolean>>> factory ) {
 		return BenchmarkProblem.nu( KnittingCursable
-				.wrap( factory ).head( 1000 ) )
+				.wrap( factory ).head( 0, 1000 ) )
 				.label( label )
 				.inputPrinter( boolean_tuple_printer )
 				.outputPrinter( x -> boolean_tuple_printer.apply( x ) )

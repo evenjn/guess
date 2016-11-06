@@ -15,79 +15,75 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.cache;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Tuple;
 
-public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>
-		implements
-		Tuple<TupleAlignmentPair<SymbolAbove, SymbolBelow>> {
+public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 
-	int record_max_length_above = 0;
-	int record_max_length_below = 0;
-	int record_max_number_of_edges = 0 ;
-	
 	private Vector<TupleAlignmentPair<SymbolAbove, SymbolBelow>> alphabet =
 			new Vector<>( );
 
 	private Vector<SymbolAbove> alphabet_above = new Vector<>( );
+
 	private Vector<Tuple<SymbolBelow>> sequences_below = new Vector<>( );
 
 	private HashMap<SymbolAbove, HashSet<Tuple<SymbolBelow>>> map =
 			new HashMap<>( );
 
 	private HashSet<SymbolAbove> above_set = new HashSet<>( );
-	
-	private HashMap<TupleAlignmentPair<SymbolAbove, SymbolBelow>, Integer> encode_map = new HashMap<>( );
-	
-	public void add( TupleAlignmentPair<SymbolAbove, SymbolBelow> pair ) {
+
+	private HashMap<TupleAlignmentPair<SymbolAbove, SymbolBelow>, Integer> encode_map =
+			new HashMap<>( );
+
+	void add( TupleAlignmentPair<SymbolAbove, SymbolBelow> pair ) {
 		alphabet_above.add( pair.above );
 		sequences_below.add( pair.below );
 		encode_map.put( pair, alphabet.size( ) );
 		alphabet.add( pair );
-		
+
 		HashSet<Tuple<SymbolBelow>> m = map.get( pair.above );
-		if (m == null) {
+		if ( m == null ) {
 			m = new HashSet<>( );
 			map.put( pair.above, m );
 			above_set.add( pair.above );
 		}
 		m.add( pair.below );
 	}
-	
-	public Set<SymbolAbove> above() {
+
+	public Set<SymbolAbove> above( ) {
 		return above_set;
 	}
 
-	public Set<Tuple<SymbolBelow>> correspondingBelow(SymbolAbove above) {
+	public Set<Tuple<SymbolBelow>> correspondingBelow( SymbolAbove above ) {
 		return map.get( above );
 	}
-	
-	@Override
+
 	public TupleAlignmentPair<SymbolAbove, SymbolBelow> get( int t ) {
 		return alphabet.get( t );
 	}
 
-	@Override
 	public int size( ) {
 		return alphabet.size( );
 	}
 
-	public int encode(SymbolAbove above, Tuple<SymbolBelow> below) {
-		TupleAlignmentPair<SymbolAbove, SymbolBelow> pair = new TupleAlignmentPair<>( );
+	public int encode( SymbolAbove above, Tuple<SymbolBelow> below ) {
+		TupleAlignmentPair<SymbolAbove, SymbolBelow> pair =
+				new TupleAlignmentPair<>( );
 		pair.above = above;
-		pair.below = KnittingTuple.wrap(below);
+		pair.below = KnittingTuple.wrap( below );
 		Integer result = encode_map.get( pair );
 		if ( result == null ) {
-			System.err.println(pair.print( ));
+			System.err.println( pair.print( ) );
 			throw new IllegalStateException(
-					"Attempting to encode a pair that is not in the alphabet.");
+					"Attempting to encode a pair that is not in the alphabet." );
 
 		}
 		return result;

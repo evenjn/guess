@@ -15,12 +15,13 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.cache;
 
 import java.util.Vector;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.SkipException;
 import org.github.evenjn.yarn.SkipFold;
@@ -39,7 +40,6 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 	private final static Pattern splitter = Pattern.compile( "," );
 
 	private boolean closed = false;
-	private boolean first = true;
 
 	@Override
 	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> end( ) {
@@ -64,13 +64,6 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 			throw new IllegalStateException( );
 		}
 		String[] split = splitter.split( object );
-		if (first) {
-			first = false;
-			result.record_max_length_above = Integer.parseInt( split[0] );
-			result.record_max_length_below = Integer.parseInt( split[1] );
-			result.record_max_number_of_edges = Integer.parseInt( split[2] );
-			throw SkipException.neo;
-		}
 		int id = Integer.parseInt( split[0] );
 		if ( result.size( ) != id ) {
 			throw new IllegalStateException( );

@@ -41,7 +41,9 @@ public class TupleAlignmentPair<SymbolAbove, SymbolBelow> {
 		return ( 17 * above.hashCode( ) ) + below.hashCode( );
 	}
 
-	public String print(Function<? super SymbolAbove, String> sa_label, Function<? super SymbolBelow, String> sb_label  ) {
+	public String print(
+			Function<? super SymbolAbove, String> sa_label,
+			Function<? super SymbolBelow, String> sb_label ) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			StringBuilder sb = new StringBuilder( );

@@ -15,12 +15,11 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.cache;
 
 import java.util.function.Function;
 
-import org.github.evenjn.knit.KnittingCursor;
-import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.Hook;
@@ -29,7 +28,6 @@ import org.github.evenjn.yarn.PastTheEndException;
 public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 		implements Cursable<String> {
 
-	private final KnittingTuple<TupleAlignmentPair<SymbolAbove, SymbolBelow>> iterator;
 
 	private final Function<SymbolAbove, String> a_serializer;
 
@@ -44,7 +42,6 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 		this.alphabet = alphabet;
 		this.a_serializer = a_serializer;
 		this.b_serializer = b_serializer;
-		iterator = KnittingTuple.wrap( alphabet );
 	}
 
 	@Override
@@ -52,27 +49,15 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 		
 		return new Cursor<String>( ) {
 
-			private KnittingCursor<TupleAlignmentPair<SymbolAbove, SymbolBelow>> outer = iterator.asCursor( );
-
-			private boolean first = true;
+			int id = 0;
 
 			@Override
 			public String next( )
 					throws PastTheEndException {
-				if (first) {
-					first = false;
-					StringBuilder builder = new StringBuilder( );
-					builder.append( alphabet.record_max_length_above );
-					builder.append( "," );
-					builder.append( alphabet.record_max_length_below );
-					builder.append( "," );
-					builder.append( alphabet.record_max_number_of_edges );
-					return builder.toString( );
-				}
-				int id = outer.soFar( );
-				TupleAlignmentPair<SymbolAbove, SymbolBelow> next = outer.next( );
+				TupleAlignmentPair<SymbolAbove, SymbolBelow> next = alphabet.get( id );
 				StringBuilder builder = new StringBuilder( );
 				builder.append( id );
+				id++;
 				builder.append( "," );
 				builder.append( a_serializer.apply( next.above ) );
 				for ( SymbolBelow sb : next.below.asIterable( ) ) {
