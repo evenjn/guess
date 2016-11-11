@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
 
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
-import org.github.evenjn.yarn.Progress;
+import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
  * A Teacher is a system that produces a discriminative model.
@@ -31,6 +31,6 @@ import org.github.evenjn.yarn.Progress;
  */
 public interface Teacher<I, O> {
 
-	BiFunction<I, O, Double> teach( Progress progress, Cursable<Di<I, O>> data );
+	BiFunction<I, O, Double> teach( ProgressSpawner progress, Cursable<Di<I, O>> data );
 
 }

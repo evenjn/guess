@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.graph;
 
 public final class NotAlignableException
 		extends Exception {

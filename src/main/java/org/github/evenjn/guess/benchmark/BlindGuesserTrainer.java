@@ -24,7 +24,7 @@ import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
-import org.github.evenjn.yarn.Progress;
+import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
  * A blind guesser ignores all features but the target, and predicts always
@@ -34,7 +34,8 @@ public class BlindGuesserTrainer<I, O> implements
 		Trainer<I, O> {
 
 	@Override
-	public Function<I, O> train( Progress progress,
+	public Function<I, O> train(
+			ProgressSpawner progress,
 			Cursable<Di<I, O>> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
 		KnittingCursable.wrap( data ).map( d -> d.back( ) ).tap( fd ).consume( );

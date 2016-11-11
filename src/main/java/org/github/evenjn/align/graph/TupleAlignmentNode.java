@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.graph;
 
 /**
  * Every path from an initial node to this node represents a partial alignment

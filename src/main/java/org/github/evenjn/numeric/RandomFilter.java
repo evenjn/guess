@@ -37,6 +37,22 @@ public class RandomFilter<K> {
 	
 	private RandomFilter() {}
 	
+	public SkipFold<K, K> asSkipFold() {
+		return new SkipFold<K, K>( ) {
+
+			@Override
+			public K next( K input )
+					throws SkipException {
+				return filter(input);
+			}
+
+			@Override
+			public K end( )
+					throws SkipException {
+				throw SkipException.neo;
+			}
+		};
+	}
 	/**
 	 * 
 	 * @param block when true,  
@@ -100,7 +116,7 @@ public class RandomFilter<K> {
 
 			@Override
 			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( true, id, false, outof, seed )::filter;
+				return new RandomFilter<K>( true, id, false, outof, seed ).asSkipFold( );
 			}
 		};
 	}
@@ -111,7 +127,7 @@ public class RandomFilter<K> {
 
 			@Override
 			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( false, id, false, outof, seed )::filter;
+				return new RandomFilter<K>( false, id, false, outof, seed ).asSkipFold( );
 			}
 		};
 	}
@@ -121,7 +137,7 @@ public class RandomFilter<K> {
 
 			@Override
 			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( true, id, true, outof, seed )::filter;
+				return new RandomFilter<K>( true, id, true, outof, seed ).asSkipFold( );
 			}
 		};
 	}
@@ -132,7 +148,7 @@ public class RandomFilter<K> {
 
 			@Override
 			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( false, id, true, outof, seed )::filter;
+				return new RandomFilter<K>( false, id, true, outof, seed ).asSkipFold( );
 			}
 		};
 	}

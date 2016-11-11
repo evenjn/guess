@@ -15,11 +15,10 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.ape;
+package org.github.evenjn.align.alphabet;
 
 import java.util.HashSet;
 
-import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.knit.KnittingTuple;
 
 public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
@@ -27,12 +26,12 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 	private final TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 			new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
 	
-	private HashSet<TupleAlignmentPair<SymbolAbove, SymbolBelow>> observed_so_far =
+	private HashSet<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> observed_so_far =
 			new HashSet<>( );
 	
 	public int record(SymbolAbove suba, KnittingTuple<SymbolBelow> subb) {
-		TupleAlignmentPair<SymbolAbove, SymbolBelow> pair =
-				new TupleAlignmentPair<>( );
+		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
+				new TupleAlignmentAlphabetPair<>( );
 		pair.above = suba;
 		pair.below = subb;
 		if ( !observed_so_far.contains( pair ) ) {

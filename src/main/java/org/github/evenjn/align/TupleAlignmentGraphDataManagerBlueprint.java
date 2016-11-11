@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.cache;
+package org.github.evenjn.align;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,9 +25,9 @@ import org.github.evenjn.yarn.Hook;
 
 public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
-	private int min_below;
+	private int min_below = 1;
 
-	private int max_below;
+	private int max_below = 1;
 
 	private Function<I, String> a_serializer;
 
@@ -45,7 +45,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	private Cursable<String> reader_coalignment_graphs;
 
-	private boolean refresh_cache;
+	private boolean refresh_cache = true;
 
 	public TupleAlignmentGraphDataManagerBlueprint<I, O> setMinBelow( int min ) {
 		this.min_below = min;

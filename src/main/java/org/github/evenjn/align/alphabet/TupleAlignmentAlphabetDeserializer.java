@@ -15,13 +15,12 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.ape;
+package org.github.evenjn.align.alphabet;
 
 import java.util.Vector;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.SkipException;
 import org.github.evenjn.yarn.SkipFold;
@@ -73,7 +72,7 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 		for ( int i = 2; i < split.length; i++ ) {
 			below.add( b_deserializer.apply( split[i] ) );
 		}
-		TupleAlignmentPair<SymbolAbove, SymbolBelow> cp = new TupleAlignmentPair<>( );
+		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> cp = new TupleAlignmentAlphabetPair<>( );
 		cp.above = sa;
 		cp.below = KnittingTuple.wrap( below );
 		result.add( cp );

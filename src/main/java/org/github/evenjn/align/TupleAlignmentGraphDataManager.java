@@ -15,33 +15,37 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.cache;
+package org.github.evenjn.align;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import org.github.evenjn.align.NotAlignableException;
-import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.align.TupleAlignmentGraph;
-import org.github.evenjn.align.TupleAlignmentNode;
-import org.github.evenjn.align.TupleAlignmentPair;
-import org.github.evenjn.align.ape.TupleAlignmentAlphabet;
-import org.github.evenjn.align.ape.TupleAlignmentAlphabetBuilder;
-import org.github.evenjn.align.ape.TupleAlignmentAlphabetDeserializer;
-import org.github.evenjn.align.ape.TupleAlignmentAlphabetSerializer;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDeserializer;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetSerializer;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetPair;
+import org.github.evenjn.align.graph.NotAlignableException;
+import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
+import org.github.evenjn.align.graph.TupleAlignmentGraph;
+import org.github.evenjn.align.graph.TupleAlignmentGraphDeserializer;
+import org.github.evenjn.align.graph.TupleAlignmentGraphSerializer;
+import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
+import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.SkipException;
 import org.github.evenjn.yarn.SkipMap;
 import org.github.evenjn.yarn.Tuple;
@@ -190,10 +194,11 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	}
 
 	public TupleAlignmentGraphDataManager<I, O> load(
-			KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
-			Progress progress ) {
-		alphabet = prepareAlphabet( data, progress );
-		graphs = prepareGraphs( data, progress );
+			Cursable<Di<Tuple<I>, Tuple<O>>> data,
+			ProgressSpawner progress ) {
+		KnittingCursable<Di<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
+		alphabet = prepareAlphabet( kc, progress );
+		graphs = prepareGraphs( kc, progress );
 		return this;
 	}
 
@@ -201,7 +206,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			TupleAlignmentAlphabet<I, O>
 			prepareAlphabet(
 					KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
-					Progress progress ) {
+					ProgressSpawner progress ) {
 
 		TupleAlignmentAlphabet<I, O> coalignment_alphabet = null;
 
@@ -213,37 +218,33 @@ public class TupleAlignmentGraphDataManager<I, O> {
 					data
 							.map( x -> ( new Bi<Tuple<I>, Tuple<O>>( )
 									.set( x.front( ), x.back( ) ) ) );
-			Progress child_progress = null;
-			if ( progress != null ) {
-				child_progress = progress.spawn( "Computing Alphabet" );
-				progress.info( "Computing dataset size." );
-				child_progress.target( data.size( ) );
-				child_progress.start( );
-				progress.info( "Working out alphabet" );
-			}
 
-			coalignment_alphabet =
-					createAlphabet( map, min_below, max_below,
-							child_progress );
+			try ( AutoHook hook = new BasicAutoHook( ) ) {
+				Progress spawn = ProgressManager.safeSpawn( hook, progress, "prepareAlphabet" );
 
-			if ( progress != null ) {
-				child_progress.end( );
-			}
-			/*
-			 * serialize the coalignment alphabet, and pour it into the putter.
-			 */
-			if ( enable_cache ) {
+				spawn.info( "Computing dataset size." );
+				int size = data.size( );
+				spawn.target( enable_cache ? 2 * size : size );
+				spawn.info( "Working out alphabet" );
 
-				if ( progress != null ) {
-					progress.info( "Serializing alignment graphs" );
+				coalignment_alphabet =
+						createAlphabet( map.pull( hook ), min_below, max_below, spawn );
+
+				/*
+				 * serialize the coalignment alphabet, and pour it into the putter.
+				 */
+				if ( enable_cache ) {
+					spawn.info( "Serializing alignment graphs" );
+					TupleAlignmentAlphabetSerializer<I, O> serializer =
+							new TupleAlignmentAlphabetSerializer<>(
+									coalignment_alphabet,
+									a_serializer,
+									b_serializer );
+					KnittingCursable.wrap( serializer )
+							.tap( x -> spawn.step( 1 ) )
+							.consume(
+									putter_coalignment_alphabet );
 				}
-				TupleAlignmentAlphabetSerializer<I, O> serializer =
-						new TupleAlignmentAlphabetSerializer<>(
-								coalignment_alphabet,
-								a_serializer,
-								b_serializer );
-				KnittingCursable.wrap( serializer ).consume(
-						putter_coalignment_alphabet );
 			}
 		}
 		if ( enable_cache ) {
@@ -257,11 +258,10 @@ public class TupleAlignmentGraphDataManager<I, O> {
 				 * volatile, but how can we communicate that?
 				 */
 				coalignment_alphabet = KnittingCursable
-						.wrap( reader_coalignment_alphabet )
-						.skipfold( ( ) -> new TupleAlignmentAlphabetDeserializer<>(
+						.wrap( reader_coalignment_alphabet ).pull( hook )
+						.skipfold( new TupleAlignmentAlphabetDeserializer<>(
 								a_deserializer,
-								b_deserializer ) )
-						.one( hook );
+								b_deserializer ) ).one( );
 			}
 			// int count = 0;
 			// for (TupleAlignmentPair<I, O> i : coalignment_alphabet) {
@@ -278,7 +278,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			KnittingCursable<TupleAlignmentGraph>
 			prepareGraphs(
 					KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
-					Progress progress ) {
+					ProgressSpawner progress ) {
 
 		KnittingCursable<TupleAlignmentGraph> graphs = null;
 
@@ -297,8 +297,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 								Di<Tuple<I>, Tuple<O>> x )
 								throws SkipException {
 							try {
-								return TupleAligner.align(
-										(a, b) -> alphabet.encode( a, b ),
+								return TupleAlignmentGraphFactory.graph(
+										( a, b ) -> alphabet.encode( a, b ),
 										x.front( ),
 										x.back( ),
 										min_below,
@@ -312,21 +312,18 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 			graphs = data.skipmap( skipMap );
 			if ( enable_cache ) {
-				KnittingCursable<TupleAlignmentGraph> graphs_to_write = graphs;
-				Progress child_progress;
-				if ( progress != null ) {
-					child_progress = progress.spawn( "Computing Alphabet" );
-					progress.info( "Computing dataset size." );
-					child_progress.target( data.size( ) );
-					child_progress.start( );
-					graphs_to_write = data
-							.tap( x -> child_progress.step( ) )
-							.skipmap( skipMap );
-				} else {
-					child_progress = null;
-				}
 
-				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
+				try ( AutoHook hook = new BasicAutoHook( ) ) {
+
+					Progress spawn =
+							ProgressManager.safeSpawn( hook, progress, "prepareGraphs");
+					KnittingCursable<TupleAlignmentGraph> graphs_to_write = graphs;
+
+					spawn.info( "Computing dataset size." );
+					spawn.target( data.size( ) );
+					graphs_to_write = data
+							.tap( x -> spawn.step(1 ) )
+							.skipmap( skipMap );
 
 					StringBuilder header = new StringBuilder( );
 					header.append( record_max_length_above );
@@ -337,13 +334,10 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 					KnittingCursor.on( header.toString( ) ).chain(
 							graphs_to_write
-									.pull( hook2 )
+									.pull( hook )
 									.unfoldCursable(
 											x -> new TupleAlignmentGraphSerializer( x ) ) )
 							.consume( putter_coalignment_graphs );
-				}
-				if ( progress != null ) {
-					child_progress.end( );
 				}
 			}
 		}
@@ -377,7 +371,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 	private FrequencyDistribution<O> fd_sb = null;
 
-	private FrequencyDistribution<TupleAlignmentPair<I, O>> fd_pair =
+	private FrequencyDistribution<TupleAlignmentAlphabetPair<I, O>> fd_pair =
 			null;
 
 	private void computeStats( ) {
@@ -391,7 +385,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 					TupleAlignmentNode node = forward.next( );
 					for ( int i = 0; i < node.number_of_incoming_edges; i++ ) {
 						int encoded = node.incoming_edges[i][2];
-						TupleAlignmentPair<I, O> pair =
+						TupleAlignmentAlphabetPair<I, O> pair =
 								alphabet.get( encoded );
 						fd_pair.accept( pair );
 					}
@@ -405,7 +399,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 					int y = node.incoming_edges[0][1];
 					int encoded = node.incoming_edges[0][2];
 
-					TupleAlignmentPair<I, O> pair =
+					TupleAlignmentAlphabetPair<I, O> pair =
 							alphabet.get( encoded );
 					fd_sa.accept( pair.above );
 					for ( O b : pair.below.asIterable( ) ) {
@@ -434,7 +428,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		return fd_sb;
 	}
 
-	public FrequencyDistribution<TupleAlignmentPair<I, O>>
+	public FrequencyDistribution<TupleAlignmentAlphabetPair<I, O>>
 			getPairFD( ) {
 		if ( fd_pair == null ) {
 			computeStats( );
@@ -444,10 +438,10 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 	private TupleAlignmentAlphabet<I, O>
 			createAlphabet(
-					Cursable<Bi<Tuple<I>, Tuple<O>>> data,
+					KnittingCursor<Bi<Tuple<I>, Tuple<O>>> data,
 					int min_below,
 					int max_below,
-					Progress mexus ) {
+					Progress progress ) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
@@ -456,11 +450,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			int record_max_number_of_edges = 0;
 			TupleAlignmentAlphabetBuilder<I, O> builder =
 					new TupleAlignmentAlphabetBuilder<>( );
-			for ( Bi<Tuple<I>, Tuple<O>> datum : KnittingCursable
-					.wrap( data ).pull( hook ).once( ) ) {
-				if ( mexus != null ) {
-					mexus.step( );
-				}
+			for ( Bi<Tuple<I>, Tuple<O>> datum : data.once( ) ) {
+					progress.step( 1 );
 				KnittingTuple<? extends I> ka =
 						KnittingTuple.wrap( datum.first );
 				KnittingTuple<O> kb = KnittingTuple.wrap( datum.second );
@@ -478,7 +469,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 				try {
 					TupleAlignmentNode[][] matrix =
-							TupleAligner.pathMatrix( ka.size( ), kb.size( ), min_below, max_below );
+							TupleAlignmentGraphFactory.pathMatrix( ka.size( ), kb.size( ), min_below, max_below );
 					int current_number_of_edges = 0;
 					for ( int a = 0; a <= la; a++ ) {
 						for ( int b = 0; b <= lb; b++ ) {

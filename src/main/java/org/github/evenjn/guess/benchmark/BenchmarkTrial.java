@@ -23,7 +23,6 @@ import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.yarn.AutoHook;
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.PastTheEndException;
 import org.github.evenjn.yarn.Progress;
 
@@ -38,8 +37,6 @@ public class BenchmarkTrial<I, O> {
 	private String trainer_label;
 
 	private String evaluator_label;
-
-	public Function<Hook, Progress> factory;
 
 	public static <I, O> Builder<I, O> builder( Trainer<I, O> trainer,
 			String label ) {
@@ -73,12 +70,6 @@ public class BenchmarkTrial<I, O> {
 			return this;
 		}
 
-		public Builder<I, O> progressFactory(
-				Function<Hook, Progress> factory ) {
-			built.factory = factory;
-			return this;
-		}
-
 		public BenchmarkTrial<?, ?> build( ) {
 			return built;
 		}
@@ -87,7 +78,7 @@ public class BenchmarkTrial<I, O> {
 	private BenchmarkTrial() {
 	}
 
-	public Evaluator<I, O> run( ) {
+	public Evaluator<I, O> run( Progress progress ) {
 		System.out.println( "\n\n\n" );
 		System.out.println( "Problem: " + problem.label( ) );
 		System.out.println( "Trainer: " + trainer_label );
@@ -96,7 +87,7 @@ public class BenchmarkTrial<I, O> {
 			KnittingCursable<BenchmarkDatum<I, O>> training_data =
 					KnittingCursable.wrap( problem.data( ) );
 			Function<I, O> guesser = trainer.train(
-					factory.apply( hook ),
+					progress,
 					training_data.map( x -> x.asBadTeacherWouldTell( ) )
 					);
 			evaluator.reset( );

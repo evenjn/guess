@@ -26,7 +26,7 @@ import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
-import org.github.evenjn.yarn.Progress;
+import org.github.evenjn.yarn.ProgressSpawner;
 
 public class CheatingMapleTrainer<I, O> implements
 		Trainer<I, O> {
@@ -39,7 +39,7 @@ public class CheatingMapleTrainer<I, O> implements
 
 	@Override
 	public Function<I, O> train(
-			Progress progress,
+			ProgressSpawner progress,
 			Cursable<Di<I, O>> data ) {
 		HashMap<I, O> cheat_sheet = new HashMap<>( );
 

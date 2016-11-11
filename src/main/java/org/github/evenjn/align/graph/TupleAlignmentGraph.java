@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.graph;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,7 +65,7 @@ public class TupleAlignmentGraph {
 		}
 	}
 
-	public TupleAlignmentNode[][] matrix;
+	TupleAlignmentNode[][] matrix;
 	
 	private final HashSet<Integer> encout_combinations = new HashSet<>( );
 
@@ -115,78 +115,4 @@ public class TupleAlignmentGraph {
 		return below;
 	}
 
-	public static void printCompleteEdgeMatrix(TupleAlignmentNode[][] mx, int la, int lb) {
-		StringBuilder sb;
-
-		sb = new StringBuilder( );
-		sb.append( " - nodes -\n" );
-		for ( int a = 0; a <= la; a++ ) {
-			TupleAlignmentNode[] columns = mx[a];
-
-			for ( int b = 0; b <= lb; b++ ) {
-				TupleAlignmentNode edges = columns[b];
-				if (edges == null) {
-					sb.append( " . " );
-				}
-				else {
-					if (edges.is_reachable_from_end) {
-						sb.append( " o " );
-					}
-					else {
-  					if (edges.is_reachable_from_beginning) {
-  						sb.append( " ? " );
-  					}
-  					else {
-  						sb.append( " Q " );
-  					}
-					}
-				}
-			}
-			sb.append( "\n" );
-		}
-		System.out.println( sb.toString( ) );
-
-		int max = 0;
-
-		sb = new StringBuilder( );
-		sb.append( " - incoming edges -\n" );
-		for ( int a = 0; a <= la; a++ ) {
-			TupleAlignmentNode[] columns = mx[a];
-
-			for ( int b = 0; b <= lb; b++ ) {
-				TupleAlignmentNode edges = columns[b];
-				if (edges == null) {
-					sb.append( " . " );
-				}
-				else {
-					int val = edges.number_of_incoming_edges;
-					if ( val > max )
-						max = val;
-					sb.append( " " ).append( val ).append( " " );
-				}
-			}
-			sb.append( "\n" );
-		}
-		System.out.println( sb.toString( ) );
-
-		for ( int layer = 0; layer < max; layer++ ) {
-			sb = new StringBuilder( );
-			sb.append( " - layer " + layer + " -\n" );
-			for ( int a = 0; a <= la; a++ ) {
-				TupleAlignmentNode[] columns = mx[a];
-
-				for ( int b = 0; b <= lb; b++ ) {
-					TupleAlignmentNode edges = columns[b];
-					if ( edges != null && edges.number_of_incoming_edges > layer ) {
-						sb.append( edges.incoming_edges[layer][0] ).append( edges.incoming_edges[layer][1] ).append( " " );
-					}
-					else {
-						sb.append( ".. " );
-					}
-				}
-				sb.append( "\n" );
-			}
-			System.out.println( sb.toString( ) );
-		}
-	}
 }

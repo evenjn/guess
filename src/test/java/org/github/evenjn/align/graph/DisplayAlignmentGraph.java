@@ -15,26 +15,29 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.cache;
+package org.github.evenjn.align.graph;
 
-import org.github.evenjn.align.NotAlignableException;
-import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.align.TupleAlignmentGraph;
+import org.github.evenjn.align.graph.NotAlignableException;
+import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
+import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.align.graph.TupleAlignmentGraph;
 
 public class DisplayAlignmentGraph {
 
 	public static void main( String[] args ) {
 
-		String above = "TAX";
-		String below = "taks";
+		KnittingTuple<String> above = KnittingTuple.on( "T", "A", "X" );
+		KnittingTuple<String> below = KnittingTuple.on( "t", "a", "k", "s" );
 		try {
-			TupleAlignmentGraph.printCompleteEdgeMatrix(
-					TupleAligner.pathMatrix( above.length( ), below.length( ), 0, 2 ),
-					above.length( ), below.length( ) );
+			TupleAlignmentGraph graph = TupleAlignmentGraphFactory.graph(
+					( x, y ) -> 1,
+					above, below, 0, 2 );
+			String print = TupleAlignmentGraphPrinter.print( graph );
+			System.out.println( print );
 		}
 		catch ( NotAlignableException e ) {
 		}
-		
+
 	}
 
 }

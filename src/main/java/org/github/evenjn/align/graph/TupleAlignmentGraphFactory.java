@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.graph;
 
 import java.util.function.BiFunction;
 
@@ -122,11 +122,11 @@ import org.github.evenjn.yarn.Tuple;
  * many edges as there are elements in the string below. 
  *
  */
-public class TupleAligner {
+public class TupleAlignmentGraphFactory {
 
 	public static <SymbolAbove, SymbolBelow>
 			TupleAlignmentGraph
-			align(
+			graph(
 					BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer> pair_encoder,
 					Tuple<? extends SymbolAbove> above,
 					Tuple<SymbolBelow> below,

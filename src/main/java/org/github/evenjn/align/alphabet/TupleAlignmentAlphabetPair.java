@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.alphabet;
 
 import java.util.function.Function;
 
@@ -23,17 +23,17 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.AutoHook;
 
-public class TupleAlignmentPair<SymbolAbove, SymbolBelow> {
+public class TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> {
 
 	public SymbolAbove above;
 
 	public KnittingTuple<SymbolBelow> below;
 
 	public boolean equals( Object other ) {
-		if ( other == null || !( other instanceof TupleAlignmentPair ) ) {
+		if ( other == null || !( other instanceof TupleAlignmentAlphabetPair ) ) {
 			return false;
 		}
-		TupleAlignmentPair<?, ?> o = (TupleAlignmentPair<?, ?>) other;
+		TupleAlignmentAlphabetPair<?, ?> o = (TupleAlignmentAlphabetPair<?, ?>) other;
 		return above.equals( o.above ) && below.equals( o.below );
 	}
 

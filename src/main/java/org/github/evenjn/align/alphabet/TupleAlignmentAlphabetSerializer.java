@@ -15,11 +15,10 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.ape;
+package org.github.evenjn.align.alphabet;
 
 import java.util.function.Function;
 
-import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.Hook;
@@ -57,7 +56,7 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 				if (id >= alphabet.size( )) {
 					throw PastTheEndException.neo;
 				}
-				TupleAlignmentPair<SymbolAbove, SymbolBelow> next = alphabet.get( id );
+				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> next = alphabet.get( id );
 				StringBuilder builder = new StringBuilder( );
 				builder.append( id );
 				id++;

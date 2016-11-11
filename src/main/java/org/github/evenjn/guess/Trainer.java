@@ -21,13 +21,13 @@ import java.util.function.Function;
 
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
-import org.github.evenjn.yarn.Progress;
+import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
  * A Trainer is a system that produces a discriminant function.
  */
 public interface Trainer<I, O> {
 
-	Function<I, O> train( Progress progress, Cursable<Di<I, O>> data );
+	Function<I, O> train( ProgressSpawner progress, Cursable<Di<I, O>> data );
 
 }

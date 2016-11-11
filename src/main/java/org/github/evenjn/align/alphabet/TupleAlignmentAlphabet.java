@@ -15,20 +15,19 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align.ape;
+package org.github.evenjn.align.alphabet;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import org.github.evenjn.align.TupleAlignmentPair;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 
-	private Vector<TupleAlignmentPair<SymbolAbove, SymbolBelow>> alphabet =
+	private Vector<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> alphabet =
 			new Vector<>( );
 
 	private Vector<SymbolAbove> alphabet_above = new Vector<>( );
@@ -40,10 +39,10 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 
 	private HashSet<SymbolAbove> above_set = new HashSet<>( );
 
-	private HashMap<TupleAlignmentPair<SymbolAbove, SymbolBelow>, Integer> encode_map =
+	private HashMap<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>, Integer> encode_map =
 			new HashMap<>( );
 
-	int add( TupleAlignmentPair<SymbolAbove, SymbolBelow> pair ) {
+	int add( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair ) {
 		alphabet_above.add( pair.above );
 		sequences_below.add( pair.below );
 		encode_map.put( pair, alphabet.size( ) );
@@ -67,7 +66,7 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		return map.get( above );
 	}
 
-	public TupleAlignmentPair<SymbolAbove, SymbolBelow> get( int t ) {
+	public TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> get( int t ) {
 		return alphabet.get( t );
 	}
 
@@ -76,8 +75,8 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 	}
 
 	public int encode( SymbolAbove above, Tuple<SymbolBelow> below ) {
-		TupleAlignmentPair<SymbolAbove, SymbolBelow> pair =
-				new TupleAlignmentPair<>( );
+		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
+				new TupleAlignmentAlphabetPair<>( );
 		pair.above = above;
 		pair.below = KnittingTuple.wrap( below );
 		Integer result = encode_map.get( pair );
