@@ -39,6 +39,11 @@ import java.util.Set;
  */
 public class TupleAlignmentGraph {
 
+	public TupleAlignmentGraph(TupleAlignmentNode[][] matrix, int a, int b) {
+		this.matrix = matrix;
+		this.above = a;
+		this.below = b;
+	}
 	
 	/**
 	 * This function iterates over all the cells of the matrix except [0 0].
@@ -65,7 +70,7 @@ public class TupleAlignmentGraph {
 		}
 	}
 
-	TupleAlignmentNode[][] matrix;
+	final TupleAlignmentNode[][] matrix;
 	
 	private final HashSet<Integer> encout_combinations = new HashSet<>( );
 
@@ -77,13 +82,9 @@ public class TupleAlignmentGraph {
 	}
 
 	private final LinkedList<TupleAlignmentNode> nodes = new LinkedList<>( );
-	private int above;
-	private int below;
+	private final int above;
+	private final int below;
 	
-	public void set(int a, int b) {
-		above = a;
-		below = b;
-	}
 	public Iterator<TupleAlignmentNode> backward() {
 		if (nodes.isEmpty( )) {
 			computeNodesList();

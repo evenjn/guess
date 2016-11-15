@@ -25,19 +25,18 @@ import java.util.regex.Pattern;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDeserializer;
-import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetSerializer;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetPair;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetSerializer;
 import org.github.evenjn.align.graph.NotAlignableException;
-import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphDeserializer;
+import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentGraphSerializer;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
-import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.AutoHook;
@@ -224,7 +223,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			/*
 			 * re-compute the coalignment alphabet.
 			 */
-			KnittingCursable<Bi<Tuple<I>, Tuple<O>>> map =
+			KnittingCursable<Di<Tuple<I>, Tuple<O>>> map =
 					data
 							.map( x -> ( new Bi<Tuple<I>, Tuple<O>>( )
 									.set( x.front( ), x.back( ) ) ) );
@@ -284,6 +283,44 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		return coalignment_alphabet;
 	}
 
+	private void computeLimits(
+			KnittingCursable<TupleAlignmentGraph> data,
+			ProgressSpawner progress) {
+		int record_max_length_above = 0;
+		int record_max_length_below = 0;
+		int record_max_number_of_edges = 0;
+		try ( AutoHook hook = new BasicAutoHook( ) ) {
+			for (TupleAlignmentGraph g : data.pull( hook ).once( )) {	
+				int la = g.la( );
+				int lb = g.lb( );
+
+				if ( record_max_length_above < la ) {
+					record_max_length_above = la;
+				}
+
+				if ( record_max_length_below < lb ) {
+					record_max_length_below = lb;
+				}
+
+				int current_number_of_edges = 0;
+				Iterator<TupleAlignmentNode> iter = g.forward( );
+				while( iter.hasNext( )) {
+					TupleAlignmentNode node = iter.next( );
+					int no_ie = node.number_of_incoming_edges;
+					current_number_of_edges = current_number_of_edges + no_ie;
+
+
+				}
+				if ( record_max_number_of_edges < current_number_of_edges ) {
+					record_max_number_of_edges = current_number_of_edges;
+				}
+			}
+		}
+		this.record_max_length_above = record_max_length_above;
+		this.record_max_length_below = record_max_length_below;
+		this.record_max_number_of_edges = record_max_number_of_edges;
+	}
+	
 	private
 			KnittingCursable<TupleAlignmentGraph>
 			prepareGraphs(
@@ -321,6 +358,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 					};
 
 			graphs = data.skipmap( skipMap );
+			computeLimits( graphs, progress );
 			if ( enable_cache ) {
 
 				try ( AutoHook hook = new BasicAutoHook( ) ) {
@@ -448,73 +486,16 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 	private TupleAlignmentAlphabet<I, O>
 			createAlphabet(
-					KnittingCursor<Bi<Tuple<I>, Tuple<O>>> data,
+					KnittingCursor<Di<Tuple<I>, Tuple<O>>> data,
 					int min_below,
 					int max_below,
 					Progress progress ) {
-
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-
-			int record_max_length_above = 0;
-			int record_max_length_below = 0;
-			int record_max_number_of_edges = 0;
 			TupleAlignmentAlphabetBuilder<I, O> builder =
 					new TupleAlignmentAlphabetBuilder<>( );
 			builder.setPrinters( a_printer, b_printer );
-			
-			for ( Bi<Tuple<I>, Tuple<O>> datum : data.once( ) ) {
-					progress.step( 1 );
-				KnittingTuple<? extends I> ka =
-						KnittingTuple.wrap( datum.first );
-				KnittingTuple<O> kb = KnittingTuple.wrap( datum.second );
-
-				int la = ka.size( );
-				int lb = kb.size( );
-
-				if ( record_max_length_above < la ) {
-					record_max_length_above = la;
-				}
-
-				if ( record_max_length_below < lb ) {
-					record_max_length_below = lb;
-				}
-
-				try {
-					TupleAlignmentNode[][] matrix =
-							TupleAlignmentGraphFactory.pathMatrix( ka.size( ), kb.size( ), min_below, max_below );
-					int current_number_of_edges = 0;
-					for ( int a = 0; a <= la; a++ ) {
-						for ( int b = 0; b <= lb; b++ ) {
-							if ( matrix[a][b] == null || ( a == 0 && b == 0 ) ) {
-								continue;
-							}
-							int[][] ie = matrix[a][b].incoming_edges;
-							int no_ie = matrix[a][b].number_of_incoming_edges;
-							current_number_of_edges = current_number_of_edges + no_ie;
-
-							for ( int e_i = 0; e_i < no_ie; e_i++ ) {
-								int x = ie[e_i][0];
-								int y = ie[e_i][1];
-								I suba = ka.get( x );
-								KnittingTuple<O> subb = kb.head( y, b - y );
-								builder.record( suba, subb );
-
-							}
-						}
-					}
-					if ( record_max_number_of_edges < current_number_of_edges ) {
-						record_max_number_of_edges = current_number_of_edges;
-					}
-				}
-				catch ( NotAlignableException e ) {
-					// simply ignore them.
-				}
-			}
-
-			this.record_max_length_above = record_max_length_above;
-			this.record_max_length_below = record_max_length_below;
-			this.record_max_number_of_edges = record_max_number_of_edges;
-			return builder.build( );
+			builder.setMinMax(min_below, max_below);
+			return builder.build( data , progress );
 		}
 	}
 }

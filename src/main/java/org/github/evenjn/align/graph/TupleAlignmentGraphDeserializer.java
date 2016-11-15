@@ -26,8 +26,8 @@ import org.github.evenjn.yarn.SkipFold;
 public class TupleAlignmentGraphDeserializer
 		implements
 		SkipFold<String, TupleAlignmentGraph> {
-
-	private TupleAlignmentGraph current_graph;
+	
+	private TupleAlignmentNode[][] matrix;
 	private TupleAlignmentNode current_node;
 	private int current_a;
 	private int current_b;
@@ -66,10 +66,9 @@ public class TupleAlignmentGraphDeserializer
 	@Override
 	public TupleAlignmentGraph end( )
 			throws SkipException {
-		if ( current_graph != null ) {
+		if ( matrix != null ) {
 			wrapUp();
-			current_graph.set( current_la, current_lb );
-			return current_graph;
+			return new TupleAlignmentGraph( matrix, current_la, current_lb );
 		}
 		throw SkipException.neo;
 	}
@@ -79,25 +78,23 @@ public class TupleAlignmentGraphDeserializer
 			String object )
 			throws SkipException {
 		if ( object.isEmpty( ) ) {
-			if ( current_graph != null ) {
+			if ( matrix != null ) {
 				wrapUp( );
-				current_graph.set( current_la, current_lb );
+				TupleAlignmentGraph tmp = new TupleAlignmentGraph( matrix, current_la, current_lb );
+				matrix = null;
 				current_node = null;
 				current_a = 0;
 				current_b = 0;
 				current_la = 0;
 				current_lb = 0;
-				TupleAlignmentGraph tmp = current_graph;
-				current_graph = null;
 				return tmp;
 			}
 			throw SkipException.neo;
 		}
 		boolean just_created = false;
-		if ( current_graph == null ) {
+		if ( matrix == null ) {
 			just_created = true;
-			current_graph = new TupleAlignmentGraph( );
-			current_graph.matrix = new TupleAlignmentNode[1+record_max_length_above][1+record_max_length_below];
+			matrix = new TupleAlignmentNode[1+record_max_length_above][1+record_max_length_below];
 		}
 		String[] split = splitter.split( object );
 		int a = Integer.parseInt(split[0]);
@@ -123,7 +120,7 @@ public class TupleAlignmentGraphDeserializer
 			current_node = new TupleAlignmentNode( );
 			current_node.a = current_a;
 			current_node.b = current_b;
-			current_graph.matrix[a][b] = current_node;
+			matrix[a][b] = current_node;
 		}
 		
 		int[] edge = new int[3];
