@@ -87,6 +87,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		this.b_serializer = null;
 		this.a_deserializer = null;
 		this.b_deserializer = null;
+		this.a_printer = null;
+		this.b_printer = null;
 		this.enable_cache = false;
 		this.refresh_cache = false;
 	}
@@ -102,6 +104,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			Function<O, String> b_serializer,
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer,
+			Function<I, String> a_printer,
+			Function<O, String> b_printer,
 			boolean refresh_cache) {
 		this.min_below = min_below;
 		this.max_below = max_below;
@@ -113,6 +117,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		this.b_serializer = b_serializer;
 		this.a_deserializer = a_deserializer;
 		this.b_deserializer = b_deserializer;
+		this.a_printer = a_printer;
+		this.b_printer = b_printer;
 		this.enable_cache = true;
 		this.refresh_cache = refresh_cache;
 		if ( putter_coalignment_alphabet == null )
@@ -144,6 +150,10 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	private final Function<Hook, Consumer<String>> putter_coalignment_graphs;
 
 	private final Cursable<String> reader_coalignment_graphs;
+
+	private final Function<I, String> a_printer;
+
+	private final Function<O, String> b_printer;
 
 	private final Function<I, String> a_serializer;
 
@@ -450,6 +460,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			int record_max_number_of_edges = 0;
 			TupleAlignmentAlphabetBuilder<I, O> builder =
 					new TupleAlignmentAlphabetBuilder<>( );
+			builder.setPrinters( a_printer, b_printer );
+			
 			for ( Bi<Tuple<I>, Tuple<O>> datum : data.once( ) ) {
 					progress.step( 1 );
 				KnittingTuple<? extends I> ka =

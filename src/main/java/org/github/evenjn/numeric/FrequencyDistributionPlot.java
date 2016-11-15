@@ -40,6 +40,8 @@ public class FrequencyDistributionPlot<K> {
 
 	private int total;
 
+	private int topN;
+
 	public FrequencyDistributionPlot<K> setNumeralPrinter(
 			Function<Double, String> numeral_printer ) {
 		this.numeral_printer = numeral_printer;
@@ -67,8 +69,14 @@ public class FrequencyDistributionPlot<K> {
 		this.total = total;
 		return this;
 	}
+	
+	public FrequencyDistributionPlot<K> setLimit( int topN ) {
+		this.topN = topN;
+		return this;
+	}
 
-	private Iterable<Bi<K, Integer>> data( Map<K, Integer> the_map,
+	private Iterable<Bi<K, Integer>> data(
+			Map<K, Integer> the_map,
 			Comparator<K> comparator ) {
 		ArrayList<Bi<K, Integer>> data = new ArrayList<>( );
 		for ( Entry<K, Integer> d : the_map.entrySet( ) ) {
@@ -81,17 +89,21 @@ public class FrequencyDistributionPlot<K> {
 				if ( comparator != null ) {
 					return comparator.compare( o1.first, o2.first );
 				}
-				return o1.second.compareTo( o2.second );
+				return o2.second.compareTo( o1.second );
 			}
 		} );
 		return data;
 	}
-
+	
 	public String print( ) {
 
 		double denominator = total;
 		StringBuilder sb = new StringBuilder( );
+		int printed = 0;
 		for ( Bi<K, Integer> d : data( the_map, comparator ) ) {
+			if (topN > 0 && printed > topN) {
+				break;
+			}
 			int len = 0;
 			double n = d.second;
 			if ( display_fraction ) {
@@ -124,6 +136,7 @@ public class FrequencyDistributionPlot<K> {
 			sb.append( "| " );
 			sb.append( labels.apply( d.first ) );
 			sb.append( "\n" );
+			printed++;
 		}
 		return sb.toString( );
 	}

@@ -41,6 +41,7 @@ public class TestM12MapleTrainer {
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
 		
 		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
+				.seed( 1 )
 				.states( 3 )
 				.trainingTime( 3,  100 );
 		

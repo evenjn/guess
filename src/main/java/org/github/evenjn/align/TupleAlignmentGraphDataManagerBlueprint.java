@@ -29,6 +29,10 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	private int max_below = 1;
 
+	private Function<I, String> a_printer;
+
+	private Function<O, String> b_printer;
+
 	private Function<I, String> a_serializer;
 
 	private Function<O, String> b_serializer;
@@ -54,6 +58,14 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	public TupleAlignmentGraphDataManagerBlueprint<I, O> setMaxBelow( int max ) {
 		this.max_below = max;
+		return this;
+	}
+
+	public TupleAlignmentGraphDataManagerBlueprint<I, O> setPrinter(
+			Function<I, String> a_printer,
+			Function<O, String> b_printer ) {
+		this.a_printer = a_printer;
+		this.b_printer = b_printer;
 		return this;
 	}
 
@@ -120,6 +132,8 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 				b_serializer,
 				a_deserializer,
 				b_deserializer,
+				a_printer,
+				b_printer,
 				refresh_cache );
 	}
 }
