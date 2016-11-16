@@ -74,18 +74,11 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		return alphabet.size( );
 	}
 
-	public int encode( SymbolAbove above, Tuple<SymbolBelow> below ) {
+	public Integer encode( SymbolAbove above, Tuple<SymbolBelow> below ) {
 		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
 				new TupleAlignmentAlphabetPair<>( );
 		pair.above = above;
 		pair.below = KnittingTuple.wrap( below );
-		Integer result = encode_map.get( pair );
-		if ( result == null ) {
-			System.err.println( pair.print( ) );
-			throw new IllegalStateException(
-					"Attempting to encode a pair that is not in the alphabet." );
-
-		}
-		return result;
+		return encode_map.get( pair );
 	}
 }

@@ -75,9 +75,13 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 	public TupleAlignmentGraphDataManager(
 			int min_below,
-			int max_below) {
+			int max_below,
+			boolean shrink_alphabet,
+			Function<I, String> a_printer,
+			Function<O, String> b_printer) {
 		this.min_below = min_below;
 		this.max_below = max_below;
+		this.shrink_alphabet = shrink_alphabet;
 		this.putter_coalignment_alphabet = null;
 		this.reader_coalignment_alphabet = null;
 		this.putter_coalignment_graphs = null;
@@ -86,8 +90,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		this.b_serializer = null;
 		this.a_deserializer = null;
 		this.b_deserializer = null;
-		this.a_printer = null;
-		this.b_printer = null;
+		this.a_printer = a_printer;
+		this.b_printer = b_printer;
 		this.enable_cache = false;
 		this.refresh_cache = false;
 	}
@@ -95,6 +99,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	public TupleAlignmentGraphDataManager(
 			int min_below,
 			int max_below,
+			boolean shrink_alphabet,
 			Function<Hook, Consumer<String>> putter_coalignment_alphabet,
 			Cursable<String> reader_coalignment_alphabet,
 			Function<Hook, Consumer<String>> putter_coalignment_graphs,
@@ -108,6 +113,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			boolean refresh_cache) {
 		this.min_below = min_below;
 		this.max_below = max_below;
+		this.shrink_alphabet = shrink_alphabet;
 		this.putter_coalignment_alphabet = putter_coalignment_alphabet;
 		this.reader_coalignment_alphabet = reader_coalignment_alphabet;
 		this.putter_coalignment_graphs = putter_coalignment_graphs;
@@ -137,6 +143,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		if ( b_deserializer == null )
 			throw new IllegalArgumentException( );
 	}
+
+	private final boolean shrink_alphabet;
 
 	private final int min_below;
 
@@ -237,7 +245,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 				spawn.info( "Working out alphabet" );
 
 				coalignment_alphabet =
-						createAlphabet( map.pull( hook ), min_below, max_below, spawn );
+						createAlphabet( map, min_below, max_below, spawn );
 
 				/*
 				 * serialize the coalignment alphabet, and pour it into the putter.
@@ -486,15 +494,14 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 	private TupleAlignmentAlphabet<I, O>
 			createAlphabet(
-					KnittingCursor<Di<Tuple<I>, Tuple<O>>> data,
+					KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
 					int min_below,
 					int max_below,
 					Progress progress ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			TupleAlignmentAlphabetBuilder<I, O> builder =
-					new TupleAlignmentAlphabetBuilder<>( );
+					new TupleAlignmentAlphabetBuilder<>( min_below, max_below, shrink_alphabet );
 			builder.setPrinters( a_printer, b_printer );
-			builder.setMinMax(min_below, max_below);
 			return builder.build( data , progress );
 		}
 	}

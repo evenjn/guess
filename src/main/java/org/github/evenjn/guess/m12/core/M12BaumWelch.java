@@ -94,7 +94,6 @@ public class M12BaumWelch {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn = ProgressManager.safeSpawn( hook, progress,
 					"M12BaumWelch::BaumWelch" );
-			spawn.info( "Training" );
 			spawn.target( epochs * period );
 
 			BasicAutoHook[] local = {
@@ -131,7 +130,6 @@ public class M12BaumWelch {
 			final double[][] new_emission =
 					new double[number_of_states][number_of_symbols];
 			for ( int epoch = 0; epoch < max_epoch; epoch++ ) {
-				spawn.info( "Expectation" );
 				for ( int s = 0; s < number_of_states; s++ ) {
 					new_initial[s] = uniform_state;
 					final double[] new_transitions_from_s = new_transition[s];
@@ -166,7 +164,6 @@ public class M12BaumWelch {
 
 					spawn.step( 1 );
 				}
-				spawn.info( "Maximization" );
 				maximization(
 						new_initial,
 						new_transition,
@@ -175,7 +172,6 @@ public class M12BaumWelch {
 						smoothing_count );
 
 				if ( check_consistency ) {
-					spawn.info( "Checking consistency" );
 					M12CoreChecker.check( hmm );
 				}
 

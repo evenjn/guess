@@ -50,7 +50,14 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 	private Cursable<String> reader_coalignment_graphs;
 
 	private boolean refresh_cache = true;
+	
+	private boolean shrink_alphabet = false;
 
+	public TupleAlignmentGraphDataManagerBlueprint<I, O>
+			setShrinkAlphabet( boolean shrink_alphabet ) {
+		this.shrink_alphabet = shrink_alphabet;
+		return this;
+	}
 	public TupleAlignmentGraphDataManagerBlueprint<I, O> setMinBelow( int min ) {
 		this.min_below = min;
 		return this;
@@ -124,6 +131,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 		return new TupleAlignmentGraphDataManager<>(
 				min_below,
 				max_below,
+				shrink_alphabet,
 				putter_coalignment_alphabet,
 				reader_coalignment_alphabet,
 				putter_coalignment_graphs,

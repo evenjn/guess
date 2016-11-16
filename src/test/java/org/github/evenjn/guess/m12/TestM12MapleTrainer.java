@@ -22,7 +22,6 @@ import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TestUtils;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
-import org.github.evenjn.guess.m12.M12MapleTrainer;
 import org.github.evenjn.guess.m12.core.M12CoreTrainerBlueprint;
 import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;
@@ -40,15 +39,61 @@ public class TestM12MapleTrainer {
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
 		
+
 		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
-				.seed( 1 )
+				.seed( 43 )
 				.states( 3 )
-				.trainingTime( 3,  100 );
+				.trainingTime( 20,  50 );
 		
 		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
-				new TupleAlignmentGraphDataManager<Boolean, Boolean>( 0, 2 ),
-				m12TrainerBlueprint.create( ));
+				new TupleAlignmentGraphDataManager<Boolean, Boolean>(
+						0,
+						2,
+						true,
+						x -> x ? "1" : "0",
+					  x -> x ? "1" : "0" ),
+				m12TrainerBlueprint.create( ) );
+
+		return trainer;
+	}
+	
+	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerDelayByOne( ) {
 		
+
+		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
+				.seed( 43 )
+				.states( 4 )
+				.trainingTime( 100,  100 );
+		
+		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
+				new TupleAlignmentGraphDataManager<Boolean, Boolean>(
+						0,
+						2,
+						true,
+						x -> x ? "1" : "0",
+					  x -> x ? "1" : "0" ),
+				m12TrainerBlueprint.create( ) );
+
+		return trainer;
+	}
+	
+	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
+		
+
+		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
+				.seed( 43 )
+				.states( 3 )
+				.trainingTime( 100,  500 );
+		
+		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
+				new TupleAlignmentGraphDataManager<Boolean, Boolean>(
+						0,
+						2,
+						true,
+						x -> x ? "1" : "0",
+					  x -> x ? "1" : "0" ),
+				m12TrainerBlueprint.create( ) );
+
 		return trainer;
 	}
 
@@ -119,13 +164,13 @@ public class TestM12MapleTrainer {
 	public void testM12Zebra( ) {
 		/** RUN! */
 		BenchmarkTrial
-				.builder( trainer(), trainer_label )
+				.builder( trainerZebra(), trainer_label )
 				.problem( TestUtils.zebra )
 				.evaluator( evaluator, evaluator_label )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
-				.assertTrue( 0.4 <= evaluator.one_minus_relative_distance( ) );
+				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
 		org.junit.Assert
 				.assertTrue( 1.0 >= evaluator.one_minus_relative_distance( ) );
 	}
@@ -134,8 +179,6 @@ public class TestM12MapleTrainer {
 	 * 
 	 * This can be modeled perfectly using a 1:1 HMM with four states.
 	 * 
-	 * 1:0..2 HMM may fail because the initial delay can be simulated by emitting
-	 * two symbols at the beginning, and implementing identity. For example:
 	 * 
 	 * gold   = x0110111
 	 * input  =  01101110
@@ -145,13 +188,13 @@ public class TestM12MapleTrainer {
 	public void testM12DelayByOne( ) {
 		/** RUN! */
 		BenchmarkTrial
-				.builder( trainer( ), trainer_label )
+				.builder( trainerDelayByOne( ), trainer_label )
 				.problem( TestUtils.delay_by_one )
 				.evaluator( evaluator, evaluator_label )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
-				.assertTrue( 0.97 <= evaluator.one_minus_relative_distance( ) );
+				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
 		org.junit.Assert
 				.assertTrue( 1.0 >= evaluator.one_minus_relative_distance( ) );
 	}

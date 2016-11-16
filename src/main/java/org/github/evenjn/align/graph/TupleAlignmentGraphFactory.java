@@ -133,7 +133,9 @@ public class TupleAlignmentGraphFactory {
 					final int min_below,
 					final int max_below )
 					throws NotAlignableException {
-		
+
+		KnittingTuple<SymbolAbove> ka = KnittingTuple.wrap( above );
+		KnittingTuple<SymbolBelow> kb = KnittingTuple.wrap( below );
 		final int labove = above.size( );
 		final int lbelow = below.size( );
 
@@ -189,6 +191,16 @@ public class TupleAlignmentGraphFactory {
 						continue;
 					}
 
+					int x = a - 1;
+					int y = b;
+
+					SymbolAbove key = ka.get( x );
+					KnittingTuple<SymbolBelow> sub = kb.head( y, z - y );
+					Integer enc = pair_encoder.apply( key, sub );
+					if (enc == null) {
+						continue;
+					}
+					
 					TupleAlignmentNode rich_dest = matrix[a][z];
 					if ( rich_dest == null ) {
 						rich_dest = new TupleAlignmentNode( );
@@ -198,8 +210,10 @@ public class TupleAlignmentGraphFactory {
 
 					int edges_in_rich_destination = rich_dest.number_of_incoming_edges;
 
-					rich_dest.incoming_edges[edges_in_rich_destination][0] = a - 1;
-					rich_dest.incoming_edges[edges_in_rich_destination][1] = b;
+					
+					rich_dest.incoming_edges[edges_in_rich_destination][0] = x;
+					rich_dest.incoming_edges[edges_in_rich_destination][1] = y;
+					rich_dest.incoming_edges[edges_in_rich_destination][2] = enc;
 
 					rich_dest.is_reachable_from_beginning = true;
 
@@ -241,8 +255,6 @@ public class TupleAlignmentGraphFactory {
 		}
 		
 		TupleAlignmentGraph graph = new TupleAlignmentGraph( matrix, labove, lbelow );
-		KnittingTuple<SymbolAbove> ka = KnittingTuple.wrap( above );
-		KnittingTuple<SymbolBelow> kb = KnittingTuple.wrap( below );
 
 		for ( int a = 0; a <= labove; a++ ) {
 			for ( int b = 0; b <= lbelow; b++ ) {
@@ -258,7 +270,8 @@ public class TupleAlignmentGraphFactory {
 
 					SymbolAbove key = ka.get( x );
 					KnittingTuple<SymbolBelow> sub = kb.head( y, b - y );
-					ie[e_i][2] = pair_encoder.apply( key, sub );
+					Integer enc = pair_encoder.apply( key, sub );
+					ie[e_i][2] = enc;
 				}
 			}
 		}
