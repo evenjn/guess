@@ -38,7 +38,7 @@ public class BlindMapleTrainer<I, O> implements
 
 	@Override
 	public Function<Tuple<I>, Tuple<O>> train(
-			ProgressSpawner progress,
+			ProgressSpawner progress_spawner,
 			Cursable<Di<Tuple<I>, Tuple<O>>> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
 		KnittingCursable.wrap( data )

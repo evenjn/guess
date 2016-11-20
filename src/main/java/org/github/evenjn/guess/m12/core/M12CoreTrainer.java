@@ -33,8 +33,6 @@ import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12CoreTrainer {
 
-	private boolean check_consistency = false;
-	
 	private int number_of_states;
 
 	private int period;
@@ -46,16 +44,14 @@ public class M12CoreTrainer {
 	private Cursable<String> reader_core;
 
 	private long seed;
-	
+
 	public M12CoreTrainer(
-			boolean check_consistency,
 			int number_of_states,
 			int period,
 			int epochs,
 			Function<Hook, Consumer<String>> putter_core,
 			Cursable<String> reader_core,
-			long seed ) {
-		this.check_consistency = check_consistency;
+			long seed) {
 		this.number_of_states = number_of_states;
 		this.period = period;
 		this.epochs = epochs;
@@ -70,10 +66,11 @@ public class M12CoreTrainer {
 			int record_max_length_above,
 			int record_max_length_below,
 			KnittingCursable<TupleAlignmentGraph> graphs,
-			ProgressSpawner progress ) {
+			ProgressSpawner progress_spawner ) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = ProgressManager.safeSpawn( hook, progress, "M12CoreTrainer::prepareCore" );
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+					"M12CoreTrainer::prepareCore" );
 
 			M12Core core = null;
 
@@ -88,19 +85,18 @@ public class M12CoreTrainer {
 						.nu( )
 						.states( number_of_states )
 						.symbols( number_of_symbols )
-						.seed( seed  )
+						.seed( seed )
 						.build( );
 
-				if ( check_consistency ) {
-					M12CoreChecker.check( core );
-				}
+				M12CoreChecker.check( core );
 
-			} else {
+			}
+			else {
 
 				/*
 				 * Otherwise, de-serialize it from the reader.
 				 */
-				
+
 				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 					core = KnittingCursable
 							.wrap( reader_core )
@@ -108,9 +104,7 @@ public class M12CoreTrainer {
 							.skipfold( new M12CoreDeserializer( ) )
 							.one( );
 
-					if ( check_consistency ) {
-						M12CoreChecker.check( core );
-					}
+					M12CoreChecker.check( core );
 				}
 			}
 
@@ -126,12 +120,10 @@ public class M12CoreTrainer {
 
 			if ( putter_core != null ) {
 				KnittingCursor.wrap( new M12CoreSerializer( core ) )
-				.consume(putter_core );
+						.consume( putter_core );
 			}
 
-			if ( check_consistency ) {
-				M12CoreChecker.check( core );
-			}
+			M12CoreChecker.check( core );
 
 			return core;
 		}

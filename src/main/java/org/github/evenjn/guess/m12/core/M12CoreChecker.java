@@ -20,7 +20,7 @@ package org.github.evenjn.guess.m12.core;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.SixCharFormat;
 
-class M12CoreChecker {
+public class M12CoreChecker {
 
 	private final static SixCharFormat format = new SixCharFormat( true );
 

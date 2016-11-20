@@ -35,7 +35,7 @@ public class BlindGuesserTrainer<I, O> implements
 
 	@Override
 	public Function<I, O> train(
-			ProgressSpawner progress,
+			ProgressSpawner progress_spawner,
 			Cursable<Di<I, O>> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
 		KnittingCursable.wrap( data ).map( d -> d.back( ) ).tap( fd ).consume( );

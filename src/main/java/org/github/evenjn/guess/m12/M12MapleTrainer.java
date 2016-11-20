@@ -17,7 +17,8 @@
  */
 package org.github.evenjn.guess.m12;
 
-import org.github.evenjn.align.TupleAlignmentGraphDataManager;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManager;
+import org.github.evenjn.align.graph.TupleAlignmentGraphDataManager;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.m12.core.M12Core;
 import org.github.evenjn.guess.m12.core.M12CoreTrainer;
@@ -34,45 +35,52 @@ public class M12MapleTrainer<I, O>
 		implements
 		Trainer<Tuple<I>, Tuple<O>> {
 
-	private M12CoreTrainer trainer;
+	private M12CoreTrainer core_trainer;
 
-	private TupleAlignmentGraphDataManager<I, O> datamanager;
+	private TupleAlignmentGraphDataManager<I, O> graph_manager;
+
+	private TupleAlignmentAlphabetDataManager<I, O> alphabet_manager;
 
 	public M12MapleTrainer(
-			TupleAlignmentGraphDataManager<I, O> datamanager,
+			TupleAlignmentAlphabetDataManager<I, O> alphabet_manager,
+			TupleAlignmentGraphDataManager<I, O> graph_manager,
 			M12CoreTrainer trainer) {
-		this.trainer = trainer;
-		this.datamanager = datamanager;
+		this.alphabet_manager = alphabet_manager;
+		this.core_trainer = trainer;
+		this.graph_manager = graph_manager;
 	}
 
 	@Override
 	public M12Maple<I, O> train(
-			ProgressSpawner progress,
+			ProgressSpawner progress_spawner,
 			Cursable<Di<Tuple<I>, Tuple<O>>> data ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn =
-					ProgressManager.safeSpawn( hook, progress, "M12MapleTrainer::train" );
+			Progress progress = ProgressManager
+					.safeSpawn( hook, progress_spawner, "M12MapleTrainer::train" );
 
-			spawn.info( "Caching alingment data." );
+			progress.info( "Caching alingment data." );
 
-			datamanager.load( data, spawn );
+			alphabet_manager.load( data, progress );
 
-			spawn.info( "Training." );
+			graph_manager.load( data, alphabet_manager.getAlphabet( ).asEncoder( ),
+					progress );
 
-			M12Core core = trainer.load(
-					datamanager.getAlphabet( ).size( ),
-					datamanager.getMaxNumberOfEdges( ),
-					datamanager.getMaxLenghtAbove( ),
-					datamanager.getMaxLenghtBelow( ),
-					datamanager.getGraphs( ),
-					spawn );
+			progress.info( "Training." );
 
-			spawn.info( "Finalizing machine." );
+			M12Core core = core_trainer.load(
+					alphabet_manager.getAlphabet( ).size( ),
+					graph_manager.getMaxNumberOfEdges( ),
+					graph_manager.getMaxLenghtAbove( ),
+					graph_manager.getMaxLenghtBelow( ),
+					graph_manager.getGraphs( ),
+					progress );
+
+			progress.info( "Finalizing machine." );
 
 			M12Maple<I, O> maple = new M12Maple<I, O>(
-					datamanager.getAlphabet( ),
+					alphabet_manager.getAlphabet( ),
 					core,
-					spawn );
+					progress );
 
 			return maple;
 		}

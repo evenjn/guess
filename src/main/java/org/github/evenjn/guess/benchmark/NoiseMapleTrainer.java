@@ -45,7 +45,7 @@ public class NoiseMapleTrainer<I, O> implements
 
 	@Override
 	public Function<Tuple<I>, Tuple<O>> train(
-			ProgressSpawner progress,
+			ProgressSpawner progress_spawner,
 			Cursable<Di<Tuple<I>, Tuple<O>>> data ) {
 		final Random r = new Random( 1l );
 		return new Function<Tuple<I>, Tuple<O>>( ) {

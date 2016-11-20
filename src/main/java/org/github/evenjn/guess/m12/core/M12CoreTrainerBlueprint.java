@@ -25,8 +25,6 @@ import org.github.evenjn.yarn.Hook;
 
 public class M12CoreTrainerBlueprint {
 
-	private boolean check_consistency = false;
-
 	private int number_of_states;
 
 	private int period;
@@ -37,16 +35,11 @@ public class M12CoreTrainerBlueprint {
 
 	private Cursable<String> reader_core;
 
-	private long seed;;
+	private long seed;
 
 	public M12CoreTrainerBlueprint trainingTime( int period, int epochs ) {
 		this.period = period;
 		this.epochs = epochs;
-		return this;
-	}
-
-	public M12CoreTrainerBlueprint checkConsistency( boolean check_consistency ) {
-		this.check_consistency = check_consistency;
 		return this;
 	}
 
@@ -74,7 +67,6 @@ public class M12CoreTrainerBlueprint {
 
 	public M12CoreTrainer create( ) {
 		return new M12CoreTrainer(
-				check_consistency,
 				number_of_states,
 				period,
 				epochs,

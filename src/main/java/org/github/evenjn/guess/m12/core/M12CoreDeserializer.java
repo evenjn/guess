@@ -20,7 +20,7 @@ package org.github.evenjn.guess.m12.core;
 import org.github.evenjn.yarn.SkipException;
 import org.github.evenjn.yarn.SkipFold;
 
-class M12CoreDeserializer implements
+public class M12CoreDeserializer implements
 		SkipFold<String, M12Core> {
 
 	private int step = 4;

@@ -39,7 +39,7 @@ public class CheatingMapleTrainer<I, O> implements
 
 	@Override
 	public Function<I, O> train(
-			ProgressSpawner progress,
+			ProgressSpawner progress_spawner,
 			Cursable<Di<I, O>> data ) {
 		HashMap<I, O> cheat_sheet = new HashMap<>( );
 

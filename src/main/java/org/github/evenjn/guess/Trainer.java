@@ -28,6 +28,7 @@ import org.github.evenjn.yarn.ProgressSpawner;
  */
 public interface Trainer<I, O> {
 
-	Function<I, O> train( ProgressSpawner progress, Cursable<Di<I, O>> data );
-
+	Function<I, O> train(
+			ProgressSpawner progress_spawner,
+			Cursable<Di<I, O>> data );
 }

@@ -31,4 +31,6 @@ public interface Evaluator<I, O> {
 	String printEvaluation( );
 
 	void reset( );
+
+	void record( I input, O target, O guessed );
 }

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.BiFunction;
 
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Tuple;
@@ -72,6 +73,10 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 
 	public int size( ) {
 		return alphabet.size( );
+	}
+	
+	public BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer> asEncoder(){
+		return (a, b) -> encode(a, b);
 	}
 
 	public Integer encode( SymbolAbove above, Tuple<SymbolBelow> below ) {

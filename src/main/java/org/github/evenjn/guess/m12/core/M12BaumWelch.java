@@ -89,10 +89,10 @@ public class M12BaumWelch {
 			KnittingCursable<TupleAlignmentGraph> observed_cursable,
 			final int period,
 			final int epochs,
-			ProgressSpawner progress ) {
+			ProgressSpawner progress_spawner ) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = ProgressManager.safeSpawn( hook, progress,
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
 			spawn.target( epochs * period );
 

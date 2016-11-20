@@ -56,15 +56,16 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 	private int min_below;
 
 	private int max_below;
-	
+
 	private boolean shrink_alphabet = false;
-	
-	public TupleAlignmentAlphabetBuilder(int min_below, int max_below, boolean shrink_alphabet) {
+
+	public TupleAlignmentAlphabetBuilder(int min_below, int max_below,
+			boolean shrink_alphabet) {
 		this.min_below = min_below;
 		this.max_below = max_below;
 		this.shrink_alphabet = shrink_alphabet;
 	}
-	
+
 	public void setPrinters(
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
@@ -78,7 +79,7 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	private FrequencyDistribution<SymbolAbove> fd_base =
 			new FrequencyDistribution<>( );
-	
+
 	private FrequencyDistribution<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> fd_global =
 			new FrequencyDistribution<>( );
 
@@ -86,7 +87,7 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 			new HashMap<>( );
 
 	public void record(
-			 SymbolAbove above,Tuple<SymbolBelow> below  ) {
+			SymbolAbove above, Tuple<SymbolBelow> below ) {
 		Vector<FrequencyDistribution<Tuple<SymbolBelow>>> vector =
 				fds.get( above );
 
@@ -124,7 +125,9 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 		if ( a_printer != null && b_printer != null ) {
 			System.out.println( decorator_line );
-			System.out.println( fd_global.plot( ).setLabels( x->a_printer.apply( x.above ) + " >-> " + tuple_printer( x.below ) ).print( ) );
+			System.out.println( fd_global.plot( ).setLabels(
+					x -> a_printer.apply( x.above ) + " >-> " + tuple_printer( x.below ) )
+					.print( ) );
 			System.out.println( decorator_line );
 			System.out.println( fd_base.plot( ).setLabels( a_printer ).print( ) );
 			System.out.println( decorator_line );
@@ -152,19 +155,20 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 	private HashSet<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> complete_alphabet =
 			new HashSet<>( );
 
-	
 	private int total;
+
 	private int total_aligneable;
-	
-	public void computeCompleteAlphabet( Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-			ProgressSpawner progress ) {
+
+	public void computeCompleteAlphabet(
+			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+			ProgressSpawner progress_spawner ) {
 		if ( total != 0 ) {
 			throw new IllegalStateException( "this can be compued only once" );
 		}
-		
+
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
-			Progress spawn = ProgressManager.safeSpawn( hook, progress,
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::computeCompleteAlphabet" );
 			int not_aligneable = 0;
 			for ( Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
@@ -176,9 +180,9 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 				try {
 					/**
-					 * We invoke the graph factory passing a special encoder.
-					 * This encoder appends the requested pair to a buffer vector and returns
-					 * the size of the buffer.
+					 * We invoke the graph factory passing a special encoder. This encoder
+					 * appends the requested pair to a buffer vector and returns the size
+					 * of the buffer.
 					 */
 					final Vector<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> buffer =
 							new Vector<>( );
@@ -197,12 +201,13 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 									return buffer.size( );
 								}
 							};
-					TupleAlignmentGraph graph = TupleAlignmentGraphFactory.graph( pair_encoder, ka, kb,
-							min_below, max_below );
-					
+					TupleAlignmentGraph graph =
+							TupleAlignmentGraphFactory.graph( pair_encoder, ka, kb,
+									min_below, max_below );
+
 					/**
-					 * When the graph is complete, we iterate through all the edges
-					 * and record all the pairs that have survived.
+					 * When the graph is complete, we iterate through all the edges and
+					 * record all the pairs that have survived.
 					 */
 					Iterator<TupleAlignmentNode> forward = graph.forward( );
 					while ( forward.hasNext( ) ) {
@@ -223,36 +228,40 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 				}
 			}
 			total_aligneable = total - not_aligneable;
-			System.out.println( PercentPrinter.printRatioAsPercent( 4, total_aligneable, total ) );
+			System.out.println(
+					PercentPrinter.printRatioAsPercent( 4, total_aligneable, total ) );
 
 		}
 	}
-	public Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> shrinkAlphabet(
-			Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> initial_alphabet,
-			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-			ProgressSpawner progress ) {
+
+	public Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
+			shrinkAlphabet(
+					Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> initial_alphabet,
+					Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+					ProgressSpawner progress_spawner ) {
 
 		HashSet<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> alphabet =
 				new HashSet<>( );
-		for (TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> s: initial_alphabet) {
+		for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> s : initial_alphabet ) {
 			alphabet.add( s );
 		}
-		
+
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
-			Progress spawn = ProgressManager.safeSpawn( hook, progress,
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::shrinkAlphabet" )
 					.target( initial_alphabet.size( ) );
-			
+
 			for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> candidate : KnittingCursor
 					.wrap( initial_alphabet.iterator( ) )
 					.once( ) ) {
 				alphabet.remove( candidate );
 				int not_aligneable =
-						computeCoverage( data, progress, alphabet::contains, total );
+						computeCoverage( data, progress_spawner, alphabet::contains, total );
 				spawn.step( 1 );
 
-				if ( (1.0 * not_aligneable) / (1.0 * total_aligneable) < threshold ) {
+				if ( ( 1.0 * not_aligneable )
+						/ ( 1.0 * total_aligneable ) < threshold ) {
 					/**
 					 * removing this pair is harmless
 					 */
@@ -276,15 +285,21 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 	}
 
 	private double threshold = 0.01;
-	
-	private Cursor<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> greedy() {
-		KnittingTuple<SymbolAbove> symbols = fd_base.dataSorted( true ).map( x->x.front( ) );
-		return new Cursor<TupleAlignmentAlphabetPair<SymbolAbove,SymbolBelow>>( ) {
+
+	private Cursor<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
+			greedy( ) {
+		KnittingTuple<SymbolAbove> symbols =
+				fd_base.dataSorted( true ).map( x -> x.front( ) );
+		return new Cursor<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>( ) {
+
 			int symbol = 0;
+
 			int size = 0;
+
 			int rank = 0;
+
 			boolean none_in_this_rank = true;
-			
+
 			@Override
 			public TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> next( )
 					throws PastTheEndException {
@@ -301,7 +316,7 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 					else {
 						Vector<FrequencyDistribution<Tuple<SymbolBelow>>> vector =
 								fds.get( symbolAbove );
-						if ( vector.size( ) + 1> size ) {
+						if ( vector.size( ) + 1 > size ) {
 							FrequencyDistribution<Tuple<SymbolBelow>> frequencyDistribution =
 									vector.get( size - 1 );
 							if ( frequencyDistribution.dataSorted( true ).size( ) > rank ) {
@@ -336,47 +351,44 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 			}
 		};
 	}
-	
+
 	public Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
 			growAlphabetQuickly(
 					Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-					ProgressSpawner progress ) {
+					ProgressSpawner progress_spawner ) {
 		HashSet<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> alphabet =
 				new HashSet<>( );
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			int total_candidates = KnittingCursor.wrap( fd_global.data() ).size( );
+			int total_candidates = KnittingCursor.wrap( fd_global.data( ) ).size( );
 			int batch_size = 0;
-			
-			Progress spawn = ProgressManager.safeSpawn( hook, progress,
+
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::growAlphabetQuickly" )
 					.target( total_aligneable );
 			int prev = total_aligneable;
 
-			
-			
 			for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> best_candidate : KnittingCursor
-					.wrap( //fd_global.dataSorted( true )
-							greedy( )
-							)
-					//.map( x -> x.front( ) )
+					.wrap( // fd_global.dataSorted( true )
+							greedy( ) )
+					// .map( x -> x.front( ) )
 					.once( ) ) {
 				alphabet.add( best_candidate );
 				batch_size++;
 
 				int not_aligneable = prev;
-				if ( batch_size == 1 + (total_candidates / 100) ) {
+				if ( batch_size == 1 + ( total_candidates / 100 ) ) {
 					not_aligneable =
 							computeCoverage( data, spawn, alphabet::contains, total );
 					batch_size = 0;
 				}
 
-						// not a good idea because certain frequent elements may
-						// need a less-frequent element to become useful.
-//						if (prev != total_aligneable && not_aligneable == prev ) {
-//							alphabet.remove( best_candidate );
-//							continue;
-//						}
+				// not a good idea because certain frequent elements may
+				// need a less-frequent element to become useful.
+				// if (prev != total_aligneable && not_aligneable == prev ) {
+				// alphabet.remove( best_candidate );
+				// continue;
+				// }
 
 				spawn.step( prev - not_aligneable );
 				prev = not_aligneable;
@@ -398,7 +410,8 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 					sb.append( " of the alphabet)." );
 					System.out.println( sb.toString( ) );
 				}
-				if ( (1.0 * not_aligneable) / (1.0 * total_aligneable) < threshold ) {
+				if ( ( 1.0 * not_aligneable )
+						/ ( 1.0 * total_aligneable ) < threshold ) {
 					break;
 				}
 			}
@@ -408,14 +421,14 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	public Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> growAlphabet(
 			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-			ProgressSpawner progress ) {
+			ProgressSpawner progress_spawner ) {
 		HashSet<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> alphabet =
 				new HashSet<>( );
 
-		int total_candidates = KnittingCursor.wrap( fd_global.data() ).size( );
+		int total_candidates = KnittingCursor.wrap( fd_global.data( ) ).size( );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
-			Progress spawn = ProgressManager.safeSpawn( hook, progress,
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::growAlphabet" )
 					.target( total_aligneable );
 			int not_aligneable = total_aligneable;
@@ -423,14 +436,15 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 			while ( not_aligneable > 0 ) {
 				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> best_candidate =
 						null;
-				
+
 				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 
-					Progress spawn_bc = ProgressManager.safeSpawn( hook2, progress,
+					Progress spawn_bc = ProgressManager.safeSpawn( hook2, progress_spawner,
 							"TupleAlignmentAlphabetBuilder::findBestCandidate" )
 							.target( limit );
 					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> candidate : KnittingCursor
-							.wrap( fd_global.dataSorted( true ) ).head( 0, limit ).map( x -> x.front( ) )
+							.wrap( fd_global.dataSorted( true ) ).head( 0, limit )
+							.map( x -> x.front( ) )
 							.once( ) ) {
 						spawn_bc.step( 1 );
 						if ( alphabet.contains( candidate ) ) {
@@ -446,11 +460,11 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 						}
 					}
 
-					if (best_candidate == null) {
+					if ( best_candidate == null ) {
 						limit++;
 						continue;
 					}
-					if (not_aligneable == total_aligneable){
+					if ( not_aligneable == total_aligneable ) {
 						limit++;
 					}
 					else {
@@ -458,15 +472,17 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 							/**
 							 * consider how much we cover at the moment ( between 0 and 1)
 							 */
-							double current_coverage = 1.0 - ( 1.0 * not_aligneable ) / (  1.0 * total_aligneable );
+							double current_coverage =
+									1.0 - ( 1.0 * not_aligneable ) / ( 1.0 * total_aligneable );
 							/**
 							 * consider how many candidates we can add
 							 */
-							int new_limit = (int)Math.floor( total_candidates * current_coverage);
-							if (new_limit < limit) {
+							int new_limit =
+									(int) Math.floor( total_candidates * current_coverage );
+							if ( new_limit < limit ) {
 								new_limit = limit + 1;
 							}
-							limit = new_limit; 
+							limit = new_limit;
 						}
 					}
 				}
@@ -490,11 +506,11 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	public int computeCoverage(
 			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-			ProgressSpawner progress,
+			ProgressSpawner progress_spawner,
 			Predicate<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> filter,
-			int total) {
+			int total ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = ProgressManager.safeSpawn( hook, progress,
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::computeCoverage" ).target( total );
 			int not_aligneable = 0;
 			for ( Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
@@ -544,16 +560,16 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
 			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-			ProgressSpawner progress ) {
+			ProgressSpawner progress_spawner ) {
 		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 				new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			computeCompleteAlphabet( data, progress );
+			computeCompleteAlphabet( data, progress_spawner );
 			print( );
 			Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> alphabet =
-					growAlphabetQuickly( data, progress );
+					growAlphabetQuickly( data, progress_spawner );
 			if ( shrink_alphabet ) {
-				alphabet = shrinkAlphabet( alphabet, data, progress );
+				alphabet = shrinkAlphabet( alphabet, data, progress_spawner );
 			}
 			for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> x : alphabet ) {
 				result.add( x );

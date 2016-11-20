@@ -72,25 +72,10 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			for ( Di<I, O> k : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
 				I i = k.front( );
-				Tuple<? extends T> oo = k.back( );
-				Tuple<? extends T> go = guesser.apply( i );
-				KnittingTuple<T> kgo = KnittingTuple.wrap( go ).map( x -> x );
-				KnittingTuple<T> koo = KnittingTuple.wrap( oo ).map( x -> x );
-				int distance = koo.distance( go );
-				total_distance += distance;
-				int size_go = kgo.size( );
-				int size_oo = koo.size( );
-				/**
-				 * Taking the largest size guarantees that the relative distance is
-				 * always in the interval [0,1]
-				 */
-				total_elements += ( size_go > size_oo ) ? size_go : size_oo;
-				if ( distance == 0 ) {
-					positive++;
-				}
-				total++;
+				O target_output = k.back( );
+				O guessed_output = guesser.apply( i );
+				record(i, target_output, guessed_output);
 			}
-
 		}
 	}
 
@@ -124,5 +109,26 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 		total_distance = 0;
 		total_elements = 0;
 		positive = 0;
+	}
+
+	@Override
+	public void record( I input, O target, O guessed ) {
+		Tuple<? extends T> target_output = target;
+		Tuple<? extends T> guessed_output = guessed;
+		KnittingTuple<T> kgo = KnittingTuple.wrap( guessed_output ).map( x -> x );
+		KnittingTuple<T> koo = KnittingTuple.wrap( target_output ).map( x -> x );
+		int distance = koo.distance( guessed_output );
+		total_distance += distance;
+		int size_go = kgo.size( );
+		int size_oo = koo.size( );
+		/**
+		 * Taking the largest size guarantees that the relative distance is
+		 * always in the interval [0,1]
+		 */
+		total_elements += ( size_go > size_oo ) ? size_go : size_oo;
+		if ( distance == 0 ) {
+			positive++;
+		}
+		total++;
 	}
 }

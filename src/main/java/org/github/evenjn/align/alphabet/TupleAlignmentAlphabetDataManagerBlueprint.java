@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.align;
+package org.github.evenjn.align.alphabet;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -23,7 +23,7 @@ import java.util.function.Function;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
 
-public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
+public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
 	private int min_below = 1;
 
@@ -45,30 +45,22 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	private Cursable<String> reader_coalignment_alphabet;
 
-	private Function<Hook, Consumer<String>> putter_coalignment_graphs;
-
-	private Cursable<String> reader_coalignment_graphs;
-
-	private boolean refresh_cache = true;
-	
 	private boolean shrink_alphabet = false;
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O>
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			setShrinkAlphabet( boolean shrink_alphabet ) {
 		this.shrink_alphabet = shrink_alphabet;
 		return this;
 	}
-	public TupleAlignmentGraphDataManagerBlueprint<I, O> setMinBelow( int min ) {
-		this.min_below = min;
-		return this;
-	}
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O> setMaxBelow( int max ) {
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
+			setMinMaxBelow( int min, int max ) {
+		this.min_below = min;
 		this.max_below = max;
 		return this;
 	}
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O> setPrinter(
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O> setPrinter(
 			Function<I, String> a_printer,
 			Function<O, String> b_printer ) {
 		this.a_printer = a_printer;
@@ -76,7 +68,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 		return this;
 	}
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O> setInputCoDec(
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O> setInputCoDec(
 			Function<I, String> a_serializer,
 			Function<String, I> a_deserializer ) {
 		this.a_serializer = a_serializer;
@@ -84,7 +76,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 		return this;
 	}
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O> setOutputCoDec(
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O> setOutputCoDec(
 			Function<O, String> b_serializer,
 			Function<String, O> b_deserializer ) {
 		this.b_serializer = b_serializer;
@@ -92,56 +84,32 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 		return this;
 	}
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O>
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			deserializeTupleAlignmentAlphabet(
 					Cursable<String> reader_alphabet ) {
 		this.reader_coalignment_alphabet = reader_alphabet;
 		return this;
 	}
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O>
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			serializeTupleAlignmentAlphabet(
 					Function<Hook, Consumer<String>> putter_alphabet ) {
 		this.putter_coalignment_alphabet = putter_alphabet;
 		return this;
 	}
 
-	public TupleAlignmentGraphDataManagerBlueprint<I, O>
-			deserializeTupleAlignmentGraphs(
-					Cursable<String> reader_coalignments ) {
-		this.reader_coalignment_graphs = reader_coalignments;
-		return this;
-	}
-
-	public TupleAlignmentGraphDataManagerBlueprint<I, O>
-			serializeTupleAlignmentGraphs(
-					Function<Hook, Consumer<String>> putter_coalignments ) {
-		this.putter_coalignment_graphs = putter_coalignments;
-		return this;
-	}
-
-	public TupleAlignmentGraphDataManagerBlueprint<I, O> refreshCache(
-			boolean refresh_cache ) {
-		this.refresh_cache = refresh_cache;
-		return this;
-	}
-
-	public TupleAlignmentGraphDataManager<I, O> create( ) {
-
-		return new TupleAlignmentGraphDataManager<>(
+	public TupleAlignmentAlphabetDataManager<I, O> create( ) {
+		return new TupleAlignmentAlphabetDataManager<>(
 				min_below,
 				max_below,
 				shrink_alphabet,
 				putter_coalignment_alphabet,
 				reader_coalignment_alphabet,
-				putter_coalignment_graphs,
-				reader_coalignment_graphs,
 				a_serializer,
 				b_serializer,
 				a_deserializer,
 				b_deserializer,
 				a_printer,
-				b_printer,
-				refresh_cache );
+				b_printer );
 	}
 }

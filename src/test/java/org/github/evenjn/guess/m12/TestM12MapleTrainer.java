@@ -17,7 +17,8 @@
  */
 package org.github.evenjn.guess.m12;
 
-import org.github.evenjn.align.TupleAlignmentGraphDataManager;
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManagerBlueprint;
+import org.github.evenjn.align.graph.TupleAlignmentGraphDataManagerBlueprint;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TestUtils;
@@ -37,21 +38,31 @@ public class TestM12MapleTrainer {
 	/** TRAINER */
 	private final static String trainer_label = "m12";
 
+	private static final TupleAlignmentAlphabetDataManagerBlueprint<Boolean, Boolean> taa_dmb =
+			new TupleAlignmentAlphabetDataManagerBlueprint<Boolean, Boolean>( )
+					.setMinMaxBelow( 0, 2 )
+					.setShrinkAlphabet( true )
+					.serializeTupleAlignmentAlphabet( null )
+					.deserializeTupleAlignmentAlphabet( null )
+					.setPrinter( x -> x ? "1" : "0", x -> x ? "1" : "0" );
+
+	private static final TupleAlignmentGraphDataManagerBlueprint<Boolean, Boolean> tag_dmb =
+			new TupleAlignmentGraphDataManagerBlueprint<Boolean, Boolean>( )
+					.setMinMaxBelow( 0, 2 )
+					.deserializeTupleAlignmentGraphs( null )
+					.serializeTupleAlignmentGraphs( null );
+	
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
 		
-
 		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
 				.seed( 43 )
 				.states( 3 )
 				.trainingTime( 20,  50 );
 		
+		
 		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
-				new TupleAlignmentGraphDataManager<Boolean, Boolean>(
-						0,
-						2,
-						true,
-						x -> x ? "1" : "0",
-					  x -> x ? "1" : "0" ),
+				taa_dmb.create( ),
+				tag_dmb.create( ),
 				m12TrainerBlueprint.create( ) );
 
 		return trainer;
@@ -66,12 +77,8 @@ public class TestM12MapleTrainer {
 				.trainingTime( 100,  100 );
 		
 		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
-				new TupleAlignmentGraphDataManager<Boolean, Boolean>(
-						0,
-						2,
-						true,
-						x -> x ? "1" : "0",
-					  x -> x ? "1" : "0" ),
+				taa_dmb.create( ),
+				tag_dmb.create( ),
 				m12TrainerBlueprint.create( ) );
 
 		return trainer;
@@ -86,12 +93,8 @@ public class TestM12MapleTrainer {
 				.trainingTime( 100,  500 );
 		
 		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
-				new TupleAlignmentGraphDataManager<Boolean, Boolean>(
-						0,
-						2,
-						true,
-						x -> x ? "1" : "0",
-					  x -> x ? "1" : "0" ),
+				taa_dmb.create( ),
+				tag_dmb.create( ),
 				m12TrainerBlueprint.create( ) );
 
 		return trainer;

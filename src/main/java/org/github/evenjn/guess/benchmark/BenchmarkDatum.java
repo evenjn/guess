@@ -19,27 +19,24 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.guess.TrainingDatum;
+import org.github.evenjn.knit.Bi;
+import org.github.evenjn.yarn.Di;
 
 public class BenchmarkDatum<I, O> implements
-		TrainingDatum<I, O> {
+		Di<I, O> {
 
-	public static <K, I, O> TrainingDatum<I, O> wrap( K k,
+	public I front() {
+		return getInput( );
+	}
+	public O back() {
+		return getGold();
+	}
+	
+	public static <K, I, O> Di<I, O> wrap( K k,
 			Function<K, I> observer, Function<K, O> teacher ) {
 		I input = observer.apply( k );
 		O gold = teacher.apply( k );
-		return new TrainingDatum<I, O>( ) {
-
-			@Override
-			public I getInput( ) {
-				return input;
-			}
-
-			@Override
-			public O getGold( ) {
-				return gold;
-			}
-		};
+		return Bi.nu( input, gold );
 	}
 
 	public I observed;
@@ -52,20 +49,8 @@ public class BenchmarkDatum<I, O> implements
 
 	}
 
-	public TrainingDatum<I, O> asBadTeacherWouldTell( ) {
-		return new TrainingDatum<I, O>( ) {
-
-			@Override
-			public I getInput( ) {
-				return observed;
-			}
-
-			@Override
-			public O getGold( ) {
-				return bad_teacher;
-			}
-
-		};
+	public Di<I, O> asBadTeacherWouldTell( ) {
+		return Bi.nu( observed, bad_teacher );
 	}
 
 	public BenchmarkDatum(I observed, O good_teacher, O bad_teacher) {
@@ -74,12 +59,10 @@ public class BenchmarkDatum<I, O> implements
 		this.bad_teacher = bad_teacher;
 	}
 
-	@Override
 	public I getInput( ) {
 		return observed;
 	}
 
-	@Override
 	public O getGold( ) {
 		return good_teacher;
 	}

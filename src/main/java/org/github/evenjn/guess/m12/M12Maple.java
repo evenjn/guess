@@ -47,7 +47,7 @@ public class M12Maple<I, O> implements
 	public M12Maple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			M12Core core,
-			ProgressSpawner progress) {
+			ProgressSpawner progress_spawner) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
@@ -58,7 +58,7 @@ public class M12Maple<I, O> implements
 			int len = 0;
 
 			Progress spawn =
-					ProgressManager.safeSpawn( hook, progress, "M12Maple::constructor" );
+					ProgressManager.safeSpawn( hook, progress_spawner, "M12Maple::constructor" );
 			spawn.target( core.number_of_states * coalignment_alphabet.size( ) );
 			/**
 			 * for each state we want to cache: for each symbol above, the probability

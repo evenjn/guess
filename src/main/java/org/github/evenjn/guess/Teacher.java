@@ -31,6 +31,7 @@ import org.github.evenjn.yarn.ProgressSpawner;
  */
 public interface Teacher<I, O> {
 
-	BiFunction<I, O, Double> teach( ProgressSpawner progress, Cursable<Di<I, O>> data );
-
+	BiFunction<I, O, Double> teach(
+			ProgressSpawner progress_spawner,
+			Cursable<Di<I, O>> data );
 }
