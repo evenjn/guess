@@ -49,11 +49,6 @@ public class TupleAlignmentNode {
 	public int number_of_incoming_edges;
 
 	/**
-	 * Marks whether the node is an initial node.
-	 */
-	public boolean is_reachable_from_beginning;
-
-	/**
 	 * Marks whether the node is a final node.
 	 */
 	public boolean is_reachable_from_end;

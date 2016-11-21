@@ -35,11 +35,7 @@ public class TupleAlignmentGraphPrinter {
 					if ( edges.is_reachable_from_end ) {
 						sb.append( " o " );
 					} else {
-						if ( edges.is_reachable_from_beginning ) {
-							sb.append( " ? " );
-						} else {
-							sb.append( " Q " );
-						}
+						sb.append( " ? " );
 					}
 				}
 			}
