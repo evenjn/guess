@@ -47,11 +47,20 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
 	private boolean shrink_alphabet = false;
 
+	private boolean full_alphabet = false;
+
 	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			setShrinkAlphabet( boolean shrink_alphabet ) {
 		this.shrink_alphabet = shrink_alphabet;
 		return this;
 	}
+
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
+			setFullAlphabet( boolean full_alphabet ) {
+		this.full_alphabet = full_alphabet;
+		return this;
+	}
+
 
 	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			setMinMaxBelow( int min, int max ) {
@@ -103,6 +112,7 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 				min_below,
 				max_below,
 				shrink_alphabet,
+				full_alphabet,
 				putter_coalignment_alphabet,
 				reader_coalignment_alphabet,
 				a_serializer,

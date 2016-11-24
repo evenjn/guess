@@ -44,6 +44,10 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 			new HashMap<>( );
 
 	int add( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair ) {
+		Integer integer = encode_map.get( pair );
+		if (integer != null) {
+			return integer;
+		}
 		alphabet_above.add( pair.above );
 		sequences_below.add( pair.below );
 		encode_map.put( pair, alphabet.size( ) );

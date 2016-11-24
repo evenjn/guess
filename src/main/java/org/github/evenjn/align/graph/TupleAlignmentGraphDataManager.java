@@ -96,13 +96,13 @@ public class TupleAlignmentGraphDataManager<I, O> {
 
 	private final Cursable<String> reader_coalignment_graphs;
 
-	private KnittingCursable<TupleAlignmentGraph> graphs;
+	private KnittingCursable<TupleAlignmentGraph> exposed_graphs;
 
 	public KnittingCursable<TupleAlignmentGraph> getGraphs( ) {
-		if ( graphs == null ) {
+		if ( exposed_graphs == null ) {
 			throw new IllegalStateException( );
 		}
-		return graphs;
+		return exposed_graphs;
 	}
 
 	/**
@@ -132,14 +132,18 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			BiFunction<I, Tuple<O>, Integer> pair_encoder,
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Di<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
-		graphs = prepareGraphs( kc, pair_encoder, progress_spawner );
+		try ( AutoHook hook = new BasicAutoHook( ) ) {
+			Progress spawn =
+					ProgressManager.safeSpawn( hook, progress_spawner,
+							"prepareGraphs" );
+			exposed_graphs = prepareGraphs( kc, pair_encoder, spawn );
+		}
 		return this;
 	}
 
-	private void computeLimits( KnittingCursable<TupleAlignmentGraph> data ) {
-		int record_max_length_above = 0;
-		int record_max_length_below = 0;
-		int record_max_number_of_edges = 0;
+	private boolean limits_are_computed = false;
+	
+	private void computeLimits( Progress progress, KnittingCursable<TupleAlignmentGraph> data ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			for ( TupleAlignmentGraph g : data.pull( hook ).once( ) ) {
 				int la = g.la( );
@@ -166,20 +170,37 @@ public class TupleAlignmentGraphDataManager<I, O> {
 				}
 			}
 		}
-		this.record_max_length_above = record_max_length_above;
-		this.record_max_length_below = record_max_length_below;
-		this.record_max_number_of_edges = record_max_number_of_edges;
+		limits_are_computed = true;
 	}
 
+	
 	private
 			KnittingCursable<TupleAlignmentGraph>
 			prepareGraphs(
 					KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
 					BiFunction<I, Tuple<O>, Integer> pair_encoder,
-					ProgressSpawner progress_spawner ) {
+					Progress progress ) {
+		SkipMap<Di<Tuple<I>, Tuple<O>>, TupleAlignmentGraph> skipMap =
+				new SkipMap<Di<Tuple<I>, Tuple<O>>, TupleAlignmentGraph>( ) {
 
-		KnittingCursable<TupleAlignmentGraph> graphs = null;
-
+					@Override
+					public TupleAlignmentGraph get(
+							Di<Tuple<I>, Tuple<O>> x )
+							throws SkipException {
+						try {
+							return TupleAlignmentGraphFactory.graph(
+									pair_encoder,
+									x.front( ),
+									x.back( ),
+									min_below,
+									max_below );
+						}
+						catch ( NotAlignableException e ) {
+							throw SkipException.neo;
+						}
+					}
+				};
+				
 		if ( null != putter_coalignment_graphs
 				|| null == reader_coalignment_graphs ) {
 			/*
@@ -188,50 +209,32 @@ public class TupleAlignmentGraphDataManager<I, O> {
 			 * This is a lazy iterator, so the graphs are computed on demand.
 			 */
 
-			SkipMap<Di<Tuple<I>, Tuple<O>>, TupleAlignmentGraph> skipMap =
-					new SkipMap<Di<Tuple<I>, Tuple<O>>, TupleAlignmentGraph>( ) {
-
-						@Override
-						public TupleAlignmentGraph get(
-								Di<Tuple<I>, Tuple<O>> x )
-								throws SkipException {
-							try {
-								return TupleAlignmentGraphFactory.graph(
-										pair_encoder,
-										x.front( ),
-										x.back( ),
-										min_below,
-										max_below );
-							}
-							catch ( NotAlignableException e ) {
-								throw SkipException.neo;
-							}
-						}
-					};
-
-			graphs = data.skipmap( skipMap );
-			computeLimits( graphs );
 			if ( null != putter_coalignment_graphs ) {
 
+				progress.info( "Computing dataset size before computing limits." );
+				int progress_target = 0;
+				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
+					Progress spawn = progress.spawn( hook2, "computing dataset size" );
+					progress_target = data.tap( x -> spawn.step( 1 ) ).size( );
+				}
+				progress.target( 2 * progress_target );
+				
+				progress.info( "Computing limits." );
+				computeLimits( progress,
+						data.tap( x -> progress.step( 1 ) ).skipmap( skipMap ) );
+				
+				progress.info( "Caching graphs." );
+				KnittingCursable<TupleAlignmentGraph> graphs_to_write = data
+						.tap( x -> progress.step( 1 ) )
+						.skipmap( skipMap );
+
+				StringBuilder header = new StringBuilder( );
+				header.append( record_max_length_above );
+				header.append( "," );
+				header.append( record_max_length_below );
+				header.append( "," );
+				header.append( record_max_number_of_edges );
 				try ( AutoHook hook = new BasicAutoHook( ) ) {
-
-					Progress spawn =
-							ProgressManager.safeSpawn( hook, progress_spawner, "prepareGraphs" );
-					KnittingCursable<TupleAlignmentGraph> graphs_to_write = graphs;
-
-					spawn.info( "Computing dataset size." );
-					spawn.target( data.size( ) );
-					graphs_to_write = data
-							.tap( x -> spawn.step( 1 ) )
-							.skipmap( skipMap );
-
-					StringBuilder header = new StringBuilder( );
-					header.append( record_max_length_above );
-					header.append( "," );
-					header.append( record_max_length_below );
-					header.append( "," );
-					header.append( record_max_number_of_edges );
-
 					KnittingCursor.on( header.toString( ) ).chain(
 							graphs_to_write
 									.pull( hook )
@@ -239,6 +242,7 @@ public class TupleAlignmentGraphDataManager<I, O> {
 											x -> new TupleAlignmentGraphSerializer( x ) ) )
 							.consume( putter_coalignment_graphs );
 				}
+				limits_are_computed = true;
 			}
 		}
 
@@ -254,17 +258,33 @@ public class TupleAlignmentGraphDataManager<I, O> {
 				record_max_length_above = Integer.parseInt( split[0] );
 				record_max_length_below = Integer.parseInt( split[1] );
 				record_max_number_of_edges = Integer.parseInt( split[2] );
+				limits_are_computed = true;
 			}
 			/*
 			 * de-serialize them from the reader.
 			 */
-			graphs = KnittingCursable
+			return KnittingCursable
 					.wrap( reader_coalignment_graphs )
 					.headless( 1 )
 					.skipfold( ( ) -> new TupleAlignmentGraphDeserializer(
 							record_max_length_above,
 							record_max_length_below ) );
 		}
-		return graphs;
+		else {
+			if ( !limits_are_computed ) {
+				progress.info(
+						"Computing dataset size before computing limits." );
+				int progress_target = 0;
+				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
+					Progress spawn = progress.spawn( hook2, "computing dataset size" );
+					progress_target = data.tap( x -> spawn.step( 1 ) ).size( );
+				}
+				progress.target( progress_target );
+				progress.info( "Computing limits." );
+				computeLimits( progress,
+						data.tap( x -> progress.step( 1 ) ).skipmap( skipMap ) );
+			}
+			return data.skipmap( skipMap );
+		}
 	}
 }

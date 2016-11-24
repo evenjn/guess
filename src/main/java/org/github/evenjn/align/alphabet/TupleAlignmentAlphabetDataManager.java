@@ -73,6 +73,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			int min_below,
 			int max_below,
 			boolean shrink_alphabet,
+			boolean full_alphabet,
 			Function<Hook, Consumer<String>> writer,
 			Cursable<String> reader,
 			Function<I, String> a_serializer,
@@ -84,6 +85,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 		this.min_below = min_below;
 		this.max_below = max_below;
 		this.shrink_alphabet = shrink_alphabet;
+		this.full_alphabet = full_alphabet;
 		this.writer = writer;
 		this.reader = reader;
 		this.a_serializer = a_serializer;
@@ -95,6 +97,8 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 	}
 
 	private final boolean shrink_alphabet;
+
+	private final boolean full_alphabet;
 
 	private final int min_below;
 
@@ -212,11 +216,18 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 					int max_below,
 					Progress progress ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			TupleAlignmentAlphabetBuilder<I, O> builder =
-					new TupleAlignmentAlphabetBuilder<>( min_below, max_below,
-							shrink_alphabet );
-			builder.setPrinters( a_printer, b_printer );
-			return builder.build( data, progress );
+			if (full_alphabet) {
+				TupleAlignmentAlphabetSimpleBuilder<I, O> builder =
+						new TupleAlignmentAlphabetSimpleBuilder<I, O>( min_below, max_below );
+				return builder.build( data, progress );
+			}
+			else {
+				TupleAlignmentAlphabetGreedyBuilder<I, O> builder =
+						new TupleAlignmentAlphabetGreedyBuilder<>( min_below, max_below,
+								shrink_alphabet );
+				builder.setPrinters( a_printer, b_printer );
+				return builder.build( data, progress );
+			}
 		}
 	}
 }

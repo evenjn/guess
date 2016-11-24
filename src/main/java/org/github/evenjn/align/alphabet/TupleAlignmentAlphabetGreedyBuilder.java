@@ -32,7 +32,7 @@ import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
+public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow> {
 
 	private Function<SymbolAbove, String> a_printer = null;
 
@@ -44,7 +44,7 @@ public class TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	private boolean shrink_alphabet = false;
 
-	public TupleAlignmentAlphabetBuilder(int min_below, int max_below,
+	public TupleAlignmentAlphabetGreedyBuilder(int min_below, int max_below,
 			boolean shrink_alphabet) {
 		this.min_below = min_below;
 		this.max_below = max_below;

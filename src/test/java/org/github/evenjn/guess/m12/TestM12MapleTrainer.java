@@ -17,17 +17,26 @@
  */
 package org.github.evenjn.guess.m12;
 
-import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManagerBlueprint;
-import org.github.evenjn.align.graph.TupleAlignmentGraphDataManagerBlueprint;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TestUtils;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
-import org.github.evenjn.guess.m12.core.M12CoreTrainerBlueprint;
 import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;
 
 public class TestM12MapleTrainer {
+	
+	private static final Path training_cache_path =
+			Paths.get( ".", "target", "training_cache" );
+
+	private static void removeModelFiles( ) {
+		FileFool ff = FileFool.nu( );
+		ff.create( ff.mold( training_cache_path ).asDirectory( ).eraseIfExists( ) );
+	}
 
 	/** EVALUATOR */
 	private final static String evaluator_label = "equals";
@@ -38,66 +47,45 @@ public class TestM12MapleTrainer {
 	/** TRAINER */
 	private final static String trainer_label = "m12";
 
-	private static final TupleAlignmentAlphabetDataManagerBlueprint<Boolean, Boolean> taa_dmb =
-			new TupleAlignmentAlphabetDataManagerBlueprint<Boolean, Boolean>( )
+	private static final M12FileTrainerBlueprint<Boolean, Boolean> blueprint() {
+		return
+			new M12FileTrainerBlueprint<Boolean, Boolean>( )
+					.seed( 43 )
+					.states( 3 )
+					.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
+					.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
+					.trainingTime( 20, 50 )
 					.setMinMaxBelow( 0, 2 )
 					.setShrinkAlphabet( true )
-					.serializeTupleAlignmentAlphabet( null )
-					.deserializeTupleAlignmentAlphabet( null )
 					.setPrinter( x -> x ? "1" : "0", x -> x ? "1" : "0" );
+	}
 
-	private static final TupleAlignmentGraphDataManagerBlueprint<Boolean, Boolean> tag_dmb =
-			new TupleAlignmentGraphDataManagerBlueprint<Boolean, Boolean>( )
-					.setMinMaxBelow( 0, 2 )
-					.deserializeTupleAlignmentGraphs( null )
-					.serializeTupleAlignmentGraphs( null );
-	
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
-		
-		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
-				.seed( 43 )
-				.states( 3 )
-				.trainingTime( 20,  50 );
-		
-		
-		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
-				taa_dmb.create( ),
-				tag_dmb.create( ),
-				m12TrainerBlueprint.create( ) );
-
-		return trainer;
+		removeModelFiles( );
+		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
+		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
+				new M12MapleFileTrainer<>( blueprint );
+		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
 	}
-	
-	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerDelayByOne( ) {
-		
 
-		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
-				.seed( 43 )
+	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>>
+			trainerDelayByOne( ) {
+		removeModelFiles( );
+		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( )
 				.states( 4 )
-				.trainingTime( 100,  100 );
-		
-		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
-				taa_dmb.create( ),
-				tag_dmb.create( ),
-				m12TrainerBlueprint.create( ) );
-
-		return trainer;
+				.trainingTime( 100, 100 );
+		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
+				new M12MapleFileTrainer<>( blueprint );
+		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
 	}
-	
+
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
-		
-
-		M12CoreTrainerBlueprint m12TrainerBlueprint = new M12CoreTrainerBlueprint( )
-				.seed( 43 )
-				.states( 3 )
-				.trainingTime( 100,  500 );
-		
-		M12MapleTrainer<Boolean, Boolean> trainer = new M12MapleTrainer<>(
-				taa_dmb.create( ),
-				tag_dmb.create( ),
-				m12TrainerBlueprint.create( ) );
-
-		return trainer;
+		removeModelFiles( );
+		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( )
+				.trainingTime( 100, 500 );
+		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
+				new M12MapleFileTrainer<>( blueprint );
+		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
 	}
 
 	@Test

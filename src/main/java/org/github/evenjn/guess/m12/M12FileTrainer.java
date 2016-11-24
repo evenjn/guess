@@ -40,14 +40,23 @@ import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12MapleDojo<I, O> {
+public class M12FileTrainer<I, O> {
 
 	private final Function<String, I> a_deserializer;
 
 	private final Function<String, O> b_deserializer;
 
-	public M12MapleDojo(
+	public Function<String, I> getDeserializerAbove( ) {
+		return a_deserializer;
+	}
+
+	public Function<String, O> getDeserializerBelow( ) {
+		return b_deserializer;
+	}
+
+	public M12FileTrainer(
 			boolean shrink_alphabet,
+			boolean full_alphabet,
 			int min_below,
 			int max_below,
 			Function<I, String> a_printer,
@@ -60,13 +69,13 @@ public class M12MapleDojo<I, O> {
 			int epochs,
 			long seed,
 			int number_of_states) {
-		
 		this.a_deserializer = a_deserializer;
 		this.b_deserializer = b_deserializer;
 		taadmb.setMinMaxBelow( min_below, max_below )
 				.setInputCoDec( a_serializer, a_deserializer )
 				.setOutputCoDec( b_serializer, b_deserializer )
 				.setPrinter( a_printer, b_printer )
+				.setFullAlphabet( full_alphabet )
 				.setShrinkAlphabet( shrink_alphabet );
 		tagdmb.setMinMaxBelow( min_below, max_below );
 		m12ctb.trainingTime( period, epochs );
@@ -82,8 +91,9 @@ public class M12MapleDojo<I, O> {
 	private final M12CoreTrainerBlueprint m12ctb =
 			new M12CoreTrainerBlueprint( );
 
-	public M12Maple<I, O> train( ProgressSpawner progress_spawner,
-			Path dojo_path,
+	public void train(
+			ProgressSpawner progress_spawner,
+			Path training_cache_path,
 			Cursable<Di<Tuple<I>, Tuple<O>>> data ) {
 		final FileFool ff = FileFool.nu( );
 		/**
@@ -98,17 +108,17 @@ public class M12MapleDojo<I, O> {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress progress = ProgressManager
-					.safeSpawn( hook, progress_spawner, "M12MapleDojo::train" );
+					.safeSpawn( hook, progress_spawner, "M12FileTrainer::train" );
 
 			/**
-			 * The whole point of the Dojo is to handle serialization and
+			 * The whole point of the FileTrainer is to handle serialization and
 			 * deserialization of intermediate and final data structures, to resume
 			 * the process if possible.
 			 */
 			Path alphabet_stable_file =
-					dojo_path.resolve( "./ta_alphabet.stable.txt" );
+					training_cache_path.resolve( "./ta_alphabet.stable.txt" );
 			Path alphabet_working_file =
-					dojo_path.resolve( "./ta_alphabet.working.txt" );
+					training_cache_path.resolve( "./ta_alphabet.working.txt" );
 
 			if ( ff.exists( alphabet_working_file ) ) {
 				ff.delete( alphabet_working_file );
@@ -127,8 +137,10 @@ public class M12MapleDojo<I, O> {
 			taadmb.deserializeTupleAlignmentAlphabet( h -> PlainText.reader( )
 					.build( ).get( h, ff.open( alphabet_working_file ).read( h ) ) );
 
-			Path graphs_stable_file = dojo_path.resolve( "./ta_graphs.stable.txt" );
-			Path graphs_working_file = dojo_path.resolve( "./ta_graphs.working.txt" );
+			Path graphs_stable_file =
+					training_cache_path.resolve( "./ta_graphs.stable.txt" );
+			Path graphs_working_file =
+					training_cache_path.resolve( "./ta_graphs.working.txt" );
 
 			if ( ff.exists( graphs_working_file ) ) {
 				ff.delete( graphs_working_file );
@@ -145,9 +157,12 @@ public class M12MapleDojo<I, O> {
 			tagdmb.deserializeTupleAlignmentGraphs( h -> PlainText.reader( )
 					.build( ).get( h, ff.open( graphs_working_file ).read( h ) ) );
 
-			Path m12core_initial_file = dojo_path.resolve( "./m12_core.initial.txt" );
-			Path m12core_stable_file = dojo_path.resolve( "./m12_core.stable.txt" );
-			Path m12core_working_file = dojo_path.resolve( "./m12_core.working.txt" );
+			Path m12core_initial_file =
+					training_cache_path.resolve( "./m12_core.initial.txt" );
+			Path m12core_stable_file =
+					training_cache_path.resolve( "./m12_core.stable.txt" );
+			Path m12core_working_file =
+					training_cache_path.resolve( "./m12_core.working.txt" );
 
 			if ( ff.exists( m12core_working_file ) ) {
 				ff.delete( m12core_working_file );
@@ -220,20 +235,6 @@ public class M12MapleDojo<I, O> {
 			if ( ff.exists( m12core_working_file ) ) {
 				ff.delete( m12core_working_file );
 			}
-
-			/*
-			 * At the end, create a M12Maple using stable files.
-			 */
-
-			M12Maple<I, O> maple = M12MapleDeserializer.deserialize( progress_spawner,
-					a_deserializer, b_deserializer,
-					h -> PlainText.reader( ).build( )
-							.get( h, ff.open( alphabet_stable_file ).read( h ) )
-					, h -> PlainText.reader( ).build( )
-							.get( h, ff.open( m12core_stable_file ).read( h ) ),
-					true );
-
-			return maple;
 		}
 		catch ( IOException t ) {
 			throw Suppressor.quit( t );

@@ -27,7 +27,7 @@ public class DisplayAlignmentGraph {
 	public static void main( String[] args ) {
 
 		KnittingTuple<String> above = KnittingTuple.on( "T", "A", "X" );
-		KnittingTuple<String> below = KnittingTuple.on( "t", "a", "k", "s" );
+		KnittingTuple<String> below = KnittingTuple.on( "t", "a", "ks" );
 		try {
 			TupleAlignmentGraph graph = TupleAlignmentGraphFactory.graph(
 					( x, y ) -> 1,

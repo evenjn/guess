@@ -19,9 +19,11 @@ package org.github.evenjn.guess.m12;
 
 import java.util.function.Function;
 
-public class M12MapleDojoBlueprint<I, O> {
+public class M12FileTrainerBlueprint<I, O> {
 
 	private boolean shrink_alphabet;
+	
+	private boolean full_alphabet;
 
 	private int min_below;
 
@@ -47,20 +49,26 @@ public class M12MapleDojoBlueprint<I, O> {
 
 	private int number_of_states;
 
-	public M12MapleDojoBlueprint<I, O>
+	public M12FileTrainerBlueprint<I, O>
 			setShrinkAlphabet( boolean shrink_alphabet ) {
 		this.shrink_alphabet = shrink_alphabet;
 		return this;
 	}
 
-	public M12MapleDojoBlueprint<I, O>
+	public M12FileTrainerBlueprint<I, O>
+			setFullAlphabet( boolean full_alphabet ) {
+		this.full_alphabet = full_alphabet;
+		return this;
+	}
+
+	public M12FileTrainerBlueprint<I, O>
 			setMinMaxBelow( int min, int max ) {
 		this.min_below = min;
 		this.max_below = max;
 		return this;
 	}
 
-	public M12MapleDojoBlueprint<I, O> setPrinter(
+	public M12FileTrainerBlueprint<I, O> setPrinter(
 			Function<I, String> a_printer,
 			Function<O, String> b_printer ) {
 		this.a_printer = a_printer;
@@ -68,7 +76,7 @@ public class M12MapleDojoBlueprint<I, O> {
 		return this;
 	}
 
-	public M12MapleDojoBlueprint<I, O> setInputCoDec(
+	public M12FileTrainerBlueprint<I, O> setInputCoDec(
 			Function<I, String> a_serializer,
 			Function<String, I> a_deserializer ) {
 		this.a_serializer = a_serializer;
@@ -76,7 +84,7 @@ public class M12MapleDojoBlueprint<I, O> {
 		return this;
 	}
 
-	public M12MapleDojoBlueprint<I, O> setOutputCoDec(
+	public M12FileTrainerBlueprint<I, O> setOutputCoDec(
 			Function<O, String> b_serializer,
 			Function<String, O> b_deserializer ) {
 		this.b_serializer = b_serializer;
@@ -84,25 +92,26 @@ public class M12MapleDojoBlueprint<I, O> {
 		return this;
 	}
 
-	public M12MapleDojoBlueprint<I, O> trainingTime( int period, int epochs ) {
+	public M12FileTrainerBlueprint<I, O> trainingTime( int period, int epochs ) {
 		this.period = period;
 		this.epochs = epochs;
 		return this;
 	}
 
-	public M12MapleDojoBlueprint<I, O> seed( long seed ) {
+	public M12FileTrainerBlueprint<I, O> seed( long seed ) {
 		this.seed = seed;
 		return this;
 	}
 
-	public M12MapleDojoBlueprint<I, O> states( int number_of_states ) {
+	public M12FileTrainerBlueprint<I, O> states( int number_of_states ) {
 		this.number_of_states = number_of_states;
 		return this;
 	}
 
-	public M12MapleDojo<I, O> create( ) {
-		return new M12MapleDojo<>(
+	public M12FileTrainer<I, O> create( ) {
+		return new M12FileTrainer<>(
 				shrink_alphabet,
+				full_alphabet,
 				min_below,
 				max_below,
 				a_printer,
