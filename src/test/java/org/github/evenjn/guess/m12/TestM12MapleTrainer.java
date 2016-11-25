@@ -20,6 +20,7 @@ package org.github.evenjn.guess.m12;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetGreedyBuilder;
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
@@ -29,7 +30,7 @@ import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;
 
 public class TestM12MapleTrainer {
-	
+
 	private static final Path training_cache_path =
 			Paths.get( ".", "target", "training_cache" );
 
@@ -47,17 +48,19 @@ public class TestM12MapleTrainer {
 	/** TRAINER */
 	private final static String trainer_label = "m12";
 
-	private static final M12FileTrainerBlueprint<Boolean, Boolean> blueprint() {
-		return
-			new M12FileTrainerBlueprint<Boolean, Boolean>( )
-					.seed( 43 )
-					.states( 3 )
-					.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-					.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-					.trainingTime( 20, 50 )
-					.setMinMaxBelow( 0, 2 )
-					.setShrinkAlphabet( true )
-					.setPrinter( x -> x ? "1" : "0", x -> x ? "1" : "0" );
+	private static final M12FileTrainerBlueprint<Boolean, Boolean> blueprint( ) {
+		return new M12FileTrainerBlueprint<Boolean, Boolean>( )
+				.seed( 43 )
+				.states( 3 )
+				.trainingTime( 20, 50 )
+				.setMinMaxBelow( 0, 2 )
+				.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
+				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
+				.setBuilder( new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
+				.setPrinter(
+						h -> System.err::println,
+						x -> x ? "1" : "0",
+						x -> x ? "1" : "0" );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
@@ -155,7 +158,7 @@ public class TestM12MapleTrainer {
 	public void testM12Zebra( ) {
 		/** RUN! */
 		BenchmarkTrial
-				.builder( trainerZebra(), trainer_label )
+				.builder( trainerZebra( ), trainer_label )
 				.problem( TestUtils.zebra )
 				.evaluator( evaluator, evaluator_label )
 				.build( ).run( null );
@@ -171,9 +174,7 @@ public class TestM12MapleTrainer {
 	 * This can be modeled perfectly using a 1:1 HMM with four states.
 	 * 
 	 * 
-	 * gold   = x0110111
-	 * input  =  01101110
-	 * output = x01101110
+	 * gold = x0110111 input = 01101110 output = x01101110
 	 */
 	@Test
 	public void testM12DelayByOne( ) {

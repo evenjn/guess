@@ -17,13 +17,17 @@
  */
 package org.github.evenjn.guess.m12;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
+
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
+import org.github.evenjn.yarn.Hook;
 
 public class M12FileTrainerBlueprint<I, O> {
 
-	private boolean shrink_alphabet;
-	
-	private boolean full_alphabet;
+	private TupleAlignmentAlphabetBuilder<I, O> builder;
+
+	private Function<Hook, Consumer<String>> logger;
 
 	private int min_below;
 
@@ -49,15 +53,9 @@ public class M12FileTrainerBlueprint<I, O> {
 
 	private int number_of_states;
 
-	public M12FileTrainerBlueprint<I, O>
-			setShrinkAlphabet( boolean shrink_alphabet ) {
-		this.shrink_alphabet = shrink_alphabet;
-		return this;
-	}
-
-	public M12FileTrainerBlueprint<I, O>
-			setFullAlphabet( boolean full_alphabet ) {
-		this.full_alphabet = full_alphabet;
+	public M12FileTrainerBlueprint<I, O> setBuilder(
+					TupleAlignmentAlphabetBuilder<I, O> builder ) {
+		this.builder = builder;
 		return this;
 	}
 
@@ -69,8 +67,10 @@ public class M12FileTrainerBlueprint<I, O> {
 	}
 
 	public M12FileTrainerBlueprint<I, O> setPrinter(
+			Function<Hook, Consumer<String>> logger,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer ) {
+		this.logger = logger;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
 		return this;
@@ -110,12 +110,12 @@ public class M12FileTrainerBlueprint<I, O> {
 
 	public M12FileTrainer<I, O> create( ) {
 		return new M12FileTrainer<>(
-				shrink_alphabet,
-				full_alphabet,
 				min_below,
 				max_below,
+				builder,
 				a_printer,
 				b_printer,
+				logger,
 				a_serializer,
 				b_serializer,
 				a_deserializer,

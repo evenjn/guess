@@ -45,22 +45,9 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
 	private Cursable<String> reader_coalignment_alphabet;
 
-	private boolean shrink_alphabet = false;
+	private TupleAlignmentAlphabetBuilder<I, O> builder;
 
-	private boolean full_alphabet = false;
-
-	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
-			setShrinkAlphabet( boolean shrink_alphabet ) {
-		this.shrink_alphabet = shrink_alphabet;
-		return this;
-	}
-
-	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
-			setFullAlphabet( boolean full_alphabet ) {
-		this.full_alphabet = full_alphabet;
-		return this;
-	}
-
+	private Function<Hook, Consumer<String>> logger;
 
 	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			setMinMaxBelow( int min, int max ) {
@@ -70,8 +57,10 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 	}
 
 	public TupleAlignmentAlphabetDataManagerBlueprint<I, O> setPrinter(
+			Function<Hook, Consumer<String>> logger,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer ) {
+		this.logger = logger;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
 		return this;
@@ -107,12 +96,17 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 		return this;
 	}
 
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O> setAlphabetBuilder(
+					TupleAlignmentAlphabetBuilder<I, O> builder ) {
+		this.builder = builder;
+		return this;
+	}
+
 	public TupleAlignmentAlphabetDataManager<I, O> create( ) {
 		return new TupleAlignmentAlphabetDataManager<>(
 				min_below,
 				max_below,
-				shrink_alphabet,
-				full_alphabet,
+				builder,
 				putter_coalignment_alphabet,
 				reader_coalignment_alphabet,
 				a_serializer,
@@ -120,6 +114,7 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 				a_deserializer,
 				b_deserializer,
 				a_printer,
-				b_printer );
+				b_printer,
+				logger);
 	}
 }

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.graph.NotAlignableException;
@@ -41,10 +42,6 @@ import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
-	private Function<SymbolAbove, String> a_printer = null;
-
-	private Function<SymbolBelow, String> b_printer = null;
-
 	private int min_below;
 
 	private int max_below;
@@ -54,16 +51,6 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 		this.max_below = max_below;
 	}
 
-	public void setPrinters(
-			Function<SymbolAbove, String> a_printer,
-			Function<SymbolBelow, String> b_printer ) {
-		if ( a_printer != null ) {
-			this.a_printer = a_printer;
-		}
-		if ( b_printer != null ) {
-			this.b_printer = b_printer;
-		}
-	}
 
 	private FrequencyDistribution<SymbolAbove> fd_base =
 			new FrequencyDistribution<>( );
@@ -99,29 +86,31 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			"----------" + "----------" + "----------" + "----------"
 					+ "----------" + "----------" + "----------" + "----------";
 
-	public void print( ) {
+	public void print( Consumer<String> logger,
+			Function<SymbolAbove, String> a_printer,
+			Function<SymbolBelow, String> b_printer) {
 
 		if ( a_printer != null && b_printer != null ) {
-			System.out.println( decorator_line );
-			System.out.println( fd_global.plot( ).setLabels(
+			logger.accept( decorator_line );
+			logger.accept( fd_global.plot( ).setLabels(
 					x -> a_printer.apply( x.above ) + " >-> "
 							+ TupleAlignmentAlphabetBuilderTools.tuple_printer( b_printer,
 									x.below ) )
 					.print( ) );
-			System.out.println( decorator_line );
-			System.out.println( fd_base.plot( ).setLabels( a_printer ).print( ) );
-			System.out.println( decorator_line );
+			logger.accept( decorator_line );
+			logger.accept( fd_base.plot( ).setLabels( a_printer ).print( ) );
+			logger.accept( decorator_line );
 			KnittingTuple<FrequencyData<SymbolAbove>> dataSorted =
 					fd_base.dataSorted( true );
 			for ( int i = 0; i < dataSorted.size( ); i++ ) {
 				FrequencyData<SymbolAbove> local_fd = dataSorted.get( i );
-				System.out.println( a_printer.apply( local_fd.front( ) ) );
-				System.out.println( decorator_line );
+				logger.accept( a_printer.apply( local_fd.front( ) ) );
+				logger.accept( decorator_line );
 				Vector<FrequencyDistribution<Tuple<SymbolBelow>>> vector =
 						fds.get( local_fd.front( ) );
 				for ( int j = 0; j < vector.size( ); j++ ) {
 
-					System.out.println(
+					logger.accept(
 							vector.get( j )
 									.plot( )
 									.setLimit( 10 )

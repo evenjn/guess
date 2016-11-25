@@ -46,6 +46,8 @@ import org.github.evenjn.yarn.Tuple;
  */
 public class TupleAlignmentAlphabetDataManager<I, O> {
 
+	private TupleAlignmentAlphabetBuilder<I, O> builder;
+
 	/**
 	 * There are four possible configurations that affect caching behaviour.
 	 * 
@@ -72,8 +74,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 	public TupleAlignmentAlphabetDataManager(
 			int min_below,
 			int max_below,
-			boolean shrink_alphabet,
-			boolean full_alphabet,
+			TupleAlignmentAlphabetBuilder<I, O> builder,
 			Function<Hook, Consumer<String>> writer,
 			Cursable<String> reader,
 			Function<I, String> a_serializer,
@@ -81,11 +82,12 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer,
 			Function<I, String> a_printer,
-			Function<O, String> b_printer ) {
+			Function<O, String> b_printer,
+			Function<Hook, Consumer<String>> logger) {
 		this.min_below = min_below;
 		this.max_below = max_below;
-		this.shrink_alphabet = shrink_alphabet;
-		this.full_alphabet = full_alphabet;
+		this.builder = builder != null ? builder
+				: new TupleAlignmentAlphabetGreedyBuilder<I, O>( false );
 		this.writer = writer;
 		this.reader = reader;
 		this.a_serializer = a_serializer;
@@ -94,17 +96,16 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 		this.b_deserializer = b_deserializer;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
+		this.logger = logger;
 	}
-
-	private final boolean shrink_alphabet;
-
-	private final boolean full_alphabet;
 
 	private final int min_below;
 
 	private final int max_below;
 
 	private final Function<Hook, Consumer<String>> writer;
+
+	private final Function<Hook, Consumer<String>> logger;
 
 	private final Cursable<String> reader;
 
@@ -216,18 +217,9 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 					int max_below,
 					Progress progress ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			if (full_alphabet) {
-				TupleAlignmentAlphabetSimpleBuilder<I, O> builder =
-						new TupleAlignmentAlphabetSimpleBuilder<I, O>( min_below, max_below );
-				return builder.build( data, progress );
-			}
-			else {
-				TupleAlignmentAlphabetGreedyBuilder<I, O> builder =
-						new TupleAlignmentAlphabetGreedyBuilder<>( min_below, max_below,
-								shrink_alphabet );
-				builder.setPrinters( a_printer, b_printer );
-				return builder.build( data, progress );
-			}
+			builder.setPrinters( logger, a_printer, b_printer );
+			builder.setMinMax(0, 2);
+			return builder.build( data, progress );
 		}
 	}
 }

@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
@@ -173,6 +174,40 @@ public class TupleAlignmentAlphabetBuilderTools {
 				below,
 				min_below,
 				max_below );
+	}
+
+	public static <SymbolAbove, SymbolBelow>
+			Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
+			localAlphabetWithAligner(
+					int min_below,
+					int max_below,
+					Tuple<SymbolAbove> above,
+					Tuple<SymbolBelow> below,
+					TupleAligner<SymbolAbove, SymbolBelow> aligner)
+					throws NotAlignableException {
+		LinkedList<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> result =
+				new LinkedList<>( );
+		Tuple<Di<Integer, Integer>> align = aligner.align( above, below );
+		int a_so_far = 0;
+		int b_so_far = 0;
+		for (int i = 0; i < align.size( ); i++) {
+			Di<Integer, Integer> di = align.get( i );
+			
+
+			TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
+					new TupleAlignmentAlphabetPair<>( );
+			if (di.front( ) != 1) {
+				throw NotAlignableException.neo;
+			}
+			pair.above = above.get( a_so_far );
+			Vector<SymbolBelow> subb = KnittingTuple.wrap( below )
+					.head( b_so_far, di.back( ) ).asCursor( ).collect( new Vector<>( ) );
+			pair.below = KnittingTuple.wrap( subb );
+			a_so_far = a_so_far + di.front( );
+			b_so_far = b_so_far + di.back( );
+			result.add( pair );
+		}
+		return result;
 	}
 
 	public static <SymbolAbove, SymbolBelow>

@@ -20,8 +20,10 @@ package org.github.evenjn.guess.m12;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManager;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManagerBlueprint;
 import org.github.evenjn.align.graph.TupleAlignmentGraphDataManager;
@@ -36,6 +38,7 @@ import org.github.evenjn.plaintext.PlainText;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
+import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -46,6 +49,10 @@ public class M12FileTrainer<I, O> {
 
 	private final Function<String, O> b_deserializer;
 
+	private Function<I, String> a_printer;
+
+	private Function<O, String> b_printer;
+
 	public Function<String, I> getDeserializerAbove( ) {
 		return a_deserializer;
 	}
@@ -55,12 +62,12 @@ public class M12FileTrainer<I, O> {
 	}
 
 	public M12FileTrainer(
-			boolean shrink_alphabet,
-			boolean full_alphabet,
 			int min_below,
 			int max_below,
+			TupleAlignmentAlphabetBuilder<I, O> builder,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer,
+			Function<Hook, Consumer<String>> logger,
 			Function<I, String> a_serializer,
 			Function<O, String> b_serializer,
 			Function<String, I> a_deserializer,
@@ -69,14 +76,14 @@ public class M12FileTrainer<I, O> {
 			int epochs,
 			long seed,
 			int number_of_states) {
+		this.a_printer = a_printer;
+		this.b_printer = b_printer;
 		this.a_deserializer = a_deserializer;
 		this.b_deserializer = b_deserializer;
 		taadmb.setMinMaxBelow( min_below, max_below )
 				.setInputCoDec( a_serializer, a_deserializer )
 				.setOutputCoDec( b_serializer, b_deserializer )
-				.setPrinter( a_printer, b_printer )
-				.setFullAlphabet( full_alphabet )
-				.setShrinkAlphabet( shrink_alphabet );
+				.setAlphabetBuilder( builder );
 		tagdmb.setMinMaxBelow( min_below, max_below );
 		m12ctb.trainingTime( period, epochs );
 		m12ctb.states( number_of_states );
@@ -119,9 +126,14 @@ public class M12FileTrainer<I, O> {
 					training_cache_path.resolve( "./ta_alphabet.stable.txt" );
 			Path alphabet_working_file =
 					training_cache_path.resolve( "./ta_alphabet.working.txt" );
+			Path alphabet_log_file =
+					training_cache_path.resolve( "./ta_alphabet.log.txt" );
 
 			if ( ff.exists( alphabet_working_file ) ) {
 				ff.delete( alphabet_working_file );
+			}
+			if ( ff.exists( alphabet_log_file ) ) {
+				ff.delete( alphabet_log_file );
 			}
 			if ( ff.exists( alphabet_stable_file ) ) {
 				System.out
@@ -130,7 +142,11 @@ public class M12FileTrainer<I, O> {
 			}
 			else {
 				ff.create( ff.mold( alphabet_working_file ) );
+				ff.create( ff.mold( alphabet_log_file ) );
 				taadmb
+						.setPrinter( h -> PlainText.writer( ).build( )
+								.get( h, ff.open( alphabet_log_file ).write( h ) ), a_printer,
+								b_printer )
 						.serializeTupleAlignmentAlphabet( h -> PlainText.writer( ).build( )
 								.get( h, ff.open( alphabet_working_file ).write( h ) ) );
 			}
