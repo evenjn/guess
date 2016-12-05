@@ -45,18 +45,26 @@ public class M12CoreTrainer {
 
 	private long seed;
 
+	private Function<M12Core, Boolean> quality_control;
+
+	private Consumer<String> logger;
+
 	public M12CoreTrainer(
 			int number_of_states,
 			int period,
 			int epochs,
+			Consumer<String> logger,
 			Function<Hook, Consumer<String>> putter_core,
 			Cursable<String> reader_core,
+			Function<M12Core, Boolean> quality_control,
 			long seed) {
 		this.number_of_states = number_of_states;
 		this.period = period;
 		this.epochs = epochs;
+		this.logger = logger;
 		this.putter_core = putter_core;
 		this.reader_core = reader_core;
+		this.quality_control = quality_control;
 		this.seed = seed;
 	}
 
@@ -111,12 +119,13 @@ public class M12CoreTrainer {
 			spawn.info( "Creating baumwelch data structures." );
 			M12BaumWelch baum_welch = new M12BaumWelch(
 					core,
+					quality_control,
 					record_max_number_of_edges,
 					record_max_length_above,
 					record_max_length_below );
-
+			
 			spawn.info( "Training." );
-			baum_welch.BaumWelch( graphs, period, epochs, spawn );
+			baum_welch.BaumWelch( logger, graphs, period, epochs, spawn );
 
 			if ( putter_core != null ) {
 				KnittingCursor.wrap( new M12CoreSerializer( core ) )

@@ -28,8 +28,8 @@ import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.m12.core.M12Core;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.BiHashMap;
+import org.github.evenjn.knit.Bis;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.Cubix;
 import org.github.evenjn.numeric.DenseCubix;
@@ -41,10 +41,6 @@ public class M12Aligner<I, O> implements
 		TupleAligner<I, O> {
 
 	private M12Core core;
-
-	private int min = 0;
-
-	private int max = 2;
 
 	private TupleAlignmentAlphabet<I, O> coalignment_alphabet;
 
@@ -77,11 +73,11 @@ public class M12Aligner<I, O> implements
 					( a, b ) -> coalignment_alphabet.encode( a, b ),
 					above,
 					below,
-					min,
-					max );
+					coalignment_alphabet.getMinBelow( ),
+					coalignment_alphabet.getMaxBelow( ) );
 		}
 		catch ( NotAlignableException e ) {
-			return KnittingTuple.on( Bi.nu( length_above, length_below ) );
+			return KnittingTuple.on( Bis.nu( length_above, length_below ) );
 		}
 
 		// find the path with the max probability.
@@ -241,7 +237,7 @@ public class M12Aligner<I, O> implements
 		while ( length_above != 0 || length_below != 0 ) {
 			Source source =
 					all_pointers.get( state ).apply( length_above, length_below );
-			result.add( Bi.nu( length_above - source.x, length_below - source.y ) );
+			result.add( Bis.nu( length_above - source.x, length_below - source.y ) );
 			state = source.state;
 			length_above = source.x;
 			length_below = source.y;

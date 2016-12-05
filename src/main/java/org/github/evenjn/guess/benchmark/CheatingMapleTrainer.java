@@ -22,10 +22,10 @@ import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.ProgressSpawner;
 
 public class CheatingMapleTrainer<I, O> implements
@@ -40,11 +40,11 @@ public class CheatingMapleTrainer<I, O> implements
 	@Override
 	public Function<I, O> train(
 			ProgressSpawner progress_spawner,
-			Cursable<Di<I, O>> data ) {
+			Cursable<Bi<I, O>> data ) {
 		HashMap<I, O> cheat_sheet = new HashMap<>( );
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			for ( Di<I, O> td : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
+			for ( Bi<I, O> td : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
 				cheat_sheet.put( td.front( ), td.back( ) );
 			}
 		}

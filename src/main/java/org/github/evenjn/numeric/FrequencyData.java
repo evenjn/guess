@@ -17,10 +17,7 @@
  */
 package org.github.evenjn.numeric;
 
-import org.github.evenjn.yarn.Di;
-
-public class FrequencyData<K> implements
-		Di<K, Integer> {
+public class FrequencyData<K>  {
 
 	K first;
 
@@ -50,12 +47,10 @@ public class FrequencyData<K> implements
 		return first.toString( ) + " " + second;
 	}
 
-	@Override
 	public K front( ) {
 		return first;
 	}
 
-	@Override
 	public Integer back( ) {
 		return second;
 	}

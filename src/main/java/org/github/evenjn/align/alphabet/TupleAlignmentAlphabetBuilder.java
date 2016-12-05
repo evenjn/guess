@@ -20,8 +20,8 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -29,7 +29,7 @@ import org.github.evenjn.yarn.Tuple;
 public interface TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
-			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 			ProgressSpawner progress_spawner );
 	
 	void setPrinters(

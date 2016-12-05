@@ -35,7 +35,11 @@ public class M12CoreTrainerBlueprint {
 
 	private Cursable<String> reader_core;
 
+	private Function<M12Core, Boolean> quality_control;
+	
 	private long seed;
+
+	private Consumer<String> logger;
 
 	public M12CoreTrainerBlueprint trainingTime( int period, int epochs ) {
 		this.period = period;
@@ -48,8 +52,20 @@ public class M12CoreTrainerBlueprint {
 		return this;
 	}
 
+	public M12CoreTrainerBlueprint qualityControl(
+			Function<M12Core, Boolean> quality_control ) {
+		this.quality_control = quality_control;
+		return this;
+	}
+
 	public M12CoreTrainerBlueprint states( int number_of_states ) {
 		this.number_of_states = number_of_states;
+		return this;
+	}
+
+	public M12CoreTrainerBlueprint
+			logger( Consumer<String> logger ) {
+		this.logger = logger;
 		return this;
 	}
 
@@ -70,8 +86,10 @@ public class M12CoreTrainerBlueprint {
 				number_of_states,
 				period,
 				epochs,
+				logger,
 				putter_core,
 				reader_core,
+				quality_control,
 				seed );
 	}
 

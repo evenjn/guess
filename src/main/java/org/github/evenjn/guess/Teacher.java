@@ -17,10 +17,8 @@
  */
 package org.github.evenjn.guess;
 
-import java.util.function.BiFunction;
-
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
@@ -31,7 +29,7 @@ import org.github.evenjn.yarn.ProgressSpawner;
  */
 public interface Teacher<I, O> {
 
-	BiFunction<I, O, Double> teach(
+	Libra<Bi<I, O>> teach(
 			ProgressSpawner progress_spawner,
-			Cursable<Di<I, O>> data );
+			Cursable<Bi<I, O>> data );
 }

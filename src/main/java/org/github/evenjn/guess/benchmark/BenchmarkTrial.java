@@ -91,7 +91,7 @@ public class BenchmarkTrial<I, O> {
 					training_data.map( x -> x.asBadTeacherWouldTell( ) )
 					);
 			evaluator.reset( );
-			evaluator.evaluate( guesser, training_data.map( x->x ) );
+			evaluator.evaluate( guesser, training_data.map( x->x.asGoodTeacherWouldTell( ) ) );
 			System.out.println( evaluator.printEvaluation( ) );
 
 			StringBuilder sb = new StringBuilder( );

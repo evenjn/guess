@@ -25,6 +25,8 @@ import static org.github.evenjn.numeric.NumericLogarithm.elnsum;
 import static org.github.evenjn.numeric.NumericLogarithm.elnsum2;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
@@ -33,6 +35,9 @@ import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.numeric.NumericLogarithm;
+import org.github.evenjn.numeric.NumericUtils;
+import org.github.evenjn.numeric.NumericUtils.Summation;
+import org.github.evenjn.numeric.SixCharFormat;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.PastTheEndException;
 import org.github.evenjn.yarn.Progress;
@@ -66,12 +71,16 @@ public class M12BaumWelch {
 
 	private final static boolean print_debug_maximization = false;
 
+	private Function<M12Core, Boolean> quality_control;
+
 	public M12BaumWelch(
 			M12Core hmm,
+			Function<M12Core, Boolean> quality_control,
 			int total_number_of_edges,
 			int max_length_above,
 			int max_length_below) {
 		this.hmm = hmm;
+		this.quality_control = quality_control;
 		number_of_states = hmm.number_of_states;
 		number_of_symbols = hmm.number_of_symbols;
 		alpha = new double[max_length_above + 1][max_length_below
@@ -86,6 +95,7 @@ public class M12BaumWelch {
 	}
 
 	public M12Core BaumWelch(
+			Consumer<String> logger,
 			KnittingCursable<TupleAlignmentGraph> observed_cursable,
 			final int period,
 			final int epochs,
@@ -94,6 +104,16 @@ public class M12BaumWelch {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
+			if ( logger != null ) {
+				logger.accept( "Baum-Welch using " + epochs + 
+						" epochs, with " + period + " data points each." );
+				logger.accept( "Training a model with " + number_of_states + 
+						" states and " + number_of_symbols + " symbols." );
+				logger.accept( "At the end of each epoch, we will display here the average");
+				logger.accept( " probability assigned to a data point by the initial model." );
+				logger.accept( "If possible, we will also display the ratio between that average" );
+				logger.accept( " and the one obtained in the previous epoch." );
+			}
 			spawn.target( epochs * period );
 
 			BasicAutoHook[] local = {
@@ -119,6 +139,7 @@ public class M12BaumWelch {
 			final double uniform_symbols =
 					eln( smoothing_count / ( 1.0 * number_of_symbols ) );
 
+			Double previous_probability = null;
 			/* example: states = 100(!) total space = 800 b */
 			final double[] new_initial = new double[number_of_states];
 
@@ -129,7 +150,10 @@ public class M12BaumWelch {
 			/* example: states = 100(!) symbols = 1 000 000 total space = 800 Mb */
 			final double[][] new_emission =
 					new double[number_of_states][number_of_symbols];
+			
 			for ( int epoch = 0; epoch < max_epoch; epoch++ ) {
+				spawn.info( "epoch " + epoch );
+
 				for ( int s = 0; s < number_of_states; s++ ) {
 					new_initial[s] = uniform_state;
 					final double[] new_transitions_from_s = new_transition[s];
@@ -140,6 +164,18 @@ public class M12BaumWelch {
 					for ( int e = 0; e < number_of_symbols; e++ ) {
 						new_emissions_from_s[e] = uniform_symbols;
 					}
+				}
+				double[] probability_of_this_graph = {
+						NumericLogarithm.smallLogValue
+				};
+				Summation summation = null;
+				int total = 0;
+				if (logger == null) {
+					probability_of_this_graph = null;
+				}
+				else {
+					summation = NumericUtils.summation( 10000,
+							x -> NumericLogarithm.elnsum( KnittingCursable.wrap( x ) ) );
 				}
 				int samples = 0;
 				for ( ; samples < period; samples++ ) {
@@ -152,17 +188,42 @@ public class M12BaumWelch {
 						}
 					}
 					try {
+						TupleAlignmentGraph graph = observed_re.next( );
 						expectation(
-								observed_re.next( ),
+								graph,
 								new_initial,
 								new_transition,
-								new_emission );
+								new_emission,
+								probability_of_this_graph);
+						if ( logger != null ) {
+							summation.add( probability_of_this_graph[0] );
+							total++;
+						}
 					}
 					catch ( PastTheEndException e ) {
 						throw new IllegalArgumentException( "Empty training set" );
 					}
 
 					spawn.step( 1 );
+				}
+				if ( logger != null ) {
+					double current_probability =
+							NumericLogarithm.eexp( summation.getSum( ) ) / ( 1.0 * total );
+					if ( previous_probability != null ) {
+						double probability_change =
+								current_probability / previous_probability;
+						logger.accept( "Epoch: " + epoch
+								+ "  average probability: "
+								+ SixCharFormat.nu( false ).apply( current_probability )
+								+ "  new/old: "
+								+ SixCharFormat.nu( false ).apply( probability_change ) );
+					}
+					else {
+						logger.accept( "Epoch: " + epoch
+								+ "  average probability: "
+								+ SixCharFormat.nu( false ).apply( current_probability ) );
+					}
+					previous_probability = current_probability;
 				}
 				maximization(
 						new_initial,
@@ -174,28 +235,56 @@ public class M12BaumWelch {
 				if ( check_consistency ) {
 					M12CoreChecker.check( hmm );
 				}
-
+				if ( quality_control != null ) {
+					spawn.info( "quality control" );
+					Boolean quality_is_ok = quality_control.apply( hmm );
+					if ( quality_is_ok ) {
+						return hmm;
+					}
+				}
 			}
 			return hmm;
 		}
 	}
 
+	/*
+	 * probability_of_this_graph is (the natural logarithm of) the probability
+	 * of the observed graph using the m12 core in its present state.
+	 * 
+	 * It is useful to compute statistics. It is optional.
+	 */
 	private void expectation(
 			TupleAlignmentGraph observed,
 			double[] new_initial,
 			double[][] new_transition,
-			double[][] new_emission ) {
+			double[][] new_emission,
+			double[] probability_of_this_graph ) {
 		if ( observed.la( ) < 2 ) {
 			throw new IllegalArgumentException(
 					"Sequences of length 0 or 1 as training data are not supported." );
 		}
 		forward( observed );
+		if (probability_of_this_graph != null) {
+			probability_of_this_graph[0] = probabilityOf( observed );
+		}
 		backward( observed );
 		double R = r( observed );
 		gamma( observed, R );
 		initial( observed, R, new_initial );
 		transitions( observed, R, new_transition );
 		emissions( observed, R, new_emission );
+	}
+
+	private double probabilityOf( TupleAlignmentGraph observed ) {
+		double max = NumericLogarithm.smallLogValue;
+		for ( int s = 0; s < number_of_states; s++ ) {
+			final double v = alpha[observed.la( )][observed.lb( )][s];
+			if ( max < v ) {
+				max = v;
+			}
+			buffer_states[s] = v;
+		}
+		return elnsum( max, buffer_states, number_of_states );
 	}
 
 	private double r( TupleAlignmentGraph observed ) {

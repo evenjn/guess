@@ -19,13 +19,13 @@ package org.github.evenjn.align.alphabet;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.ProgressManager;
@@ -33,85 +33,178 @@ import org.github.evenjn.numeric.FrequencyData;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.Di;
-import org.github.evenjn.yarn.PastTheEndException;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
-	private int min_below;
-
-	private int max_below;
-
 	public TupleAlignmentAlphabetAnalysis(int min_below, int max_below) {
 		this.min_below = min_below;
 		this.max_below = max_below;
 	}
 
+	private int min_below;
 
-	private FrequencyDistribution<SymbolAbove> fd_base =
-			new FrequencyDistribution<>( );
+	private int max_below;
 
-	private FrequencyDistribution<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> fd_global =
-			new FrequencyDistribution<>( );
+	/**
+	 * Frequency distribution of symbols above
+	 */
+	private FrequencyDistribution<SymbolAbove> //
+	fd_all_symbols_above = new FrequencyDistribution<>( );
 
-	private HashMap<SymbolAbove, Vector<FrequencyDistribution<Tuple<SymbolBelow>>>> fds =
-			new HashMap<>( );
+	/**
+	 * Frequency distribution of all pairs [symbol_above, tuple_of_symbol_below]
+	 */
+	private FrequencyDistribution<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> //
+	fd_all_pairs = new FrequencyDistribution<>( );
 
-	public void record(
-			SymbolAbove above, Tuple<SymbolBelow> below ) {
-		Vector<FrequencyDistribution<Tuple<SymbolBelow>>> vector =
-				fds.get( above );
+	/**
+	 * maps each symbol_above to a frequency distribution of tuples of symbols
+	 * below
+	 */
+	private HashMap<SymbolAbove, FrequencyDistribution<Tuple<SymbolBelow>>> //
+	fd_tuplebelow_by_symbolabove = new HashMap<>( );
 
-		if ( vector == null ) {
-			vector = new Vector<>( );
-			fds.put( above, vector );
+	/**
+	 * for each J, there is a map at position J in this vector. Each such map
+	 * sends each symbol_above to the frequency distribution of all
+	 * [tuple_of_symbol_below] with size J.
+	 */
+	private Vector<HashMap<SymbolAbove, FrequencyDistribution<Tuple<SymbolBelow>>>> //
+	fd_tuplebelow_by_symbolabove_and_size = new Vector<>( );
+
+	/**
+	 * 
+	 * @return SymbolsAbove Sorted By Descending Frequency
+	 */
+	public KnittingTuple<SymbolAbove>
+			getSymbolsAbove( ) {
+		KnittingTuple<FrequencyData<SymbolAbove>> dataSorted =
+				fd_all_symbols_above.dataSorted( true );
+		return dataSorted.map( x -> x.front( ) );
+	}
+
+	/**
+	 * 
+	 * @return tuples of SymbolsBelow for the given SymbolAbove Sorted By
+	 *         Descending Frequency
+	 */
+	public KnittingTuple<Tuple<SymbolBelow>>
+			getSymbolsBelow( SymbolAbove above ) {
+		KnittingTuple<FrequencyData<Tuple<SymbolBelow>>> dataSorted =
+				fd_tuplebelow_by_symbolabove.get( above ).dataSorted( true );
+		return dataSorted.map( x -> x.front( ) );
+	}
+
+	/**
+	 * 
+	 * @return tuples of SymbolsBelow for the given SymbolAbove Sorted By
+	 *         Descending Frequency
+	 */
+	public KnittingTuple<Tuple<SymbolBelow>>
+			getSymbolsBelow( SymbolAbove above, int size ) {
+		if (fd_tuplebelow_by_symbolabove_and_size.size( ) <= size) {
+			return KnittingTuple.empty( );
 		}
+
+		FrequencyDistribution<Tuple<SymbolBelow>> frequencyDistribution =
+				fd_tuplebelow_by_symbolabove_and_size.get( size ).get( above );
+
+		if (frequencyDistribution == null) {
+			return KnittingTuple.empty( );
+		}
+		KnittingTuple<FrequencyData<Tuple<SymbolBelow>>> dataSorted =
+				frequencyDistribution.dataSorted( true );
+		
+		return dataSorted.map( x -> x.front( ) );
+	}
+
+	public void record( SymbolAbove above, Tuple<SymbolBelow> below ) {
+		
+		fd_all_symbols_above.accept( above );
+
+		FrequencyDistribution<Tuple<SymbolBelow>> fd_tuplebelow_for_this_symbol =
+				fd_tuplebelow_by_symbolabove.get( above );
+
+		if ( fd_tuplebelow_for_this_symbol == null ) {
+			fd_tuplebelow_for_this_symbol = new FrequencyDistribution<>( );
+			fd_tuplebelow_by_symbolabove.put( above, fd_tuplebelow_for_this_symbol );
+		}
+		fd_tuplebelow_for_this_symbol.accept( below );
+		
+
 		int size = below.size( );
-		for ( int i = 0; i < size; i++ ) {
-			if ( vector.size( ) < i + 1 ) {
-				vector.add( new FrequencyDistribution<Tuple<SymbolBelow>>( ) );
-			}
+		for ( int i = fd_tuplebelow_by_symbolabove_and_size.size( ); i <= size; i++ ) {
+			fd_tuplebelow_by_symbolabove_and_size.add( new HashMap<>( ) );
 		}
-		if ( size > 0 ) {
-			vector.get( size - 1 ).accept( below );
+
+		FrequencyDistribution<Tuple<SymbolBelow>> frequencyDistribution =
+				fd_tuplebelow_by_symbolabove_and_size.get( size ).get( above );
+		if ( frequencyDistribution == null ) {
+			frequencyDistribution = new FrequencyDistribution<>( );
+			fd_tuplebelow_by_symbolabove_and_size.get( size ).put( above,
+					frequencyDistribution );
 		}
-		fd_base.accept( above );
+		frequencyDistribution.accept( below );
 	}
 
 	private static final String decorator_line =
-			"----------" + "----------" + "----------" + "----------"
-					+ "----------" + "----------" + "----------" + "----------";
+			">---------" + "----------" + "----------" + "----------"
+					+ "----------" + "----------" + "----------" + "---------<";
 
 	public void print( Consumer<String> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer) {
 
 		if ( a_printer != null && b_printer != null ) {
+			logger.accept( "" );
+			logger.accept( " Beginning of TupleAlignmentAlphabetAnalysis report" );
 			logger.accept( decorator_line );
-			logger.accept( fd_global.plot( ).setLabels(
+			logger.accept( " The total number of distinct a/b pairs is: " +  complete_alphabet.size( ) );
+			logger.accept( " The total number of tuple pairs is: " + total );
+			logger.accept( " The number of aligneable tuple pairs is: " + total_aligneable );
+			logger.accept( " The number of non aligneable tuple pairs is: " + ( total - total_aligneable ) );
+			logger.accept( decorator_line );
+			logger.accept( "" );
+			logger.accept( " Distribution of a/b pairs" );
+			logger.accept( fd_all_pairs.plot( ).setLabels(
 					x -> a_printer.apply( x.above ) + " >-> "
 							+ TupleAlignmentAlphabetBuilderTools.tuple_printer( b_printer,
 									x.below ) )
 					.print( ) );
 			logger.accept( decorator_line );
-			logger.accept( fd_base.plot( ).setLabels( a_printer ).print( ) );
+			logger.accept( "" );
+			logger.accept( " Distribution of symbols above" );
+			logger.accept( fd_all_symbols_above.plot( ).setLabels( a_printer ).print( ) );
 			logger.accept( decorator_line );
 			KnittingTuple<FrequencyData<SymbolAbove>> dataSorted =
-					fd_base.dataSorted( true );
+					fd_all_symbols_above.dataSorted( true );
 			for ( int i = 0; i < dataSorted.size( ); i++ ) {
 				FrequencyData<SymbolAbove> local_fd = dataSorted.get( i );
-				logger.accept( a_printer.apply( local_fd.front( ) ) );
-				logger.accept( decorator_line );
-				Vector<FrequencyDistribution<Tuple<SymbolBelow>>> vector =
-						fds.get( local_fd.front( ) );
-				for ( int j = 0; j < vector.size( ); j++ ) {
+				logger.accept( "" );
+				logger.accept( " Distribution of symbols below " + a_printer.apply( local_fd.front( )) + "" );
 
+				logger.accept(
+						fd_tuplebelow_by_symbolabove.get( local_fd.front( ) )
+								.plot( )
+								.setLimit( 10 )
+								.setLabels( x -> TupleAlignmentAlphabetBuilderTools
+										.tuple_printer( b_printer, x ) )
+								.print( ) );
+				
+				logger.accept( "" );
+				logger.accept( " Distribution of symbols below " + a_printer.apply( local_fd.front( )) + " (for a given size of the tuple below)" );
+				logger.accept( decorator_line );
+				for ( int j = 0; j < fd_tuplebelow_by_symbolabove_and_size.size( ); j++ ) {
+					HashMap<SymbolAbove, FrequencyDistribution<Tuple<SymbolBelow>>> hashMap =
+							fd_tuplebelow_by_symbolabove_and_size.get( j );
+					if ( !hashMap.containsKey( local_fd.front( ) ) ) {
+						continue;
+					}
 					logger.accept(
-							vector.get( j )
+							hashMap.get( local_fd.front( ) )
 									.plot( )
 									.setLimit( 10 )
 									.setLabels( x -> TupleAlignmentAlphabetBuilderTools
@@ -119,6 +212,8 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 									.print( ) );
 				}
 			}
+			logger.accept( " End of TupleAlignmentAlphabetAnalysis report" );
+			logger.accept( "" );
 		}
 	}
 
@@ -143,7 +238,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 	public void computeCompleteAlphabet(
 			ProgressSpawner progress_spawner,
-			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data ) {
+			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data ) {
 		if ( total != 0 ) {
 			throw new IllegalStateException( "this can be compued only once" );
 		}
@@ -153,7 +248,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetAnalysis::computeCompleteAlphabet" );
 			int not_aligneable = 0;
-			for ( Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
+			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
 					.wrap( data ).pull( hook ).once( ) ) {
 				total++;
 				spawn.step( 1 );
@@ -169,7 +264,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
 
 						record( pp.above, pp.below );
-						fd_global.accept( pp );
+						fd_all_pairs.accept( pp );
 						complete_alphabet.add( pp );
 					}
 				}
@@ -182,88 +277,5 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 		}
 	}
 	
-	public Set<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> basicOneToOne( ) {
-		HashSet<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> result =
-				new HashSet<>( );
-		for (SymbolAbove above : fd_base.data( ).map( x->x.front( ) ).once( )) {
-			Vector<FrequencyDistribution<Tuple<SymbolBelow>>> vector = fds.get( above );
-			TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair = new TupleAlignmentAlphabetPair<>( );
-			pair.above = above;
-			if (vector != null && vector.size( ) > 0) {
-				pair.below = KnittingTuple.wrap(vector.get( 0 ).getMostFrequent( ));
-			}
-			else {
-				pair.below = KnittingTuple.empty( );
-			}
-			result.add( pair );
-		}
-		return result;
-	}
-
-	public Cursor<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
-			greedy( ) {
-		KnittingTuple<SymbolAbove> symbols =
-				fd_base.dataSorted( true ).map( x -> x.front( ) );
-		return new Cursor<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>( ) {
-
-			int symbol = 0;
-
-			int size = 0;
-
-			int rank = 0;
-
-			boolean none_in_this_rank = true;
-
-			@Override
-			public TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> next( )
-					throws PastTheEndException {
-
-				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> result = null;
-				for ( ; result == null; ) {
-
-					SymbolAbove symbolAbove = symbols.get( symbol );
-					if ( size == 0 ) {
-						result = new TupleAlignmentAlphabetPair<>( );
-						result.above = symbolAbove;
-						result.below = KnittingTuple.empty( );
-					}
-					else {
-						Vector<FrequencyDistribution<Tuple<SymbolBelow>>> vector =
-								fds.get( symbolAbove );
-						if ( vector.size( ) + 1 > size ) {
-							FrequencyDistribution<Tuple<SymbolBelow>> frequencyDistribution =
-									vector.get( size - 1 );
-							if ( frequencyDistribution.dataSorted( true ).size( ) > rank ) {
-								result = new TupleAlignmentAlphabetPair<>( );
-								result.above = symbolAbove;
-								result.below = KnittingTuple.wrap(
-										frequencyDistribution.dataSorted( true ).get( rank )
-												.front( ) );
-								none_in_this_rank = false;
-							}
-						}
-					}
-					if ( symbol + 1 == symbols.size( ) ) {
-						symbol = 0;
-						if ( size == max_below ) {
-							size = 1;
-							rank++;
-							if ( none_in_this_rank ) {
-								throw PastTheEndException.neo;
-							}
-							none_in_this_rank = true;
-						}
-						else {
-							size++;
-						}
-					}
-					else {
-						symbol++;
-					}
-				}
-				return result;
-			}
-		};
-	}
 
 }

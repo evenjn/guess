@@ -19,8 +19,8 @@ package org.github.evenjn.guess;
 
 import java.util.function.Function;
 
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
@@ -30,5 +30,5 @@ public interface Trainer<I, O> {
 
 	Function<I, O> train(
 			ProgressSpawner progress_spawner,
-			Cursable<Di<I, O>> data );
+			Cursable<Bi<I, O>> data );
 }

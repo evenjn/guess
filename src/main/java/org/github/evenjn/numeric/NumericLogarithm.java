@@ -26,7 +26,6 @@ import org.github.evenjn.yarn.PastTheEndException;
 
 public class NumericLogarithm {
 
-
 	/**
 	 * See Tobias P.Mann, 2006: Numerically Stable Hidden Markov Model
 	 * Implementation
@@ -73,7 +72,6 @@ public class NumericLogarithm {
 	public static final Double smallLogValue = -1E300d;
 
 	public static final Double oneLogValue = 0d;
-
 
 	/**
 	 * 

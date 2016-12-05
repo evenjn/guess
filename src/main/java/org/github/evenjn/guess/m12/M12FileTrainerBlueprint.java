@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
+import org.github.evenjn.guess.m12.M12FileTrainer.QualityChecker;
 import org.github.evenjn.yarn.Hook;
 
 public class M12FileTrainerBlueprint<I, O> {
@@ -53,9 +54,17 @@ public class M12FileTrainerBlueprint<I, O> {
 
 	private int number_of_states;
 
+	private QualityChecker<I, O> checker;
+
 	public M12FileTrainerBlueprint<I, O> setBuilder(
 					TupleAlignmentAlphabetBuilder<I, O> builder ) {
 		this.builder = builder;
+		return this;
+	}
+	
+	public M12FileTrainerBlueprint<I, O> setQualityChecker(
+			M12FileTrainer.QualityChecker<I, O> checker ) {
+		this.checker = checker;
 		return this;
 	}
 
@@ -113,6 +122,7 @@ public class M12FileTrainerBlueprint<I, O> {
 				min_below,
 				max_below,
 				builder,
+				checker,
 				a_printer,
 				b_printer,
 				logger,

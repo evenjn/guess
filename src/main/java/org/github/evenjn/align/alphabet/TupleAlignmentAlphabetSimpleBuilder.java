@@ -5,11 +5,11 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -40,9 +40,9 @@ public class TupleAlignmentAlphabetSimpleBuilder<SymbolAbove, SymbolBelow>
 	}
 
 	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
-			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> kd =
+		KnittingCursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> kd =
 				KnittingCursable.wrap( data );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
@@ -54,7 +54,7 @@ public class TupleAlignmentAlphabetSimpleBuilder<SymbolAbove, SymbolBelow>
 			spawn.info( "Computing dataset size." );
 			spawn.target( kd.size( ) );
 			spawn.info( "Collecting alphabet elements." );
-			for ( Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( hook )
+			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( hook )
 					.once( ) ) {
 
 				spawn.step( 1 );

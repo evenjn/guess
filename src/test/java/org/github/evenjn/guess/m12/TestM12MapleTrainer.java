@@ -52,7 +52,7 @@ public class TestM12MapleTrainer {
 		return new M12FileTrainerBlueprint<Boolean, Boolean>( )
 				.seed( 43 )
 				.states( 3 )
-				.trainingTime( 20, 50 )
+				.trainingTime( 20, 26 )
 				.setMinMaxBelow( 0, 2 )
 				.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
 				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )

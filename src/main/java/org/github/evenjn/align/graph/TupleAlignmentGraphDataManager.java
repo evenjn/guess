@@ -24,12 +24,12 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -128,10 +128,10 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	}
 
 	public TupleAlignmentGraphDataManager<I, O> load(
-			Cursable<Di<Tuple<I>, Tuple<O>>> data,
+			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
 			BiFunction<I, Tuple<O>, Integer> pair_encoder,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Di<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
+		KnittingCursable<Bi<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn =
 					ProgressManager.safeSpawn( hook, progress_spawner,
@@ -177,15 +177,15 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	private
 			KnittingCursable<TupleAlignmentGraph>
 			prepareGraphs(
-					KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
+					KnittingCursable<Bi<Tuple<I>, Tuple<O>>> data,
 					BiFunction<I, Tuple<O>, Integer> pair_encoder,
 					Progress progress ) {
-		SkipMap<Di<Tuple<I>, Tuple<O>>, TupleAlignmentGraph> skipMap =
-				new SkipMap<Di<Tuple<I>, Tuple<O>>, TupleAlignmentGraph>( ) {
+		SkipMap<Bi<Tuple<I>, Tuple<O>>, TupleAlignmentGraph> skipMap =
+				new SkipMap<Bi<Tuple<I>, Tuple<O>>, TupleAlignmentGraph>( ) {
 
 					@Override
 					public TupleAlignmentGraph get(
-							Di<Tuple<I>, Tuple<O>> x )
+							Bi<Tuple<I>, Tuple<O>> x )
 							throws SkipException {
 						try {
 							return TupleAlignmentGraphFactory.graph(

@@ -26,7 +26,6 @@ import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -131,15 +130,15 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 	}
 
 	public TupleAlignmentAlphabetDataManager<I, O> load(
-			Cursable<Di<Tuple<I>, Tuple<O>>> data,
+			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Di<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
+		KnittingCursable<Bi<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
 		alphabet = prepareAlphabet( kc, progress_spawner );
 		return this;
 	}
 
 	private TupleAlignmentAlphabet<I, O> prepareAlphabet(
-			KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
+			KnittingCursable<Bi<Tuple<I>, Tuple<O>>> data,
 			ProgressSpawner progress_spawner ) {
 
 		TupleAlignmentAlphabet<I, O> coalignment_alphabet = null;
@@ -148,7 +147,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			/*
 			 * re-compute the coalignment alphabet.
 			 */
-			KnittingCursable<Di<Tuple<I>, Tuple<O>>> map =
+			KnittingCursable<Bi<Tuple<I>, Tuple<O>>> map =
 					data
 							.map( x -> ( new Bi<Tuple<I>, Tuple<O>>( )
 									.set( x.front( ), x.back( ) ) ) );
@@ -212,7 +211,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 
 	private TupleAlignmentAlphabet<I, O>
 			createAlphabet(
-					KnittingCursable<Di<Tuple<I>, Tuple<O>>> data,
+					KnittingCursable<Bi<Tuple<I>, Tuple<O>>> data,
 					int min_below,
 					int max_below,
 					Progress progress ) {

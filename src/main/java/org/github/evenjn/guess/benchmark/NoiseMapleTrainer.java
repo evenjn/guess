@@ -22,10 +22,10 @@ import java.util.Vector;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
@@ -46,7 +46,7 @@ public class NoiseMapleTrainer<I, O> implements
 	@Override
 	public Function<Tuple<I>, Tuple<O>> train(
 			ProgressSpawner progress_spawner,
-			Cursable<Di<Tuple<I>, Tuple<O>>> data ) {
+			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
 		final Random r = new Random( 1l );
 		return new Function<Tuple<I>, Tuple<O>>( ) {
 

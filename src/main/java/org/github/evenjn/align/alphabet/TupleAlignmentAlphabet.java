@@ -39,6 +39,10 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 			new HashMap<>( );
 
 	private HashSet<SymbolAbove> above_set = new HashSet<>( );
+	
+	private int min_below = 0;
+	
+	private int max_below = 0;
 
 	private HashMap<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>, Integer> encode_map =
 			new HashMap<>( );
@@ -60,11 +64,25 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 			above_set.add( pair.above );
 		}
 		m.add( pair.below );
+		if (min_below > pair.below.size( )) {
+			min_below = pair.below.size( );
+		}
+		if (max_below < pair.below.size( )) {
+			max_below = pair.below.size( );
+		}
 		return alphabet.size( );
 	}
 
 	public Set<SymbolAbove> above( ) {
 		return above_set;
+	}
+	
+	public int getMinBelow() {
+		return min_below;
+	}
+
+	public int getMaxBelow() {
+		return max_below;
 	}
 
 	public Set<Tuple<SymbolBelow>> correspondingBelow( SymbolAbove above ) {

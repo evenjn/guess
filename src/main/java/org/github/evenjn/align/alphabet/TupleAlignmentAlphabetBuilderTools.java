@@ -14,6 +14,7 @@ import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.ProgressManager;
@@ -49,14 +50,14 @@ public class TupleAlignmentAlphabetBuilderTools {
 			Function<SymbolBelow, String> b_printer,
 			int min_below,
 			int max_below,
-			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 			int total ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilderTools::computeMinMaxCoverage" )
 					.target( total );
 			int not_aligneable = 0;
-			for ( Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
+			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
 					.wrap( data ).pull( hook ).once( ) ) {
 				spawn.step( 1 );
 				try {
@@ -107,7 +108,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 			Consumer<String> logger,
 			int min_below,
 			int max_below,
-			Cursable<Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 			Predicate<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> filter,
 			int total,
 			int min_max_total ) {
@@ -116,7 +117,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 					"TupleAlignmentAlphabetBuilderTools::computeCoverage" )
 					.target( total );
 			int not_aligneable = 0;
-			for ( Di<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
+			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
 					.wrap( data ).pull( hook ).once( ) ) {
 				spawn.step( 1 );
 				try {

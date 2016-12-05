@@ -85,7 +85,7 @@ public class M12Maple<I, O> implements
 						}
 					}
 					if ( best == null ) {
-						throw new RuntimeException( "who screwed up?" );
+						throw new RuntimeException( );
 					}
 
 					cache_prediction[s].put( sa, best );

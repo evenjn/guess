@@ -85,6 +85,10 @@ public class SixCharFormat implements
 		
 	}
 	
+	public static Function<Double, String> nu(boolean print_signum) {
+		return new SixCharFormat( print_signum );
+	}
+	
 	private String format( Double t ) {
 		// System.out.println("8CharNP input: " + Double.toString( t ));
 		if ( t == 0.0 )

@@ -18,6 +18,8 @@
 package org.github.evenjn.numeric;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Vector;
 import java.util.function.Function;
 
 import org.github.evenjn.knit.Bi;
@@ -27,6 +29,62 @@ import org.github.evenjn.yarn.PastTheEndException;
 
 public class NumericUtils {
 
+	public static double sumDoubles(Iterable<Double> numbers) {
+		double r = 0;
+		for (Double d: numbers) {
+			r = r + d;
+		}
+		return r;
+	}
+	
+	public static Summation summation(int buffer_size,  Function<Iterable<Double>, Double> sum) {
+		return new Summation( buffer_size, sum);
+	}
+	
+	public static class Summation {
+
+		private final int buffer_size;
+		private Function<Iterable<Double>, Double> sum;
+		
+		public Summation(int buffer_size, Function<Iterable<Double>, Double> sum) {
+			this.sum = sum;
+			layers.add( new LinkedList<>( ) );
+			this.buffer_size = buffer_size;
+		}
+
+		private Vector<LinkedList<Double>> layers = new Vector<>( );
+		
+		public void add(double value) {
+			makeSureThereIsFreeSpace( 0 );
+			layers.get( 0 ).add( value );
+		}
+		
+		public double getSum() {
+			LinkedList<Double> values = new LinkedList<>( );
+			for (LinkedList<Double> list : layers) {
+				for (Double d : list) {
+					values.add( d );
+				}	
+			}
+			return this.sum.apply( values );
+		}
+		private void makeSureThereIsFreeSpace( int level ) {
+			if (level + 1 > layers.size( )) {
+				layers.add( new LinkedList<>( ));
+				return;
+			}
+			LinkedList<Double> list = layers.get( level );
+			if (list.size( ) < buffer_size) {
+				return;
+			}
+			makeSureThereIsFreeSpace( level + 1 );
+			double sum = this.sum.apply( list );
+			layers.get( level + 1 ).add( sum );
+			list.clear( );
+		}
+	}
+
+	
 	public static int raiseInt( int base, int exponent ) {
 		int result = 1;
 		for ( int i = 0; i < exponent; i++ ) {

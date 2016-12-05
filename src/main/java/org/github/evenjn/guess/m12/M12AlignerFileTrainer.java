@@ -20,10 +20,10 @@ package org.github.evenjn.guess.m12;
 import java.nio.file.Path;
 
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -39,7 +39,7 @@ public class M12AlignerFileTrainer<I, O> {
 	public M12Aligner<I, O> train(
 			ProgressSpawner progress_spawner,
 			Path dojo_path,
-			Cursable<Di<Tuple<I>, Tuple<O>>> data ) {
+			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress progress = ProgressManager
 					.safeSpawn( hook, progress_spawner, "M12AlignerFileTrainer::train" );

@@ -23,28 +23,38 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManager;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManagerBlueprint;
 import org.github.evenjn.align.graph.TupleAlignmentGraphDataManager;
 import org.github.evenjn.align.graph.TupleAlignmentGraphDataManagerBlueprint;
 import org.github.evenjn.file.FileFool;
+import org.github.evenjn.guess.m12.core.M12Core;
 import org.github.evenjn.guess.m12.core.M12CoreTrainer;
 import org.github.evenjn.guess.m12.core.M12CoreTrainerBlueprint;
 import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.knit.Suppressor;
 import org.github.evenjn.plaintext.PlainText;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
 public class M12FileTrainer<I, O> {
+	
+	static interface QualityChecker<I, O> {
 
+		boolean check(
+				Consumer<String> logger,
+				TupleAlignmentAlphabet<I, O> alphabet,
+				M12Core core );
+	}
+	
 	private final Function<String, I> a_deserializer;
 
 	private final Function<String, O> b_deserializer;
@@ -52,6 +62,8 @@ public class M12FileTrainer<I, O> {
 	private Function<I, String> a_printer;
 
 	private Function<O, String> b_printer;
+
+	private QualityChecker<I, O> checker;
 
 	public Function<String, I> getDeserializerAbove( ) {
 		return a_deserializer;
@@ -65,6 +77,7 @@ public class M12FileTrainer<I, O> {
 			int min_below,
 			int max_below,
 			TupleAlignmentAlphabetBuilder<I, O> builder,
+			QualityChecker<I, O> checker,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer,
 			Function<Hook, Consumer<String>> logger,
@@ -76,6 +89,7 @@ public class M12FileTrainer<I, O> {
 			int epochs,
 			long seed,
 			int number_of_states) {
+		this.checker = checker;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
 		this.a_deserializer = a_deserializer;
@@ -101,7 +115,7 @@ public class M12FileTrainer<I, O> {
 	public void train(
 			ProgressSpawner progress_spawner,
 			Path training_cache_path,
-			Cursable<Di<Tuple<I>, Tuple<O>>> data ) {
+			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data ) {
 		final FileFool ff = FileFool.nu( );
 		/**
 		 * Override any custom or previous setting.
@@ -179,6 +193,8 @@ public class M12FileTrainer<I, O> {
 					training_cache_path.resolve( "./m12_core.stable.txt" );
 			Path m12core_working_file =
 					training_cache_path.resolve( "./m12_core.working.txt" );
+			Path m12core_log_file =
+					training_cache_path.resolve( "./m12_core.log.txt" );
 
 			if ( ff.exists( m12core_working_file ) ) {
 				ff.delete( m12core_working_file );
@@ -200,7 +216,9 @@ public class M12FileTrainer<I, O> {
 					m12ctb.deserializeModel( h -> PlainText.reader( )
 							.build( ).get( h, ff.open( m12core_working_file ).read( h ) ) );
 				}
-				ff.create( ff.mold( m12core_working_file ) );
+				else {
+					ff.create( ff.mold( m12core_working_file ) );
+				}
 				m12ctb.serializeModel( h -> PlainText.writer( ).build( )
 						.get( h, ff.open( m12core_working_file ).write( h ) ) );
 			}
@@ -211,7 +229,7 @@ public class M12FileTrainer<I, O> {
 
 			progress.info( "Loading tuple alignment alphabet." );
 			TupleAlignmentAlphabetDataManager<I, O> taadm = taadmb.create( );
-			taadm.load( data, progress );
+			taadm.load( training_data, progress );
 
 			if ( !ff.exists( alphabet_stable_file ) ) {
 				Files.copy( alphabet_working_file, alphabet_stable_file );
@@ -219,13 +237,31 @@ public class M12FileTrainer<I, O> {
 
 			progress.info( "Loading tuple alignment graphs." );
 			TupleAlignmentGraphDataManager<I, O> tagdm = tagdmb.create( );
-			tagdm.load( data, taadm.getAlphabet( ).asEncoder( ), progress );
+			tagdm.load( training_data, taadm.getAlphabet( ).asEncoder( ), progress );
 
 			if ( !ff.exists( graphs_stable_file ) ) {
 				Files.copy( graphs_working_file, graphs_stable_file );
 			}
 
 			if ( !skip_m12_training ) {
+
+				/*
+				 * setup quality control
+				 */
+				final Consumer<String> training_logger = PlainText
+						.writer( )
+						.build( )
+						.get( hook, FileFool.nu( ).open( m12core_log_file ).write( hook ) );
+				
+				if (checker != null) {
+					m12ctb.qualityControl( core -> checker.check(
+							training_logger,
+							taadm.getAlphabet( ),
+							core ) );
+				}
+				
+				m12ctb.logger( training_logger );
+
 				progress.info( "Training M12 core." );
 				M12CoreTrainer m12ct = m12ctb.create( );
 
