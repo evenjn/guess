@@ -17,8 +17,7 @@
  */
 package org.github.evenjn.guess.m12;
 
-import java.nio.file.Path;
-
+import org.github.evenjn.file.FileFool;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.ProgressManager;
@@ -38,17 +37,17 @@ public class M12MapleFileTrainer<I, O> {
 
 	public M12Maple<I, O> train(
 			ProgressSpawner progress_spawner,
-			Path training_cache_path,
+			FileFool filefool,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress progress = ProgressManager
 					.safeSpawn( hook, progress_spawner, "M12MapleFileTrainer::train" );
-			m12_file_trainer.train( progress, training_cache_path, data );
+			m12_file_trainer.train( progress, filefool, data );
 			M12Maple<I, O> maple = M12MapleFileDeserializer.deserialize(
 					progress_spawner,
 					m12_file_trainer.getDeserializerAbove( ),
 					m12_file_trainer.getDeserializerBelow( ),
-					training_cache_path );
+					filefool.getRoot( ) );
 			return maple;
 		}
 	}

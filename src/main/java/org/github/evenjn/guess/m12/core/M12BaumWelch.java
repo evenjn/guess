@@ -45,8 +45,6 @@ import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12BaumWelch {
 
-	private static final boolean check_consistency = true;
-
 	private final double[][][] alpha;
 
 	private final double[][][] beta;
@@ -71,16 +69,16 @@ public class M12BaumWelch {
 
 	private final static boolean print_debug_maximization = false;
 
-	private Function<M12Core, Boolean> quality_control;
+	private Function<M12Core, Boolean> core_inspector;
 
 	public M12BaumWelch(
 			M12Core hmm,
-			Function<M12Core, Boolean> quality_control,
+			Function<M12Core, Boolean> core_inspector,
 			int total_number_of_edges,
 			int max_length_above,
 			int max_length_below) {
 		this.hmm = hmm;
-		this.quality_control = quality_control;
+		this.core_inspector = core_inspector;
 		number_of_states = hmm.number_of_states;
 		number_of_symbols = hmm.number_of_symbols;
 		alpha = new double[max_length_above + 1][max_length_below
@@ -213,14 +211,14 @@ public class M12BaumWelch {
 						double probability_change =
 								current_probability / previous_probability;
 						logger.accept( "Epoch: " + epoch
-								+ "  average probability: "
+								+ "  probability indicator: "
 								+ SixCharFormat.nu( false ).apply( current_probability )
 								+ "  new/old: "
 								+ SixCharFormat.nu( false ).apply( probability_change ) );
 					}
 					else {
 						logger.accept( "Epoch: " + epoch
-								+ "  average probability: "
+								+ "  probability indicator: "
 								+ SixCharFormat.nu( false ).apply( current_probability ) );
 					}
 					previous_probability = current_probability;
@@ -232,12 +230,9 @@ public class M12BaumWelch {
 						samples,
 						smoothing_count );
 
-				if ( check_consistency ) {
-					M12CoreChecker.check( hmm );
-				}
-				if ( quality_control != null ) {
-					spawn.info( "quality control" );
-					Boolean quality_is_ok = quality_control.apply( hmm );
+				if ( core_inspector != null ) {
+					spawn.info( "core inspection" );
+					Boolean quality_is_ok = core_inspector.apply( hmm );
 					if ( quality_is_ok ) {
 						return hmm;
 					}

@@ -82,7 +82,7 @@ TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 					new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
 			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
-					"TupleAlignmentAlphabetSimpleBuilder::build" );
+					"TupleAlignmentAlphabetWithAligner::build" );
 
 			spawn.info( "Computing dataset size." );
 		  spawn.target( kd.size( ) );

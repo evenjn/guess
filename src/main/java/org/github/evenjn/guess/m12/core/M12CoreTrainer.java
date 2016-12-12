@@ -117,9 +117,23 @@ public class M12CoreTrainer {
 			}
 
 			spawn.info( "Creating baumwelch data structures." );
+			
+			Function<M12Core, Boolean> local_core_inspector =
+					new Function<M12Core, Boolean>( ) {
+						@Override
+						public Boolean apply( M12Core t ) {
+							KnittingCursor.wrap( new M12CoreSerializer( t ) )
+									.consume( putter_core );
+							M12CoreChecker.check( t );
+							if ( quality_control != null ) {
+								return quality_control.apply( t );
+							}
+							return false;
+						}
+					};
 			M12BaumWelch baum_welch = new M12BaumWelch(
 					core,
-					quality_control,
+					local_core_inspector,
 					record_max_number_of_edges,
 					record_max_length_above,
 					record_max_length_below );

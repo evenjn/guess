@@ -17,7 +17,6 @@
  */
 package org.github.evenjn.guess.m12;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetGreedyBuilder;
@@ -31,12 +30,11 @@ import org.junit.Test;
 
 public class TestM12MapleTrainer {
 
-	private static final Path training_cache_path =
-			Paths.get( ".", "target", "training_cache" );
+	private static final FileFool training_cache_path = FileFool.nu(
+			Paths.get( ".", "target", "training_cache" ));
 
 	private static void removeModelFiles( ) {
-		FileFool ff = FileFool.nu( );
-		ff.create( ff.mold( training_cache_path ).asDirectory( ).eraseIfExists( ) );
+		training_cache_path.create( training_cache_path.mold( training_cache_path.getRoot( ) ).asDirectory( ).eraseIfExists( ) );
 	}
 
 	/** EVALUATOR */
@@ -58,7 +56,6 @@ public class TestM12MapleTrainer {
 				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
 				.setBuilder( new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
 				.setPrinter(
-						h -> System.err::println,
 						x -> x ? "1" : "0",
 						x -> x ? "1" : "0" );
 	}

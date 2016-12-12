@@ -40,7 +40,6 @@ import org.github.evenjn.knit.Suppressor;
 import org.github.evenjn.plaintext.PlainText;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -80,7 +79,6 @@ public class M12FileTrainer<I, O> {
 			QualityChecker<I, O> checker,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer,
-			Function<Hook, Consumer<String>> logger,
 			Function<I, String> a_serializer,
 			Function<O, String> b_serializer,
 			Function<String, I> a_deserializer,
@@ -114,9 +112,9 @@ public class M12FileTrainer<I, O> {
 
 	public void train(
 			ProgressSpawner progress_spawner,
-			Path training_cache_path,
+			FileFool training_cache_path,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data ) {
-		final FileFool ff = FileFool.nu( );
+		FileFool ff = training_cache_path;
 		/**
 		 * Override any custom or previous setting.
 		 */
@@ -137,11 +135,11 @@ public class M12FileTrainer<I, O> {
 			 * the process if possible.
 			 */
 			Path alphabet_stable_file =
-					training_cache_path.resolve( "./ta_alphabet.stable.txt" );
+					ff.getRoot( ).resolve( "ta_alphabet.stable.txt" );
 			Path alphabet_working_file =
-					training_cache_path.resolve( "./ta_alphabet.working.txt" );
+					ff.getRoot( ).resolve( "ta_alphabet.working.txt" );
 			Path alphabet_log_file =
-					training_cache_path.resolve( "./ta_alphabet.log.txt" );
+					ff.getRoot( ).resolve( "ta_alphabet.log.txt" );
 
 			if ( ff.exists( alphabet_working_file ) ) {
 				ff.delete( alphabet_working_file );
@@ -152,49 +150,51 @@ public class M12FileTrainer<I, O> {
 			if ( ff.exists( alphabet_stable_file ) ) {
 				System.out
 						.println( "Using alphabet cached in " + alphabet_stable_file );
-				Files.copy( alphabet_stable_file, alphabet_working_file );
+				taadmb.deserializeTupleAlignmentAlphabet( h -> PlainText.reader( )
+						.build( ).get( h, ff.open( alphabet_stable_file ).read( h ) ) );
 			}
 			else {
 				ff.create( ff.mold( alphabet_working_file ) );
 				ff.create( ff.mold( alphabet_log_file ) );
 				taadmb
-						.setPrinter( h -> PlainText.writer( ).build( )
+						.setPrinter( h -> PlainText.writer( ).setForcedFlush( true ).build( )
 								.get( h, ff.open( alphabet_log_file ).write( h ) ), a_printer,
 								b_printer )
 						.serializeTupleAlignmentAlphabet( h -> PlainText.writer( ).build( )
 								.get( h, ff.open( alphabet_working_file ).write( h ) ) );
+				taadmb.deserializeTupleAlignmentAlphabet( h -> PlainText.reader( )
+						.build( ).get( h, ff.open( alphabet_working_file ).read( h ) ) );
 			}
-			taadmb.deserializeTupleAlignmentAlphabet( h -> PlainText.reader( )
-					.build( ).get( h, ff.open( alphabet_working_file ).read( h ) ) );
 
 			Path graphs_stable_file =
-					training_cache_path.resolve( "./ta_graphs.stable.txt" );
+					ff.getRoot( ).resolve( "ta_graphs.stable.txt" );
 			Path graphs_working_file =
-					training_cache_path.resolve( "./ta_graphs.working.txt" );
+					ff.getRoot( ).resolve( "ta_graphs.working.txt" );
 
 			if ( ff.exists( graphs_working_file ) ) {
 				ff.delete( graphs_working_file );
 			}
 			if ( ff.exists( graphs_stable_file ) ) {
 				System.out.println( "Using graphs cached in " + graphs_stable_file );
-				Files.copy( graphs_stable_file, graphs_working_file );
+				tagdmb.deserializeTupleAlignmentGraphs( h -> PlainText.reader( )
+						.build( ).get( h, ff.open( graphs_stable_file ).read( h ) ) );
 			}
 			else {
 				ff.create( ff.mold( graphs_working_file ) );
 				tagdmb.serializeTupleAlignmentGraphs( h -> PlainText.writer( ).build( )
 						.get( h, ff.open( graphs_working_file ).write( h ) ) );
+				tagdmb.deserializeTupleAlignmentGraphs( h -> PlainText.reader( )
+						.build( ).get( h, ff.open( graphs_working_file ).read( h ) ) );
 			}
-			tagdmb.deserializeTupleAlignmentGraphs( h -> PlainText.reader( )
-					.build( ).get( h, ff.open( graphs_working_file ).read( h ) ) );
 
 			Path m12core_initial_file =
-					training_cache_path.resolve( "./m12_core.initial.txt" );
+					ff.getRoot( ).resolve( "./m12_core.initial.txt" );
 			Path m12core_stable_file =
-					training_cache_path.resolve( "./m12_core.stable.txt" );
+					ff.getRoot( ).resolve( "./m12_core.stable.txt" );
 			Path m12core_working_file =
-					training_cache_path.resolve( "./m12_core.working.txt" );
+					ff.getRoot( ).resolve( "./m12_core.working.txt" );
 			Path m12core_log_file =
-					training_cache_path.resolve( "./m12_core.log.txt" );
+					ff.getRoot( ).resolve( "./m12_core.log.txt" );
 
 			if ( ff.exists( m12core_working_file ) ) {
 				ff.delete( m12core_working_file );
@@ -249,7 +249,7 @@ public class M12FileTrainer<I, O> {
 				 * setup quality control
 				 */
 				final Consumer<String> training_logger = PlainText
-						.writer( )
+						.writer( ).setForcedFlush( true )
 						.build( )
 						.get( hook, FileFool.nu( ).open( m12core_log_file ).write( hook ) );
 				
@@ -268,8 +268,8 @@ public class M12FileTrainer<I, O> {
 				m12ct.load(
 						taadm.getAlphabet( ).size( ),
 						tagdm.getMaxNumberOfEdges( ),
-						tagdm.getMaxLenghtAbove( ),
-						tagdm.getMaxLenghtBelow( ),
+						tagdm.getMaxLenghtFront( ),
+						tagdm.getMaxLenghtBack( ),
 						tagdm.getGraphs( ),
 						progress );
 

@@ -217,7 +217,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 					Progress progress ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			builder.setPrinters( logger, a_printer, b_printer );
-			builder.setMinMax(0, 2);
+			builder.setMinMax(min_below, max_below);
 			return builder.build( data, progress );
 		}
 	}

@@ -17,18 +17,14 @@
  */
 package org.github.evenjn.guess.m12;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
 import org.github.evenjn.guess.m12.M12FileTrainer.QualityChecker;
-import org.github.evenjn.yarn.Hook;
 
 public class M12FileTrainerBlueprint<I, O> {
 
 	private TupleAlignmentAlphabetBuilder<I, O> builder;
-
-	private Function<Hook, Consumer<String>> logger;
 
 	private int min_below;
 
@@ -76,10 +72,8 @@ public class M12FileTrainerBlueprint<I, O> {
 	}
 
 	public M12FileTrainerBlueprint<I, O> setPrinter(
-			Function<Hook, Consumer<String>> logger,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer ) {
-		this.logger = logger;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
 		return this;
@@ -125,7 +119,6 @@ public class M12FileTrainerBlueprint<I, O> {
 				checker,
 				a_printer,
 				b_printer,
-				logger,
 				a_serializer,
 				b_serializer,
 				a_deserializer,

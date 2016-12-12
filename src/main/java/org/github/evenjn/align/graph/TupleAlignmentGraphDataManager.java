@@ -69,21 +69,21 @@ import org.github.evenjn.yarn.Tuple;
  * cache and passed over.
  * 
  */
-public class TupleAlignmentGraphDataManager<I, O> {
+public class TupleAlignmentGraphDataManager<Above, Below> {
 
-	private int record_max_length_above = 0;
+	private int record_max_length_front = 0;
 
-	private int record_max_length_below = 0;
+	private int record_max_length_back = 0;
 
 	private int record_max_number_of_edges = 0;
 
 	public TupleAlignmentGraphDataManager(
-			int min_below,
-			int max_below,
+			int min,
+			int max,
 			Function<Hook, Consumer<String>> putter_coalignment_graphs,
 			Cursable<String> reader_coalignment_graphs ) {
-		this.min_below = min_below;
-		this.max_below = max_below;
+		this.min_below = min;
+		this.max_below = max;
 		this.putter_coalignment_graphs = putter_coalignment_graphs;
 		this.reader_coalignment_graphs = reader_coalignment_graphs;
 	}
@@ -106,17 +106,17 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	}
 
 	/**
-	 * @return the maximum number of input symbols observed in the cached data.
+	 * @return the length of the longest tuple "at the front" observed in the data.
 	 */
-	public int getMaxLenghtAbove( ) {
-		return record_max_length_above;
+	public int getMaxLenghtFront( ) {
+		return record_max_length_front;
 	}
 
 	/**
-	 * @return the maximum number of output symbols observed in the cached data.
+	 * @return the length of the longest tuple "at the back" observed in the data.
 	 */
-	public int getMaxLenghtBelow( ) {
-		return record_max_length_below;
+	public int getMaxLenghtBack( ) {
+		return record_max_length_back;
 	}
 
 	/**
@@ -127,11 +127,11 @@ public class TupleAlignmentGraphDataManager<I, O> {
 		return record_max_number_of_edges;
 	}
 
-	public TupleAlignmentGraphDataManager<I, O> load(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
-			BiFunction<I, Tuple<O>, Integer> pair_encoder,
+	public TupleAlignmentGraphDataManager<Above, Below> load(
+			Cursable<Bi<Tuple<Above>, Tuple<Below>>> data,
+			BiFunction<Above, Tuple<Below>, Integer> pair_encoder,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Bi<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
+		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kc = KnittingCursable.wrap( data );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn =
 					ProgressManager.safeSpawn( hook, progress_spawner,
@@ -149,12 +149,12 @@ public class TupleAlignmentGraphDataManager<I, O> {
 				int la = g.la( );
 				int lb = g.lb( );
 
-				if ( record_max_length_above < la ) {
-					record_max_length_above = la;
+				if ( record_max_length_front < la ) {
+					record_max_length_front = la;
 				}
 
-				if ( record_max_length_below < lb ) {
-					record_max_length_below = lb;
+				if ( record_max_length_back < lb ) {
+					record_max_length_back = lb;
 				}
 
 				int current_number_of_edges = 0;
@@ -177,15 +177,15 @@ public class TupleAlignmentGraphDataManager<I, O> {
 	private
 			KnittingCursable<TupleAlignmentGraph>
 			prepareGraphs(
-					KnittingCursable<Bi<Tuple<I>, Tuple<O>>> data,
-					BiFunction<I, Tuple<O>, Integer> pair_encoder,
+					KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> data,
+					BiFunction<Above, Tuple<Below>, Integer> pair_encoder,
 					Progress progress ) {
-		SkipMap<Bi<Tuple<I>, Tuple<O>>, TupleAlignmentGraph> skipMap =
-				new SkipMap<Bi<Tuple<I>, Tuple<O>>, TupleAlignmentGraph>( ) {
+		SkipMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph> skipMap =
+				new SkipMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph>( ) {
 
 					@Override
 					public TupleAlignmentGraph get(
-							Bi<Tuple<I>, Tuple<O>> x )
+							Bi<Tuple<Above>, Tuple<Below>> x )
 							throws SkipException {
 						try {
 							return TupleAlignmentGraphFactory.graph(
@@ -229,9 +229,9 @@ public class TupleAlignmentGraphDataManager<I, O> {
 						.skipmap( skipMap );
 
 				StringBuilder header = new StringBuilder( );
-				header.append( record_max_length_above );
+				header.append( record_max_length_front );
 				header.append( "," );
-				header.append( record_max_length_below );
+				header.append( record_max_length_back );
 				header.append( "," );
 				header.append( record_max_number_of_edges );
 				try ( AutoHook hook = new BasicAutoHook( ) ) {
@@ -255,8 +255,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 				String[] split = splitter.split(
 						KnittingCursable.wrap( reader_coalignment_graphs ).head( 0, 1 )
 								.one( hook ) );
-				record_max_length_above = Integer.parseInt( split[0] );
-				record_max_length_below = Integer.parseInt( split[1] );
+				record_max_length_front = Integer.parseInt( split[0] );
+				record_max_length_back = Integer.parseInt( split[1] );
 				record_max_number_of_edges = Integer.parseInt( split[2] );
 				limits_are_computed = true;
 			}
@@ -267,8 +267,8 @@ public class TupleAlignmentGraphDataManager<I, O> {
 					.wrap( reader_coalignment_graphs )
 					.headless( 1 )
 					.skipfold( ( ) -> new TupleAlignmentGraphDeserializer(
-							record_max_length_above,
-							record_max_length_below ) );
+							record_max_length_front,
+							record_max_length_back ) );
 		}
 		else {
 			if ( !limits_are_computed ) {

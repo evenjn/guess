@@ -43,22 +43,23 @@ public class M12Maple<I, O> implements
 		Maple<I, O> {
 
 	private final M12Core core;
+	
 
 	public M12Maple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			M12Core core,
 			ProgressSpawner progress_spawner) {
 
+//		Map<I, Set<Tuple<O>>> actual_pairs = new HashMap<>();
+		
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
 			this.core = core;
 			init_cache( core.number_of_states );
 
 			double[] buffer = new double[coalignment_alphabet.size( )];
-			int len = 0;
 
-			Progress spawn =
-					ProgressManager.safeSpawn( hook, progress_spawner, "M12Maple::constructor" );
+			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner, "M12Maple::constructor" );
 			spawn.target( core.number_of_states * coalignment_alphabet.size( ) );
 			/**
 			 * for each state we want to cache: for each symbol above, the probability
@@ -69,13 +70,13 @@ public class M12Maple<I, O> implements
 				cache_partial_prob[s] = new HashMap<I, Double>( );
 
 				for ( I sa : coalignment_alphabet.above( ) ) {
-					len = 0;
+					int len = 0;
 					double max = 0;
 					Tuple<O> best = null;
 					for ( Tuple<O> sb : coalignment_alphabet.correspondingBelow( sa ) ) {
 						int encode = coalignment_alphabet.encode( sa, sb );
 						double prob = core.emission_table[s][encode];
-						if ( len == 0 || prob > max ) {
+						if ( best == null || prob > max ) {
 							max = prob;
 							best = sb;
 						}
@@ -88,6 +89,12 @@ public class M12Maple<I, O> implements
 						throw new RuntimeException( );
 					}
 
+//					Set<Tuple<O>> fd = actual_pairs.get( sa );
+//					if (fd == null) {
+//						fd = new HashSet<>( );
+//						actual_pairs.put( sa, fd );
+//					}
+//					fd.add( best );
 					cache_prediction[s].put( sa, best );
 					cache_partial_prob[s].put( sa,
 							NumericLogarithm.elnsum( max, buffer, len ) );
@@ -96,6 +103,13 @@ public class M12Maple<I, O> implements
 			}
 
 		}
+
+//		for ( I sa : coalignment_alphabet.above( ) ) { 
+//			System.out.println( Unicode.aboutCodepoint( Integer.parseInt( sa.toString( ) ) ));
+//			for (Tuple<O> sb : actual_pairs.get( sa )) {
+//				System.out.println(   " >-> " + sb.toString( ) );
+//			}
+//		}
 	}
 
 	@SuppressWarnings("unchecked")

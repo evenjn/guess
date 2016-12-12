@@ -15,9 +15,9 @@ import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class TupleAlignmentAlphabetSimpleBuilder<SymbolAbove, SymbolBelow>
+public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 		implements
-		TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
+		TupleAlignmentAlphabetBuilder<Above, Below> {
 
 	private int min_below;
 
@@ -31,39 +31,41 @@ public class TupleAlignmentAlphabetSimpleBuilder<SymbolAbove, SymbolBelow>
 		this.min_below = min;
 		this.max_below = max;
 	}
-	
+
+	@Override
 	public void setPrinters(
 			Function<Hook, Consumer<String>> logger,
-			Function<SymbolAbove, String> a_printer,
-			Function<SymbolBelow, String> b_printer ) {
+			Function<Above, String> a_printer,
+			Function<Below, String> b_printer ) {
 		
 	}
 
-	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
-			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+	@Override
+	public TupleAlignmentAlphabet<Above, Below> build(
+			Cursable<Bi<Tuple<Above>, Tuple<Below>>> data,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> kd =
+		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kd =
 				KnittingCursable.wrap( data );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
-			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
-					new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
+			TupleAlignmentAlphabet<Above, Below> result =
+					new TupleAlignmentAlphabet<Above, Below>( );
 			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetSimpleBuilder::build" );
 
 			spawn.info( "Computing dataset size." );
 			spawn.target( kd.size( ) );
 			spawn.info( "Collecting alphabet elements." );
-			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( hook )
+			for ( Bi<Tuple<Above>, Tuple<Below>> datum : kd.pull( hook )
 					.once( ) ) {
 
 				spawn.step( 1 );
 
 				try {
-					Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> localAlphabet =
+					Iterable<TupleAlignmentAlphabetPair<Above, Below>> localAlphabet =
 							TupleAlignmentAlphabetBuilderTools.localAlphabet(
 									min_below, max_below, datum.front( ), datum.back( ) );
-					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
+					for ( TupleAlignmentAlphabetPair<Above, Below> pp : localAlphabet ) {
 						result.add( pp );
 					}
 				}
