@@ -46,7 +46,7 @@ import org.github.evenjn.yarn.Tuple;
 
 public class M12FileTrainer<I, O> {
 	
-	static interface QualityChecker<I, O> {
+	public static interface QualityChecker<I, O> {
 
 		boolean check(
 				Consumer<String> logger,

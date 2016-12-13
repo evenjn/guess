@@ -75,7 +75,7 @@ public class NumericRandom {
 			@Override
 			public K next( K input )
 					throws SkipException {
-				if ( random.nextInt( 1000 ) < permille ) {
+				if ( random.nextInt( 1000 ) >= permille ) {
 					throw SkipException.neo;
 				}
 				return input;

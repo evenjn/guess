@@ -69,6 +69,6 @@ public class M12MapleFileDeserializer {
 
 			M12CoreChecker.check( core );
 		}
-		return new M12Maple<>( alphabet, core, progress_spawner );
+		return new M12Maple<>( alphabet, core, false, progress_spawner );
 	}
 }

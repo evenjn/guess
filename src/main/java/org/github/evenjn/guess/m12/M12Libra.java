@@ -53,7 +53,7 @@ public class M12Libra<I, O> {
 			Tuple<I>,
 			Tuple<O> > bi ) throws NotAlignableException {
 		Tuple<O> below = bi.back( );
-		Tuple<? extends I> above = bi.front( );
+		Tuple<I> above = bi.front( );
 		boolean must_update_alpha = false;
 		boolean must_update_eb = false;
 		if (above.size( ) > max_length_above) { 

@@ -150,7 +150,15 @@ public class M12BaumWelch {
 					new double[number_of_states][number_of_symbols];
 			
 			for ( int epoch = 0; epoch < max_epoch; epoch++ ) {
-				spawn.info( "epoch " + epoch );
+
+				if ( core_inspector != null ) {
+					spawn.info( "core inspection at epoch " + epoch  );
+					Boolean quality_is_ok = core_inspector.apply( hmm );
+					if ( quality_is_ok ) {
+						return hmm;
+					}
+				}
+				spawn.info( "training at epoch " + epoch );
 
 				for ( int s = 0; s < number_of_states; s++ ) {
 					new_initial[s] = uniform_state;
@@ -229,13 +237,13 @@ public class M12BaumWelch {
 						new_emission,
 						samples,
 						smoothing_count );
+			}
 
-				if ( core_inspector != null ) {
-					spawn.info( "core inspection" );
-					Boolean quality_is_ok = core_inspector.apply( hmm );
-					if ( quality_is_ok ) {
-						return hmm;
-					}
+			if ( core_inspector != null ) {
+				spawn.info( "final core inspection" );
+				Boolean quality_is_ok = core_inspector.apply( hmm );
+				if ( quality_is_ok ) {
+					return hmm;
 				}
 			}
 			return hmm;

@@ -108,7 +108,7 @@ public class M12MapleQualityChecker<I, O> implements
 			TupleAlignmentAlphabet<I, O> alphabet,
 			M12Core core  ) {
 		M12Maple<I, O> m12Maple =
-				new M12Maple<I, O>( alphabet, core, null );
+				new M12Maple<I, O>( alphabet, core, false, null );
 		logger.accept( decorator_line );
 		if ( training_data != null ) {
 			logger.accept( "Maple check on training data");

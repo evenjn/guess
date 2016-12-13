@@ -39,17 +39,33 @@ import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
+
+/**
+ * Uses a one-to-many hidden markov model to implement a transducer.
+ * 
+ * Upon encountering a never-seen-before input symbol, the system ignores the
+ * input symbol information when choosing the most likely state.
+ * By assigning emission probability "one" to unknown symbols, the system
+ * chooses the most likely state based on transition probabilities only. 
+ * 
+ * @author Marco Trevisan
+ *
+ * @param <I> The type of input symbols.
+ * @param <O> The type of output symbols.
+ */
 public class M12Maple<I, O> implements
 		Maple<I, O> {
 
 	private final M12Core core;
 	
+	private final boolean fail_on_unknown_input_symbol;
 
 	public M12Maple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			M12Core core,
+			boolean fail_on_unknown_input_symbol,
 			ProgressSpawner progress_spawner) {
-
+		this.fail_on_unknown_input_symbol = fail_on_unknown_input_symbol;
 //		Map<I, Set<Tuple<O>>> actual_pairs = new HashMap<>();
 		
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
@@ -128,8 +144,13 @@ public class M12Maple<I, O> implements
 	private double emission( int s, I i ) {
 		Double result = cache_partial_prob[s].get( i );
 		if ( result == null ) {
-			System.err.println( "M12Maple unknown symbol: " + i.toString( ) );
-			return NumericLogarithm.smallLogValue;
+			if ( fail_on_unknown_input_symbol ) {
+				throw new IllegalArgumentException(
+						"M12Maple unknown symbol: " + i.toString( ) );
+			}
+			else {
+				return NumericLogarithm.oneLogValue;
+			}
 		}
 		return result;
 	}
