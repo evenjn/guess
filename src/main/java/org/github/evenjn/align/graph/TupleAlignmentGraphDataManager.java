@@ -129,7 +129,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 	public TupleAlignmentGraphDataManager<Above, Below> load(
 			Cursable<Bi<Tuple<Above>, Tuple<Below>>> data,
-			BiFunction<Above, Tuple<Below>, Integer> pair_encoder,
+			BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kc = KnittingCursable.wrap( data );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
@@ -178,7 +178,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			KnittingCursable<TupleAlignmentGraph>
 			prepareGraphs(
 					KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> data,
-					BiFunction<Above, Tuple<Below>, Integer> pair_encoder,
+					BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 					Progress progress ) {
 		SkipMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph> skipMap =
 				new SkipMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph>( ) {

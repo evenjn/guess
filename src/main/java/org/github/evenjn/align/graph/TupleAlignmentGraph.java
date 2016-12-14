@@ -94,7 +94,7 @@ public class TupleAlignmentGraph {
 	
 	/**
 	 * @return An iterator over all the nodes of this graph, starting
-	 * with all the nodes of the first row (from the first to the last column),
+	 * with all the nodes of the first row (from the first column to the last one),
 	 * then the nodes of the second row, etc.
 	 */
 	public Iterator<TupleAlignmentNode> forward() {

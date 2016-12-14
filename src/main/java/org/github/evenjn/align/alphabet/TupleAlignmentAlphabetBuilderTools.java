@@ -151,16 +151,19 @@ public class TupleAlignmentAlphabetBuilderTools {
 			Tuple<SymbolBelow> below,
 			Predicate<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> filter )
 			throws NotAlignableException {
-		BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer> pair_encoder =
-				new BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer>( ) {
+		BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer> pair_encoder =
+				new BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer>( ) {
 
 					@Override
-					public Integer apply( SymbolAbove suba,
+					public Integer apply( Tuple<SymbolAbove> suba,
 							Tuple<SymbolBelow> subb ) {
+						if (suba.size( ) != 1) {
+							throw new IllegalArgumentException( );
+						}
 
 						TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
 								new TupleAlignmentAlphabetPair<>( );
-						pair.above = suba;
+						pair.above = suba.get( 0 );
 						pair.below = KnittingTuple.wrap( subb );
 						boolean test = filter.test( pair );
 						if ( !test ) {
@@ -229,16 +232,18 @@ public class TupleAlignmentAlphabetBuilderTools {
 				new Vector<>( );
 		LinkedList<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> result =
 				new LinkedList<>( );
-		BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer> pair_encoder =
-				new BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer>( ) {
+		BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer> pair_encoder =
+				new BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer>( ) {
 
 					@Override
-					public Integer apply( SymbolAbove suba,
+					public Integer apply( Tuple<SymbolAbove> suba,
 							Tuple<SymbolBelow> subb ) {
-
+						if (suba.size( ) != 1) {
+							throw new IllegalArgumentException( );
+						}
 						TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
 								new TupleAlignmentAlphabetPair<>( );
-						pair.above = suba;
+						pair.above = suba.get( 0 );
 						pair.below = KnittingTuple.wrap( subb );
 						buffer.add( pair );
 						return buffer.size( );

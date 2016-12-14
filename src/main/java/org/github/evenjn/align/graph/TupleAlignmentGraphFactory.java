@@ -63,8 +63,8 @@ import org.github.evenjn.yarn.Tuple;
  * 0 or more symbols below. To this purpose, we extend the alpha table to
  * track how many symbols above and below have been emitted.
  * 
- *           C/k     A/o     L/5     L/-     E/-     D/d
- * B -> [s1] -> [s1] -> [s1] -> [s1] -> [s1] -> [s1] -> E
+ *       C/k     A/o     L/5     L/-     E/-     D/d
+ * B -> [s1] -> [s1] -> [s1] -> [s1] -> [s1] -> [s1]
  * 
  *   - k o l d
  * - B * * * *
@@ -127,7 +127,7 @@ public class TupleAlignmentGraphFactory {
 	public static <SymbolAbove, SymbolBelow>
 			TupleAlignmentGraph
 			graph(
-					BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer> pair_encoder,
+					BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer> pair_encoder,
 					Tuple<SymbolAbove> above,
 					Tuple<SymbolBelow> below,
 					final int min_below,
@@ -202,7 +202,7 @@ public class TupleAlignmentGraphFactory {
 					// when the above/below pair is not in the pair alphabet, 
 					// the edge is not legal. skip it.
 					KnittingTuple<SymbolBelow> sub = kb.head( b, z - b );
-					Integer enc = pair_encoder.apply( key, sub );
+					Integer enc = pair_encoder.apply( KnittingTuple.on(key), sub );
 					if (enc == null) {
 						continue;
 					}
@@ -273,7 +273,7 @@ public class TupleAlignmentGraphFactory {
 
 					SymbolAbove key = ka.get( x );
 					KnittingTuple<SymbolBelow> sub = kb.head( y, b - y );
-					Integer enc = pair_encoder.apply( key, sub );
+					Integer enc = pair_encoder.apply( KnittingTuple.on(key), sub );
 					ie[e_i][2] = enc;
 				}
 			}

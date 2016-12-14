@@ -90,7 +90,7 @@ public class M12Maple<I, O> implements
 					double max = 0;
 					Tuple<O> best = null;
 					for ( Tuple<O> sb : coalignment_alphabet.correspondingBelow( sa ) ) {
-						int encode = coalignment_alphabet.encode( sa, sb );
+						int encode = coalignment_alphabet.encode( KnittingTuple.on(sa), sb );
 						double prob = core.emission_table[s][encode];
 						if ( best == null || prob > max ) {
 							max = prob;

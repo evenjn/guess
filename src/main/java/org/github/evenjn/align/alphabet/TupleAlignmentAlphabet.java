@@ -97,14 +97,17 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		return alphabet.size( );
 	}
 	
-	public BiFunction<SymbolAbove, Tuple<SymbolBelow>, Integer> asEncoder(){
+	public BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer> asEncoder(){
 		return (a, b) -> encode(a, b);
 	}
 
-	public Integer encode( SymbolAbove above, Tuple<SymbolBelow> below ) {
+	public Integer encode( Tuple<SymbolAbove> above, Tuple<SymbolBelow> below ) {
 		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
 				new TupleAlignmentAlphabetPair<>( );
-		pair.above = above;
+		if (above.size( ) != 1) {
+			throw new IllegalArgumentException( );
+		}
+		pair.above = above.get( 0 );
 		pair.below = KnittingTuple.wrap( below );
 		return encode_map.get( pair );
 	}

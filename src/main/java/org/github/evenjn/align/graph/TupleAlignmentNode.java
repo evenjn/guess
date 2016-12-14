@@ -35,7 +35,7 @@ public class TupleAlignmentNode {
 	 * column-index of the node the edge is coming from.
 	 * 
 	 * The third value, referred to as "encout", is a unique id that identifies
-	 * the pair [p q] where p is a symbol above and q is a finite sequence of
+	 * the pair [p q] where p is a tuple of symbols above and q is a tuple of
 	 * symbols below.
 	 * 
 	 * This pair is such that Above[0..x]+p = Above[0..a] and Below[0..y]+q =
