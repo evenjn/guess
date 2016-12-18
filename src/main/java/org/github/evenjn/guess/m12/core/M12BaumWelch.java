@@ -152,7 +152,7 @@ public class M12BaumWelch {
 			for ( int epoch = 0; epoch < max_epoch; epoch++ ) {
 
 				if ( core_inspector != null ) {
-					spawn.info( "core inspection at epoch " + epoch  );
+					spawn.info( "core inspection at the beginning of epoch " + epoch  );
 					Boolean quality_is_ok = core_inspector.apply( hmm );
 					if ( quality_is_ok ) {
 						return hmm;

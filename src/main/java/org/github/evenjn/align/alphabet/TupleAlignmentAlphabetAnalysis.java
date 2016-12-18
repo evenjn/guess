@@ -39,10 +39,18 @@ import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
-	public TupleAlignmentAlphabetAnalysis(int min_below, int max_below) {
+	public TupleAlignmentAlphabetAnalysis(
+			int min_above, int max_above,
+			int min_below, int max_below) {
+		this.min_above = min_above;
+		this.max_above = max_above;
 		this.min_below = min_below;
 		this.max_below = max_below;
 	}
+
+	private int min_above;
+
+	private int max_above;
 
 	private int min_below;
 
@@ -259,6 +267,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 					Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> localAlphabet =
 							TupleAlignmentAlphabetBuilderTools.localAlphabet(
+									min_above, max_above,
 									min_below, max_below, ka, kb );
 
 					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp : localAlphabet ) {

@@ -19,6 +19,10 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 		implements
 		TupleAlignmentAlphabetBuilder<Above, Below> {
 
+	private int min_above;
+
+	private int max_above;
+
 	private int min_below;
 
 	private int max_below;
@@ -27,9 +31,13 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 	}
 
 	@Override
-	public void setMinMax( int min, int max ) {
-		this.min_below = min;
-		this.max_below = max;
+	public void setMinMax( 
+			int min_above, int max_above,
+			int min_below, int max_below ) {
+		this.min_above = min_above;
+		this.max_above = max_above;
+		this.min_below = min_below;
+		this.max_below = max_below;
 	}
 
 	@Override
@@ -64,7 +72,9 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 				try {
 					Iterable<TupleAlignmentAlphabetPair<Above, Below>> localAlphabet =
 							TupleAlignmentAlphabetBuilderTools.localAlphabet(
-									min_below, max_below, datum.front( ), datum.back( ) );
+									min_above, max_above,
+									min_below, max_below,
+									datum.front( ), datum.back( ) );
 					for ( TupleAlignmentAlphabetPair<Above, Below> pp : localAlphabet ) {
 						result.add( pp );
 					}

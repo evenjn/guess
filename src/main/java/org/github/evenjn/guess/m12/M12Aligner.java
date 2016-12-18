@@ -73,6 +73,8 @@ public class M12Aligner<I, O> implements
 					( a, b ) -> coalignment_alphabet.encode( a, b ),
 					above,
 					below,
+					1,
+					1,
 					coalignment_alphabet.getMinBelow( ),
 					coalignment_alphabet.getMaxBelow( ) );
 		}

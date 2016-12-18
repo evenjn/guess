@@ -45,6 +45,10 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 
 	private Function<SymbolBelow, String> b_printer = null;
 
+	private int min_above;
+
+	private int max_above;
+
 	private int min_below;
 
 	private int max_below;
@@ -58,9 +62,13 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 	}
 
 	@Override
-	public void setMinMax( int min, int max ) {
-		this.min_below = min;
-		this.max_below = max;
+	public void setMinMax(
+			int min_above, int max_above,
+			int min_below, int max_below ) {
+		this.min_above = min_above;
+		this.max_above = max_above;
+		this.min_below = min_below;
+		this.max_below = max_below;
 	}
 
 	public void setPrinters(
@@ -107,6 +115,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 				int not_aligneable = TupleAlignmentAlphabetBuilderTools.computeCoverage(
 						progress_spawner,
 						null,
+						min_above, max_above,
 						min_below, max_below,
 						data, alphabet::contains,
 						analysis.getTotal( ), analysis.getTotalAligneable( ) );
@@ -201,6 +210,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					not_aligneable = TupleAlignmentAlphabetBuilderTools.computeCoverage(
 							spawn,
 							null,
+							min_above, max_above,
 							min_below, max_below,
 							data, alphabet::contains,
 							analysis.getTotal( ), analysis.getTotalAligneable( ) );
@@ -251,7 +261,8 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Consumer<String> open_logger = logger.apply( hook );
 			TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis =
-					new TupleAlignmentAlphabetAnalysis<>( min_below, max_below );
+					new TupleAlignmentAlphabetAnalysis<>( 
+							min_above, max_above, min_below, max_below );
 			analysis.computeCompleteAlphabet( progress_spawner, data );
 			analysis.print( open_logger, a_printer, b_printer );
 

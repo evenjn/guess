@@ -25,6 +25,10 @@ import org.github.evenjn.yarn.Hook;
 
 public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
+	private int min_above = 1;
+
+	private int max_above = 1;
+	
 	private int min_below = 1;
 
 	private int max_below = 1;
@@ -53,6 +57,13 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 			setMinMaxBelow( int min, int max ) {
 		this.min_below = min;
 		this.max_below = max;
+		return this;
+	}
+
+	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
+			setMinMaxAbove( int min, int max ) {
+		this.min_above = min;
+		this.max_above = max;
 		return this;
 	}
 
@@ -104,6 +115,8 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
 	public TupleAlignmentAlphabetDataManager<I, O> create( ) {
 		return new TupleAlignmentAlphabetDataManager<>(
+				min_above,
+				max_above,
 				min_below,
 				max_below,
 				builder,

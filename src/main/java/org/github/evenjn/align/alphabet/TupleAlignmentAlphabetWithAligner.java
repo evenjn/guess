@@ -37,10 +37,6 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 implements
 TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
-	private int min_below;
-
-	private int max_below;
-
 	private TupleAligner<SymbolAbove, SymbolBelow> aligner;
 
 	private Function<Hook, Consumer<String>> logger;
@@ -55,9 +51,9 @@ TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 	}
 
 	@Override
-	public void setMinMax( int min, int max ) {
-		this.min_below = min;
-		this.max_below = max;
+	public void setMinMax( 
+			int min_above, int max_above,
+			int min_below, int max_below ) {
 	}
 	
 	public void setPrinters(
@@ -95,7 +91,7 @@ TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 				try {
 					Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> localAlphabet =
 							TupleAlignmentAlphabetBuilderTools.localAlphabetWithAligner(
-									min_below, max_below, datum.front( ), datum.back( ), aligner );
+									datum.front( ), datum.back( ), aligner );
 					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
 						result.add( pp );
 					}

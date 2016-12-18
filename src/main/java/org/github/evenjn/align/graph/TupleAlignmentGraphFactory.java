@@ -33,10 +33,13 @@ import org.github.evenjn.yarn.Tuple;
  * each node associated to a state, and each state is connected to all
  * the nodes of the next section, each edge having a cost that is
  * the cost of the node-to-node transition times the cost of the emission
- * of the T-th symbol.  
+ * of the T-th symbol.
  * 
- * Section 0 has only one node, and there is an edge to each node
- * of section 1, with cost set to the initial probability.
+ * Except the edges leaving the first sections, where
+ * we use the initial cost instead of the transition cost.
+ * In fact, section 0 has only one node, and there is an edge to each node
+ * of section 1, with cost set to the initial probability times the cost of the
+ * emission of the first symbol.
  * 
  * We can sort of compress this representation into a chain of macro-states
  * where each macro-state represents a section.
@@ -79,7 +82,7 @@ import org.github.evenjn.yarn.Tuple;
  * -/- emissions.
  * 
  * In position [0 1 s1] we could store the probability of being in s1 after
- * observing -/k but this makes sense only if we allow 0-to-1 emissions.
+ * observing -/k if we were to allow 0-to-1 emissions.
  * 
  * In position [1 0 s1] we store the probability of being in s1 after
  * observing C/-.
@@ -130,6 +133,8 @@ public class TupleAlignmentGraphFactory {
 					BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer> pair_encoder,
 					Tuple<SymbolAbove> above,
 					Tuple<SymbolBelow> below,
+					final int min_above,
+					final int max_above,
 					final int min_below,
 					final int max_below )
 					throws NotAlignableException {

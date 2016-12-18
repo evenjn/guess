@@ -48,6 +48,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 			Consumer<String> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer,
+			int min_above,
+			int max_above,
 			int min_below,
 			int max_below,
 			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
@@ -62,7 +64,13 @@ public class TupleAlignmentAlphabetBuilderTools {
 				spawn.step( 1 );
 				try {
 					TupleAlignmentAlphabetBuilderTools.attemptToAlingn(
-							min_below, max_below, datum.front( ), datum.back( ), x -> true );
+							min_above,
+							max_above,
+							min_below,
+							max_below,
+							datum.front( ),
+							datum.back( ),
+							x -> true );
 				}
 				catch ( NotAlignableException e ) {
 					if ( logger != null ) {
@@ -106,6 +114,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 	public static <SymbolAbove, SymbolBelow> int computeCoverage(
 			ProgressSpawner progress_spawner,
 			Consumer<String> logger,
+			int min_above,
+			int max_above,
 			int min_below,
 			int max_below,
 			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
@@ -122,7 +132,13 @@ public class TupleAlignmentAlphabetBuilderTools {
 				spawn.step( 1 );
 				try {
 					TupleAlignmentAlphabetBuilderTools.attemptToAlingn(
-							min_below, max_below, datum.front( ), datum.back( ), filter );
+							min_above,
+							max_above,
+							min_below,
+							max_below,
+							datum.front( ),
+							datum.back( ),
+							filter );
 				}
 				catch ( NotAlignableException e ) {
 					not_aligneable++;
@@ -145,6 +161,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 	}
 
 	public static <SymbolAbove, SymbolBelow> void attemptToAlingn(
+			int min_above,
+			int max_above,
 			int min_below,
 			int max_below,
 			Tuple<SymbolAbove> above,
@@ -176,6 +194,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 				pair_encoder,
 				above,
 				below,
+				min_above,
+				max_above,
 				min_below,
 				max_below );
 	}
@@ -183,8 +203,6 @@ public class TupleAlignmentAlphabetBuilderTools {
 	public static <SymbolAbove, SymbolBelow>
 			Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
 			localAlphabetWithAligner(
-					int min_below,
-					int max_below,
 					Tuple<SymbolAbove> above,
 					Tuple<SymbolBelow> below,
 					TupleAligner<SymbolAbove, SymbolBelow> aligner)
@@ -217,6 +235,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 	public static <SymbolAbove, SymbolBelow>
 			Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
 			localAlphabet(
+					int min_above,
+					int max_above,
 					int min_below,
 					int max_below,
 					Tuple<SymbolAbove> above,
@@ -250,8 +270,14 @@ public class TupleAlignmentAlphabetBuilderTools {
 					}
 				};
 		TupleAlignmentGraph graph =
-				TupleAlignmentGraphFactory.graph( pair_encoder, above, below,
-						min_below, max_below );
+				TupleAlignmentGraphFactory.graph(
+						pair_encoder,
+						above,
+						below,
+						min_above,
+						max_above,
+						min_below,
+						max_below );
 
 		Iterator<TupleAlignmentNode> forward = graph.forward( );
 		while ( forward.hasNext( ) ) {

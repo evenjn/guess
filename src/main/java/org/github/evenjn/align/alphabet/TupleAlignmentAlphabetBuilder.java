@@ -37,5 +37,5 @@ public interface TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer );
 
-	void setMinMax( int min, int max );
+	void setMinMax( int min_above, int max_above, int min_below, int max_below );
 }

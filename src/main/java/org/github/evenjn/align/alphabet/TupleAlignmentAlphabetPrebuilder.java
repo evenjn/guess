@@ -48,7 +48,9 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 	}
 
 	@Override
-	public void setMinMax( int min, int max ) {
+	public void setMinMax( 
+			int min_above, int max_above,
+			int min_below, int max_below ) {
 	}
 
 	@Override

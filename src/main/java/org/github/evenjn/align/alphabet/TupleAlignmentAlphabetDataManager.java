@@ -71,6 +71,8 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 	 * 
 	 */
 	public TupleAlignmentAlphabetDataManager(
+			int min_above,
+			int max_above,
 			int min_below,
 			int max_below,
 			TupleAlignmentAlphabetBuilder<I, O> builder,
@@ -83,6 +85,8 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			Function<I, String> a_printer,
 			Function<O, String> b_printer,
 			Function<Hook, Consumer<String>> logger) {
+		this.min_above = min_above;
+		this.max_above = max_above;
 		this.min_below = min_below;
 		this.max_below = max_below;
 		this.builder = builder != null ? builder
@@ -97,6 +101,10 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 		this.b_printer = b_printer;
 		this.logger = logger;
 	}
+
+	private final int min_above;
+
+	private final int max_above;
 
 	private final int min_below;
 
@@ -161,8 +169,9 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 				spawn.target( null != writer ? 2 * size : size );
 				spawn.info( "Working out alphabet" );
 
-				coalignment_alphabet =
-						createAlphabet( map, min_below, max_below, spawn );
+				builder.setPrinters( logger, a_printer, b_printer );
+				builder.setMinMax( min_above, max_above, min_below, max_below );
+				coalignment_alphabet = builder.build( map, spawn );
 
 				/*
 				 * serialize the coalignment alphabet, and pour it into the putter.
@@ -209,16 +218,4 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 		return coalignment_alphabet;
 	}
 
-	private TupleAlignmentAlphabet<I, O>
-			createAlphabet(
-					KnittingCursable<Bi<Tuple<I>, Tuple<O>>> data,
-					int min_below,
-					int max_below,
-					Progress progress ) {
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			builder.setPrinters( logger, a_printer, b_printer );
-			builder.setMinMax(min_below, max_below);
-			return builder.build( data, progress );
-		}
-	}
 }

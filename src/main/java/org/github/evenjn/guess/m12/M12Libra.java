@@ -69,6 +69,8 @@ public class M12Libra<I, O> {
 				(a, b) -> coalignment_alphabet.encode( a,  b ),
 				above,
 				below,
+				1,
+				1,
 				coalignment_alphabet.getMinBelow( ),
 				coalignment_alphabet.getMaxBelow( ) );
 		

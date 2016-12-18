@@ -31,7 +31,7 @@ public class DisplayAlignmentGraph {
 		try {
 			TupleAlignmentGraph graph = TupleAlignmentGraphFactory.graph(
 					( x, y ) -> 1,
-					above, below, 0, 2 );
+					above, below, 1, 1, 0, 2 );
 			String print = TupleAlignmentGraphPrinter.print( graph );
 			System.out.println( print );
 		}

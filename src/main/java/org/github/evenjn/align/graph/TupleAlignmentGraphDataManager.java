@@ -78,15 +78,23 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 	private int record_max_number_of_edges = 0;
 
 	public TupleAlignmentGraphDataManager(
-			int min,
-			int max,
+			int min_above,
+			int max_above,
+			int min_below,
+			int max_below,
 			Function<Hook, Consumer<String>> putter_coalignment_graphs,
 			Cursable<String> reader_coalignment_graphs ) {
-		this.min_below = min;
-		this.max_below = max;
+		this.min_above = min_above;
+		this.max_above = max_above;
+		this.min_below = min_below;
+		this.max_below = max_below;
 		this.putter_coalignment_graphs = putter_coalignment_graphs;
 		this.reader_coalignment_graphs = reader_coalignment_graphs;
 	}
+
+	private final int min_above;
+
+	private final int max_above;
 
 	private final int min_below;
 
@@ -192,6 +200,8 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 									pair_encoder,
 									x.front( ),
 									x.back( ),
+									min_above,
+									max_above,
 									min_below,
 									max_below );
 						}
