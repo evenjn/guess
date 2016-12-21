@@ -144,89 +144,69 @@ public class TupleAlignmentGraphFactory {
 		final int labove = above.size( );
 		final int lbelow = below.size( );
 
-		/*
-		 * If we force a ONE-to-many schema, in each cell there can be at most as
-		 * many edges as there are elements in the string below.
-		 */
-		final int max_number_of_edges = lbelow + 1;
+		final int max_number_of_edges = (1+max_below) * (1+max_above);
 
-		/*
-		 * In a MANY-to-MANY schema, we would need two ints to identify the target
-		 * of each edge. In a ONE-to-MANY, we just need one. In a MANY-to-MANY
-		 * schema, each edge would be represented as a short array with length 2.
+		/* Indexing may be confusing.
+		 * Cell in position [4 7] the matrix holds a node representing
+		 * information about the prefix of length 4 above and length 7 below.
 		 */
-
 		TupleAlignmentNode[][] matrix =
 				new TupleAlignmentNode[1 + labove][1 + lbelow];
+
+		/*
+		 * Cell in position [0 0] exists and has a purpose.
+		 */
+		TupleAlignmentNode root = new TupleAlignmentNode( );
+		matrix[0][0] = root;
 
 		// we fill in the structure
 
 		for ( int a = 0; a <= labove; a++ ) {
 			for ( int b = 0; b <= lbelow; b++ ) {
-
-				if ( a == 0 && b == 0 ) {
-					TupleAlignmentNode root = new TupleAlignmentNode( );
-					matrix[0][0] = root;
-					continue;
-				}
-
-				if ( a == 0 && b != 0 ) {
-					matrix[a][b] = null;
-					continue;
-				}
-
-				TupleAlignmentNode source_node = matrix[a - 1][b];
-
+				
+				TupleAlignmentNode source_node = matrix[a][b];
 				if ( source_node == null ) {
-					// the macro state above us is not reachable.
 					continue;
 				}
-				/* Indexing may be confusing.
-				 * Remember that in position [4 7] the graph holds a node representing
-				 * information about the prefix of length 4 above and length 7 below.
-				 */
-				SymbolAbove key = ka.get( a - 1 );
 
-				/* We are leaping forwared from [a - 1, b] by inserting one symbol
-				 * above. In case of min=0 and max=2, we will most likely insert new
-				 * nodes in positions:
-				 * [a b] [a b+1] [a b+2]
-				 */
-				for ( int z = b + min_below; z <= b + max_below && z <= lbelow; z++ ) {
+				for (int q = a + min_above; q <= a + max_above && q <= labove; q++) {
 
-					// additional condition to prune tree: the end of the string
-					// must be in range from [a z].
+					KnittingTuple<SymbolAbove> key = ka.head( a, q - a );
 
-					int leftover_above = labove - a;
+					for ( int z = b + min_below; z <= b + max_below && z <= lbelow; z++ ) {
+						
+						if (q == 0 && z == 0) {
+							continue;
+						}
 
-					if ( z + leftover_above * max_below < lbelow
-							|| z + leftover_above * min_below > lbelow ) {
-						continue;
+						/*
+						 * We are leaping forwared from [a, b] by inserting q symbol
+						 * above and z symbols below.
+						 */
+
+						// when the above/below pair is not in the pair alphabet,
+						// the edge is not legal. skip it.
+						KnittingTuple<SymbolBelow> sub = kb.head( b, z - b );
+						Integer enc = pair_encoder.apply( key, sub );
+						if ( enc == null ) {
+							continue;
+						}
+
+						TupleAlignmentNode target_node = matrix[q][z];
+						if ( target_node == null ) {
+							target_node = new TupleAlignmentNode( );
+							target_node.incoming_edges = new int[max_number_of_edges][3];
+							matrix[q][z] = target_node;
+						}
+
+						int edges = target_node.number_of_incoming_edges;
+
+						target_node.incoming_edges[edges][0] = a;
+						target_node.incoming_edges[edges][1] = b;
+						target_node.incoming_edges[edges][2] = enc;
+
+						target_node.number_of_incoming_edges = edges + 1;
 					}
-
-					// when the above/below pair is not in the pair alphabet, 
-					// the edge is not legal. skip it.
-					KnittingTuple<SymbolBelow> sub = kb.head( b, z - b );
-					Integer enc = pair_encoder.apply( KnittingTuple.on(key), sub );
-					if (enc == null) {
-						continue;
-					}
-					
-					TupleAlignmentNode target_node = matrix[a][z];
-					if ( target_node == null ) {
-						target_node = new TupleAlignmentNode( );
-						target_node.incoming_edges = new int[max_number_of_edges][3];
-						matrix[a][z] = target_node;
-					}
-
-					int edges = target_node.number_of_incoming_edges;
-
-					
-					target_node.incoming_edges[edges][0] = a - 1;
-					target_node.incoming_edges[edges][1] = b;
-					target_node.incoming_edges[edges][2] = enc;
-
-					target_node.number_of_incoming_edges = edges + 1;
 				}
 			}
 		}
@@ -264,25 +244,6 @@ public class TupleAlignmentGraphFactory {
 		
 		TupleAlignmentGraph graph = new TupleAlignmentGraph( matrix, labove, lbelow );
 
-		for ( int a = 0; a <= labove; a++ ) {
-			for ( int b = 0; b <= lbelow; b++ ) {
-				if ( matrix[a][b] == null || ( a == 0 && b == 0 ) ) {
-					continue;
-				}
-				int[][] ie = matrix[a][b].incoming_edges;
-				int no_ie = matrix[a][b].number_of_incoming_edges;
-
-				for ( int e_i = 0; e_i < no_ie; e_i++ ) {
-					int x = ie[e_i][0];
-					int y = ie[e_i][1];
-
-					SymbolAbove key = ka.get( x );
-					KnittingTuple<SymbolBelow> sub = kb.head( y, b - y );
-					Integer enc = pair_encoder.apply( KnittingTuple.on(key), sub );
-					ie[e_i][2] = enc;
-				}
-			}
-		}
 		return graph;
 	}
 

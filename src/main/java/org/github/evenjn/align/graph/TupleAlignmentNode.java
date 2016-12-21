@@ -18,8 +18,10 @@
 package org.github.evenjn.align.graph;
 
 /**
- * Every path from an initial node to this node represents a partial alignment
- * of the subtuples Above[0..a] and Below[0..b].
+ * Every node carries two integers, A and B.
+ * 
+ * Every path from the initial node to a node carrying A and B represents a
+ * partial alignment of the subtuples Above[0..A] and Below[0..B].
  * 
  * Each node contains information about the incoming edges.
  */
