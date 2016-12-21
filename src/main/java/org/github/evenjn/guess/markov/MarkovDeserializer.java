@@ -15,17 +15,17 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.markov;
 
 import org.github.evenjn.yarn.SkipException;
 import org.github.evenjn.yarn.SkipFold;
 
-public class M12CoreDeserializer implements
-		SkipFold<String, M12Core> {
+public class MarkovDeserializer implements
+		SkipFold<String, Markov> {
 
 	private int step = 4;
 
-	private M12Core core;
+	private Markov core;
 
 	private int symbol = 0;
 
@@ -34,7 +34,7 @@ public class M12CoreDeserializer implements
 	private int state_d = 0;
 
 	@Override
-	public M12Core end( )
+	public Markov end( )
 			throws SkipException {
 		if ( core == null ) {
 			throw new IllegalArgumentException( );
@@ -43,13 +43,13 @@ public class M12CoreDeserializer implements
 	}
 
 	@Override
-	public M12Core next( String object )
+	public Markov next( String object )
 			throws SkipException {
 		try {
 			if ( step == 4 ) {
 				step = 3;
 				int indexOf = object.indexOf( ' ' );
-				core = new M12Core(
+				core = new Markov(
 						Integer.parseInt( object.substring( 0, indexOf ) ),
 						Integer.parseInt( object.substring( indexOf + 1 ) ) );
 				throw SkipException.neo;

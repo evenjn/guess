@@ -15,9 +15,9 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.markov;
 
-public class M12Core {
+public class Markov {
 
 	public int number_of_states;
 
@@ -29,7 +29,7 @@ public class M12Core {
 
 	public final double[][] emission_table;
 
-	public M12Core(int number_of_states, int number_of_symbols) {
+	public Markov(int number_of_states, int number_of_symbols) {
 		this.number_of_states = number_of_states;
 		this.number_of_symbols = number_of_symbols;
 		initial_table = new double[number_of_states];

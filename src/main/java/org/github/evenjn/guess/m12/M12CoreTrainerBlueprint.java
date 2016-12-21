@@ -15,11 +15,12 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.m12;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
 
@@ -35,7 +36,7 @@ public class M12CoreTrainerBlueprint {
 
 	private Cursable<String> reader_core;
 
-	private Function<M12Core, Boolean> quality_control;
+	private Function<Markov, Boolean> quality_control;
 	
 	private long seed;
 
@@ -53,7 +54,7 @@ public class M12CoreTrainerBlueprint {
 	}
 
 	public M12CoreTrainerBlueprint qualityControl(
-			Function<M12Core, Boolean> quality_control ) {
+			Function<Markov, Boolean> quality_control ) {
 		this.quality_control = quality_control;
 		return this;
 	}

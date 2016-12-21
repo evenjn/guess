@@ -23,9 +23,9 @@ import java.util.function.Function;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDeserializer;
 import org.github.evenjn.file.FileFool;
-import org.github.evenjn.guess.m12.core.M12Core;
-import org.github.evenjn.guess.m12.core.M12CoreChecker;
-import org.github.evenjn.guess.m12.core.M12CoreDeserializer;
+import org.github.evenjn.guess.markov.Markov;
+import org.github.evenjn.guess.markov.MarkovChecker;
+import org.github.evenjn.guess.markov.MarkovDeserializer;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.plaintext.PlainText;
@@ -41,7 +41,7 @@ public class M12MapleFileDeserializer {
 			Path training_cache_path ) {
 
 		TupleAlignmentAlphabet<I, O> alphabet;
-		M12Core core;
+		Markov core;
 		Path m12core_stable_file = training_cache_path.resolve( "./m12_core.stable.txt" );
 		Path alphabet_stable_file = training_cache_path.resolve( "./ta_alphabet.stable.txt" );
 		FileFool ff = FileFool.nu( );
@@ -64,10 +64,10 @@ public class M12MapleFileDeserializer {
 					.wrap( h -> PlainText.reader( )
 							.build( ).get( h, ff.open( m12core_stable_file ).read( h ) ) )
 					.pull( hook )
-					.skipfold( new M12CoreDeserializer( ) )
+					.skipfold( new MarkovDeserializer( ) )
 					.one( );
 
-			M12CoreChecker.check( core );
+			MarkovChecker.check( core );
 		}
 		return new M12Maple<>( alphabet, core, false, progress_spawner );
 	}

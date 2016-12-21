@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.markov;
 
 import java.util.Random;
 
@@ -23,7 +23,7 @@ import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.NumericRandom;
 import org.github.evenjn.numeric.NumericRandom.RandomProbabilityMassGenerator;
 
-public class M12CoreRandomBuilder {
+public class MarkovRandomBuilder {
 
 	private int number_of_states;
 
@@ -31,37 +31,37 @@ public class M12CoreRandomBuilder {
 
 	private long seed;
 	
-	public static M12CoreRandomBuilder nu( ) {
-		return new M12CoreRandomBuilder( );
+	public static MarkovRandomBuilder nu( ) {
+		return new MarkovRandomBuilder( );
 	}
 	
-	public M12CoreRandomBuilder states(
+	public MarkovRandomBuilder states(
 			int number_of_states ) {
 		this.number_of_states = number_of_states;
 		return this;
 	}
 	
 	
-	public M12CoreRandomBuilder symbols(
+	public MarkovRandomBuilder symbols(
 			int number_of_symbols ) {
 		this.number_of_symbols = number_of_symbols;
 		return this;
 	}
 
-	public M12CoreRandomBuilder seed(long seed) {
+	public MarkovRandomBuilder seed(long seed) {
 		this.seed = seed;
 		return this;
 	}
 
 
-	public M12Core build() {
+	public Markov build() {
 		if ( number_of_states == 0 ) {
 			throw new IllegalStateException( "The number of states must be greater than zero." );
 		}
 		if ( number_of_symbols == 0 ) {
 			throw new IllegalStateException( "The number of symbols must be greater than zero." );
 		}
-		M12Core m12 = new M12Core( number_of_states, number_of_symbols );
+		Markov m12 = new Markov( number_of_states, number_of_symbols );
 
 		Random r = new Random( seed );
 		

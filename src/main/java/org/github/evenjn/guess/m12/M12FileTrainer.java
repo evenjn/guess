@@ -30,9 +30,7 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManagerBluepri
 import org.github.evenjn.align.graph.TupleAlignmentGraphDataManager;
 import org.github.evenjn.align.graph.TupleAlignmentGraphDataManagerBlueprint;
 import org.github.evenjn.file.FileFool;
-import org.github.evenjn.guess.m12.core.M12Core;
-import org.github.evenjn.guess.m12.core.M12CoreTrainer;
-import org.github.evenjn.guess.m12.core.M12CoreTrainerBlueprint;
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.ProgressManager;
@@ -51,7 +49,7 @@ public class M12FileTrainer<I, O> {
 		boolean check(
 				Consumer<String> logger,
 				TupleAlignmentAlphabet<I, O> alphabet,
-				M12Core core );
+				Markov core );
 	}
 	
 	private final Function<String, I> a_deserializer;

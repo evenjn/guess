@@ -27,14 +27,14 @@ import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
-import org.github.evenjn.guess.m12.core.M12Core;
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.yarn.Tuple;
 
 public class M12Libra<I, O> {
 
-	private M12Core core;
+	private Markov core;
 
 	private TupleAlignmentAlphabet<I, O> coalignment_alphabet;
 	private int max_length_above = 0;
@@ -43,7 +43,7 @@ public class M12Libra<I, O> {
 
 	public M12Libra(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
-			M12Core hmm ) {
+			Markov hmm ) {
 		core = hmm;
 		this.coalignment_alphabet = coalignment_alphabet;
 		buffer_states = new double[hmm.number_of_states];

@@ -15,12 +15,17 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.m12;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
+import org.github.evenjn.guess.markov.Markov;
+import org.github.evenjn.guess.markov.MarkovChecker;
+import org.github.evenjn.guess.markov.MarkovDeserializer;
+import org.github.evenjn.guess.markov.MarkovRandomBuilder;
+import org.github.evenjn.guess.markov.MarkovSerializer;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
@@ -45,7 +50,7 @@ public class M12CoreTrainer {
 
 	private long seed;
 
-	private Function<M12Core, Boolean> quality_control;
+	private Function<Markov, Boolean> quality_control;
 
 	private Consumer<String> logger;
 
@@ -56,7 +61,7 @@ public class M12CoreTrainer {
 			Consumer<String> logger,
 			Function<Hook, Consumer<String>> putter_core,
 			Cursable<String> reader_core,
-			Function<M12Core, Boolean> quality_control,
+			Function<Markov, Boolean> quality_control,
 			long seed) {
 		this.number_of_states = number_of_states;
 		this.period = period;
@@ -68,7 +73,7 @@ public class M12CoreTrainer {
 		this.seed = seed;
 	}
 
-	public M12Core load(
+	public Markov load(
 			int number_of_symbols,
 			int record_max_number_of_edges,
 			int record_max_length_above,
@@ -80,7 +85,7 @@ public class M12CoreTrainer {
 			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"M12CoreTrainer::prepareCore" );
 
-			M12Core core = null;
+			Markov core = null;
 
 			if ( reader_core == null ) {
 				/*
@@ -89,14 +94,14 @@ public class M12CoreTrainer {
 				 */
 				spawn.info( "Creating random M12 core." );
 
-				core = M12CoreRandomBuilder
+				core = MarkovRandomBuilder
 						.nu( )
 						.states( number_of_states )
 						.symbols( number_of_symbols )
 						.seed( seed )
 						.build( );
 
-				M12CoreChecker.check( core );
+				MarkovChecker.check( core );
 
 			}
 			else {
@@ -109,22 +114,22 @@ public class M12CoreTrainer {
 					core = KnittingCursable
 							.wrap( reader_core )
 							.pull( hook2 )
-							.skipfold( new M12CoreDeserializer( ) )
+							.skipfold( new MarkovDeserializer( ) )
 							.one( );
 
-					M12CoreChecker.check( core );
+					MarkovChecker.check( core );
 				}
 			}
 
 			spawn.info( "Creating baumwelch data structures." );
 			
-			Function<M12Core, Boolean> local_core_inspector =
-					new Function<M12Core, Boolean>( ) {
+			Function<Markov, Boolean> local_core_inspector =
+					new Function<Markov, Boolean>( ) {
 						@Override
-						public Boolean apply( M12Core t ) {
-							KnittingCursor.wrap( new M12CoreSerializer( t ) )
+						public Boolean apply( Markov t ) {
+							KnittingCursor.wrap( new MarkovSerializer( t ) )
 									.consume( putter_core );
-							M12CoreChecker.check( t );
+							MarkovChecker.check( t );
 							if ( quality_control != null ) {
 								return quality_control.apply( t );
 							}
@@ -142,11 +147,11 @@ public class M12CoreTrainer {
 			baum_welch.BaumWelch( logger, graphs, period, epochs, spawn );
 
 			if ( putter_core != null ) {
-				KnittingCursor.wrap( new M12CoreSerializer( core ) )
+				KnittingCursor.wrap( new MarkovSerializer( core ) )
 						.consume( putter_core );
 			}
 
-			M12CoreChecker.check( core );
+			MarkovChecker.check( core );
 
 			return core;
 		}

@@ -26,7 +26,7 @@ import java.util.Vector;
 import java.util.function.BiFunction;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
-import org.github.evenjn.guess.m12.core.M12Core;
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.ProgressManager;
@@ -56,13 +56,13 @@ import org.github.evenjn.yarn.Tuple;
 public class M12Maple<I, O> implements
 		Maple<I, O> {
 
-	private final M12Core core;
+	private final Markov core;
 	
 	private final boolean fail_on_unknown_input_symbol;
 
 	public M12Maple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
-			M12Core core,
+			Markov core,
 			boolean fail_on_unknown_input_symbol,
 			ProgressSpawner progress_spawner) {
 		this.fail_on_unknown_input_symbol = fail_on_unknown_input_symbol;

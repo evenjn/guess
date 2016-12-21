@@ -27,7 +27,7 @@ import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
-import org.github.evenjn.guess.m12.core.M12Core;
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BiHashMap;
 import org.github.evenjn.knit.Bis;
 import org.github.evenjn.knit.KnittingTuple;
@@ -40,13 +40,13 @@ import org.github.evenjn.yarn.Tuple;
 public class M12Aligner<I, O> implements
 		TupleAligner<I, O> {
 
-	private M12Core core;
+	private Markov core;
 
 	private TupleAlignmentAlphabet<I, O> coalignment_alphabet;
 
 	public M12Aligner(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
-			M12Core core) {
+			Markov core) {
 		this.coalignment_alphabet = coalignment_alphabet;
 		this.core = core;
 	}

@@ -15,15 +15,15 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.markov;
 
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.PastTheEndException;
 
-class M12CoreSerializer implements
+public class MarkovSerializer implements
 		Cursor<String> {
 
-	private M12Core core;
+	private Markov core;
 
 	private int step = 4;
 
@@ -33,7 +33,7 @@ class M12CoreSerializer implements
 
 	private int symbol = 0;
 
-	public M12CoreSerializer(M12Core m12) {
+	public MarkovSerializer(Markov m12) {
 		core = m12;
 	}
 

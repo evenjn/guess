@@ -20,7 +20,7 @@ package org.github.evenjn.guess.m12;
 import java.util.function.Consumer;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
-import org.github.evenjn.guess.m12.core.M12Core;
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
@@ -106,7 +106,7 @@ public class M12MapleQualityChecker<I, O> implements
 	public boolean check(
 			Consumer<String> logger,
 			TupleAlignmentAlphabet<I, O> alphabet,
-			M12Core core  ) {
+			Markov core  ) {
 		M12Maple<I, O> m12Maple =
 				new M12Maple<I, O>( alphabet, core, false, null );
 		logger.accept( decorator_line );

@@ -15,16 +15,16 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.markov;
 
 import java.util.function.Function;
 
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.SixCharFormat;
 
-public class M12CorePrinter {
+public class MarkovPrinter {
 
-	public static String print( M12Core core,
+	public static String print( Markov core,
 			Function<Integer, String> debug_symbol_printer ) {
 		SixCharFormat format = new SixCharFormat( false );
 		StringBuilder sb = new StringBuilder( );

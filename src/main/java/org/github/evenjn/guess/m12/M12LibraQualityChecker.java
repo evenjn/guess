@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.align.graph.NotAlignableException;
-import org.github.evenjn.guess.m12.core.M12Core;
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
@@ -107,7 +107,7 @@ public class M12LibraQualityChecker<I, O> implements
 	public boolean check(
 			Consumer<String> logger,
 			TupleAlignmentAlphabet<I, O> alphabet,
-			M12Core core ) {
+			Markov core ) {
 		M12Libra<I, O> m12Libra =
 				new M12Libra<I, O>( alphabet, core );
 

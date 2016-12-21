@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.m12;
 
 import static org.github.evenjn.numeric.NumericLogarithm.eexp;
 import static org.github.evenjn.numeric.NumericLogarithm.eln;
@@ -30,6 +30,7 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
+import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
@@ -61,7 +62,7 @@ public class M12BaumWelch {
 
 	private final int number_of_symbols;
 
-	private final M12Core hmm;
+	private final Markov hmm;
 
 	private final static boolean erase_buffers = true;
 
@@ -69,11 +70,11 @@ public class M12BaumWelch {
 
 	private final static boolean print_debug_maximization = false;
 
-	private Function<M12Core, Boolean> core_inspector;
+	private Function<Markov, Boolean> core_inspector;
 
 	public M12BaumWelch(
-			M12Core hmm,
-			Function<M12Core, Boolean> core_inspector,
+			Markov hmm,
+			Function<Markov, Boolean> core_inspector,
 			int total_number_of_edges,
 			int max_length_above,
 			int max_length_below) {
@@ -92,7 +93,7 @@ public class M12BaumWelch {
 		buffer_transitions = new double[number_of_states][number_of_states];
 	}
 
-	public M12Core BaumWelch(
+	public Markov BaumWelch(
 			Consumer<String> logger,
 			KnittingCursable<TupleAlignmentGraph> observed_cursable,
 			final int period,

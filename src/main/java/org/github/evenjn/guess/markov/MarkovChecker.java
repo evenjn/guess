@@ -15,12 +15,12 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.core;
+package org.github.evenjn.guess.markov;
 
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.SixCharFormat;
 
-public class M12CoreChecker {
+public class MarkovChecker {
 
 	private final static SixCharFormat format = new SixCharFormat( true );
 
@@ -28,14 +28,14 @@ public class M12CoreChecker {
 
 	private final static double threshold_min = 0.9999;
 
-	private final M12Core m12;
+	private final Markov m12;
 
-	private M12CoreChecker(M12Core m12) {
+	private MarkovChecker(Markov m12) {
 		this.m12 = m12;
 	}
 
-	public static void check( M12Core m12 ) {
-		M12CoreChecker m12Checker = new M12CoreChecker( m12 );
+	public static void check( Markov m12 ) {
+		MarkovChecker m12Checker = new MarkovChecker( m12 );
 		m12Checker.checkConsistencyInitial( );
 		m12Checker.checkConsistencyTransitions( );
 		m12Checker.checkConsistencyEmissions( );
