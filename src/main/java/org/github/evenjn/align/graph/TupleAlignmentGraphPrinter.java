@@ -31,12 +31,9 @@ public class TupleAlignmentGraphPrinter {
 				TupleAlignmentNode edges = columns[b];
 				if ( edges == null ) {
 					sb.append( " . " );
-				} else {
-					if ( edges.is_reachable_from_end ) {
-						sb.append( " o " );
-					} else {
-						sb.append( " ? " );
-					}
+				}
+				else {
+					sb.append( " o " );
 				}
 			}
 			sb.append( "\n" );

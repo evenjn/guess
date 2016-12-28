@@ -18,30 +18,46 @@
 package org.github.evenjn.align.graph;
 
 /**
+ * <p>A TupleAligmentNode object represents a node in an alignment graph.</p>
+ * <p>
+ * {@code let be function composition}<br>
+ * {@code let + be tuple concatenation}
+ * </p>
+ * <p>
  * Every node carries two integers, A and B.
- * 
+ * </p>
+ * <p>
  * Every path from the initial node to a node carrying A and B represents a
- * partial alignment of the subtuples Above[0..A] and Below[0..B].
- * 
+ * partial alignment of the subtuples {@code Above[0..A]} and
+ * {@code Below[0..B]}.
+ * </p>
+ * <p>
  * Each node contains information about the incoming edges.
+ * </p>
  */
 public class TupleAlignmentNode {
 
 	/**
+	 * <p>
 	 * An array with as many sub-arrays as there are incoming edges.
-	 * 
-	 * Each sub-array is an array with three integer values (x, y, encout). It
+	 * </p>
+	 * <p>
+	 * Each sub-array is an array with three integer values: x, y and encout. It
 	 * describes an edge incoming from another node.
-	 * 
+	 * </p>
+	 * <p>
 	 * The first value (x) is the row-index and the second value (y) is the
 	 * column-index of the node the edge is coming from.
-	 * 
+	 * </p>
+	 * <p>
 	 * The third value, referred to as "encout", is a unique id that identifies
 	 * the pair [p q] where p is a tuple of symbols above and q is a tuple of
 	 * symbols below.
-	 * 
-	 * This pair is such that Above[0..x]+p = Above[0..a] and Below[0..y]+q =
-	 * Below[0..b]
+	 * </p>
+	 * <p>
+	 * This pair is such that {@code Above[0..x] + p = Above[0..a]} and
+	 * {@code Below[0..y] + q = Below[0..b]}.
+	 * </p>
 	 */
 	public int[][] incoming_edges;
 
@@ -49,11 +65,6 @@ public class TupleAlignmentNode {
 	 * The number of edges entering this node.
 	 */
 	public int number_of_incoming_edges;
-
-	/**
-	 * Marks whether the node is a final node.
-	 */
-	public boolean is_reachable_from_end;
 
 	/**
 	 * The row-index of this node in the tuple-alignment-graph matrix.

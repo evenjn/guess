@@ -25,9 +25,11 @@ public class TestBlindTrainer {
 
 	/** EVALUATOR */
 	private final static String evaluator_label = "equals";
-
+	
 	private final static TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>> evaluator =
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
+
+	private final static int limit = 20;
 
 	/** TRAINER */
 	private final static String trainer_label = "blind";
@@ -45,7 +47,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.identity )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -60,7 +62,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.reverse )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -75,7 +77,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.constant_true )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -90,7 +92,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.constant_true_false )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -105,7 +107,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.zebra )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -120,7 +122,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.delay_by_one )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -135,7 +137,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.lycantrope2 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -150,7 +152,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.lycantrope3 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -165,7 +167,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.absorb )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -180,7 +182,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );
@@ -195,7 +197,7 @@ public class TestBlindTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.absorb_and_duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.0 <= evaluator.one_minus_relative_distance( ) );

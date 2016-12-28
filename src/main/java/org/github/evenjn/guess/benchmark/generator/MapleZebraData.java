@@ -57,7 +57,7 @@ public class MapleZebraData implements
 			next( )
 					throws PastTheEndException {
 
-		int size = 4 + input_size.nextInt( 12 );
+		int size = 3 + input_size.nextInt( 3 );
 
 		Vector<Boolean> input = new Vector<>( size );
 		boolean first = root.nextBoolean( );

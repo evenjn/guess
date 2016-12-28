@@ -93,19 +93,25 @@ public class M12BaumWelch {
 		buffer_transitions = new double[number_of_states][number_of_states];
 	}
 
+	/**
+	 * Collects the probability change in the last {@code period} epochs.
+	 * when the probability change does not decrease for {code period} epochs
+	 * consecutively, training is finalized.
+	 */
 	public Markov BaumWelch(
 			Consumer<String> logger,
 			KnittingCursable<TupleAlignmentGraph> observed_cursable,
-			final int period,
+			final int grace_period,
 			final int epochs,
 			ProgressSpawner progress_spawner ) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
+			int data_size = observed_cursable.size( );
 			if ( logger != null ) {
 				logger.accept( "Baum-Welch using " + epochs + 
-						" epochs, with " + period + " data points each." );
+						" epochs, with " + data_size + " data points each." );
 				logger.accept( "Training a model with " + number_of_states + 
 						" states and " + number_of_symbols + " symbols." );
 				logger.accept( "At the end of each epoch, we will display here the average");
@@ -113,7 +119,7 @@ public class M12BaumWelch {
 				logger.accept( "If possible, we will also display the ratio between that average" );
 				logger.accept( " and the one obtained in the previous epoch." );
 			}
-			spawn.target( epochs * period );
+			spawn.target( epochs * data_size );
 
 			BasicAutoHook[] local = {
 					new BasicAutoHook( )
@@ -150,7 +156,12 @@ public class M12BaumWelch {
 			final double[][] new_emission =
 					new double[number_of_states][number_of_symbols];
 			
+			int not_increased_for_n_epochs = 0;
+
 			for ( int epoch = 0; epoch < max_epoch; epoch++ ) {
+				if ( not_increased_for_n_epochs == grace_period ) {
+					break;
+				}
 
 				if ( core_inspector != null ) {
 					spawn.info( "core inspection at the beginning of epoch " + epoch  );
@@ -177,16 +188,14 @@ public class M12BaumWelch {
 				};
 				Summation summation = null;
 				int total = 0;
-				if (logger == null) {
-					probability_of_this_graph = null;
-				}
-				else {
-					summation = NumericUtils.summation( 10000,
-							x -> NumericLogarithm.elnsum( KnittingCursable.wrap( x ) ) );
-				}
+				summation = NumericUtils.summation( 10000,
+						x -> NumericLogarithm.elnsum( KnittingCursable.wrap( x ) ) );
 				int samples = 0;
-				for ( ; samples < period; samples++ ) {
+				for ( ; samples < data_size; samples++ ) {
 					if ( !observed_re.hasNext( ) ) {
+						if (samples != 0) {
+							throw new IllegalArgumentException( "Something wrong with training data size." );
+						}
 						local[0].close( );
 						local[0] = new BasicAutoHook( );
 						observed_re = observed_cursable.pull( local[0] );
@@ -201,11 +210,9 @@ public class M12BaumWelch {
 								new_initial,
 								new_transition,
 								new_emission,
-								probability_of_this_graph);
-						if ( logger != null ) {
-							summation.add( probability_of_this_graph[0] );
-							total++;
-						}
+								probability_of_this_graph );
+						summation.add( probability_of_this_graph[0] );
+						total++;
 					}
 					catch ( PastTheEndException e ) {
 						throw new IllegalArgumentException( "Empty training set" );
@@ -213,24 +220,32 @@ public class M12BaumWelch {
 
 					spawn.step( 1 );
 				}
-				if ( logger != null ) {
-					double current_probability =
-							NumericLogarithm.eexp( summation.getSum( ) ) / ( 1.0 * total );
-					if ( previous_probability != null ) {
-						double probability_change =
-								current_probability / previous_probability;
+				double current_probability =
+						NumericLogarithm.eexp( summation.getSum( ) ) / ( 1.0 * total );
+				if ( previous_probability != null ) {
+					double probability_change =
+							current_probability / previous_probability;
+					if (probability_change <= 1.0) {
+						not_increased_for_n_epochs++;
+					}
+					else {
+						not_increased_for_n_epochs = 0;
+					}
+					if ( logger != null ) {
 						logger.accept( "Epoch: " + epoch
 								+ "  probability indicator: "
 								+ SixCharFormat.nu( false ).apply( current_probability )
 								+ "  new/old: "
 								+ SixCharFormat.nu( false ).apply( probability_change ) );
 					}
-					else {
+					previous_probability = current_probability;
+				}
+				else {
+					if ( logger != null ) {
 						logger.accept( "Epoch: " + epoch
 								+ "  probability indicator: "
 								+ SixCharFormat.nu( false ).apply( current_probability ) );
 					}
-					previous_probability = current_probability;
 				}
 				maximization(
 						new_initial,

@@ -78,14 +78,14 @@ public class BenchmarkTrial<I, O> {
 	private BenchmarkTrial() {
 	}
 
-	public Evaluator<I, O> run( Progress progress ) {
+	public Evaluator<I, O> run( int limit, Progress progress ) {
 		System.out.println( "\n\n\n" );
 		System.out.println( "Problem: " + problem.label( ) );
 		System.out.println( "Trainer: " + trainer_label );
 		System.out.println( "Evaluator: " + evaluator_label );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			KnittingCursable<BenchmarkDatum<I, O>> training_data =
-					KnittingCursable.wrap( problem.data( ) );
+					KnittingCursable.wrap( problem.data( ) ).head( 0, limit );
 			Function<I, O> guesser = trainer.train(
 					progress,
 					training_data.map( x -> x.asBadTeacherWouldTell( ) )

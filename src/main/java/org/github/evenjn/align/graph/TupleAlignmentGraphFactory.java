@@ -152,6 +152,7 @@ public class TupleAlignmentGraphFactory {
 		 */
 		TupleAlignmentNode[][] matrix =
 				new TupleAlignmentNode[1 + labove][1 + lbelow];
+		boolean[][] reachable = new boolean[1 + labove][1 + lbelow];
 
 		/*
 		 * Cell in position [0 0] exists and has a purpose.
@@ -216,7 +217,7 @@ public class TupleAlignmentGraphFactory {
 			throw NotAlignableException.neo;
 		}
 
-		matrix[labove][lbelow].is_reachable_from_end = true;
+		reachable[labove][lbelow] = true;
 
 		for ( int a = labove; a >= 0; a-- ) {
 			for ( int b = lbelow; b >= 0; b-- ) {
@@ -225,7 +226,7 @@ public class TupleAlignmentGraphFactory {
 				if ( node == null ) {
 					continue;
 				}
-				if ( !node.is_reachable_from_end ) {
+				if ( !reachable[a][b] ) {
 					matrix[a][b] = null;
 				}
 
@@ -236,8 +237,7 @@ public class TupleAlignmentGraphFactory {
 					int x = node.incoming_edges[e][0];
 					int y = node.incoming_edges[e][1];
 
-					TupleAlignmentNode origin = matrix[x][y];
-					origin.is_reachable_from_end = true;
+					reachable[x][y] = true;
 				}
 			}
 		}

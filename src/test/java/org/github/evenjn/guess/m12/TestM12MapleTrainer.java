@@ -37,6 +37,8 @@ public class TestM12MapleTrainer {
 		training_cache_path.create( training_cache_path.mold( training_cache_path.getRoot( ) ).asDirectory( ).eraseIfExists( ) );
 	}
 
+	private final static int limit = 20;
+
 	/** EVALUATOR */
 	private final static String evaluator_label = "equals";
 
@@ -50,7 +52,7 @@ public class TestM12MapleTrainer {
 		return new M12FileTrainerBlueprint<Boolean, Boolean>( )
 				.seed( 43 )
 				.states( 3 )
-				.trainingTime( 20, 26 )
+				.trainingTime( 1, 26 )
 				.setMinMaxBelow( 0, 2 )
 				.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
 				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
@@ -73,7 +75,7 @@ public class TestM12MapleTrainer {
 		removeModelFiles( );
 		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( )
 				.states( 4 )
-				.trainingTime( 100, 100 );
+				.trainingTime( 1, 100 );
 		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
 				new M12MapleFileTrainer<>( blueprint );
 		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
@@ -82,7 +84,9 @@ public class TestM12MapleTrainer {
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
 		removeModelFiles( );
 		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( )
-				.trainingTime( 100, 500 );
+				.trainingTime( 1, 20 )
+				.states( 8 )
+				;
 		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
 				new M12MapleFileTrainer<>( blueprint );
 		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
@@ -95,7 +99,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.identity )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -110,7 +114,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.reverse )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -125,7 +129,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.constant_true )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -140,7 +144,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.constant_true_false )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -158,7 +162,7 @@ public class TestM12MapleTrainer {
 				.builder( trainerZebra( ), trainer_label )
 				.problem( TestUtils.zebra )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( 1000, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -180,7 +184,7 @@ public class TestM12MapleTrainer {
 				.builder( trainerDelayByOne( ), trainer_label )
 				.problem( TestUtils.delay_by_one )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -195,7 +199,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.lycantrope2 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -210,7 +214,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.lycantrope3 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -225,7 +229,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.absorb )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -240,7 +244,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -255,7 +259,7 @@ public class TestM12MapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.absorb_and_duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );

@@ -30,6 +30,8 @@ public class TestCheatTrainer {
 	private final static TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>> evaluator =
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
 
+	private final static int limit = 20;
+	
 	/** TRAINER */
 	private final static String trainer_label = "cheat";
 
@@ -46,7 +48,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.identity )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -61,7 +63,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.reverse )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -76,7 +78,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.constant_true )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -91,7 +93,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.constant_true_false )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -106,7 +108,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.zebra )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -121,7 +123,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.delay_by_one )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -136,7 +138,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.lycantrope2 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -151,7 +153,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.lycantrope3 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -166,7 +168,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.absorb )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -181,7 +183,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
@@ -196,7 +198,7 @@ public class TestCheatTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( TestUtils.absorb_and_duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.6 <= evaluator.one_minus_relative_distance( ) );
