@@ -66,7 +66,7 @@ public class TestM12MapleTrainer {
 		removeModelFiles( );
 		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
 		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
-				new M12MapleFileTrainer<>( blueprint );
+				new M12MapleFileTrainer<>( blueprint, Object::equals );
 		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
 	}
 
@@ -77,7 +77,7 @@ public class TestM12MapleTrainer {
 				.states( 4 )
 				.trainingTime( 1, 100 );
 		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
-				new M12MapleFileTrainer<>( blueprint );
+				new M12MapleFileTrainer<>( blueprint, Object::equals );
 		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
 	}
 
@@ -88,7 +88,7 @@ public class TestM12MapleTrainer {
 				.states( 8 )
 				;
 		M12MapleFileTrainer<Boolean, Boolean> m12MapleFileTrainer =
-				new M12MapleFileTrainer<>( blueprint );
+				new M12MapleFileTrainer<>( blueprint, Object::equals );
 		return ( p, d ) -> m12MapleFileTrainer.train( p, training_cache_path, d );
 	}
 

@@ -33,6 +33,7 @@ import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.numeric.DenseMatrix;
 import org.github.evenjn.numeric.Matrix;
 import org.github.evenjn.numeric.NumericLogarithm;
+import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Maple;
 import org.github.evenjn.yarn.Progress;
@@ -63,6 +64,20 @@ public class M12Maple<I, O> implements
 	public M12Maple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			Markov core,
+			boolean fail_on_unknown_input_symbol,
+			ProgressSpawner progress_spawner) {
+		this(coalignment_alphabet, core, null, fail_on_unknown_input_symbol, progress_spawner);
+	}
+	
+	/**
+	 * 
+	 * {@code descendant_test} is a function that returns true when the second argument
+	 * is a descendant of the first one.
+	 */
+	public M12Maple(
+			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
+			Markov core,
+			BiFunction<I, I, Boolean> descendant_test,
 			boolean fail_on_unknown_input_symbol,
 			ProgressSpawner progress_spawner) {
 		this.fail_on_unknown_input_symbol = fail_on_unknown_input_symbol;
@@ -102,7 +117,49 @@ public class M12Maple<I, O> implements
 						}
 					}
 					if ( best == null ) {
-						throw new RuntimeException( );
+						if (descendant_test == null) {
+							throw new IllegalStateException( "A symbol above in the alphabet"
+									+ " does not have any corresponding symbols below,"
+									+ " and no descendant test function is set." );	
+						}
+						/**
+						 * This symbol above is not a leaf in the tree of symbols.
+						 */
+						HashMap<Tuple<O>, Summation> sum_map = new HashMap<>( );
+						for ( I sa_descendant : coalignment_alphabet.above( ) ) {
+							if (! descendant_test.apply( sa, sa_descendant )) {
+								continue;
+							}
+
+							for ( Tuple<O> sb : coalignment_alphabet.correspondingBelow( sa_descendant ) ) {
+								int encode = coalignment_alphabet.encode( KnittingTuple.on(sa_descendant), sb );
+								double prob = core.emission_table[s][encode];
+								
+								Summation summation = sum_map.get( sb );
+								if (summation == null) {
+									summation = new Summation( coalignment_alphabet.size( ), NumericLogarithm::elnsumIterable );
+								}
+								summation.add( prob );
+							}
+						}
+						
+						for (Tuple<O> key : sum_map.keySet( )) {
+							double prob = sum_map.get( key ).getSum( );
+							if ( best == null || prob > max ) {
+								max = prob;
+								best = key;
+							}
+							buffer[len++] = prob;
+							if ( spawn != null ) {
+								spawn.step( 1 );
+							}
+						}
+
+						if ( best == null ) {
+							throw new IllegalStateException( "A symbol above in the alphabet"
+									+ " does not have any corresponding symbols below,"
+									+ " even considering descendants." );
+						}
 					}
 
 //					Set<Tuple<O>> fd = actual_pairs.get( sa );

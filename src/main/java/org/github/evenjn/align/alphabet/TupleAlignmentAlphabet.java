@@ -73,7 +73,7 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		return alphabet.size( );
 	}
 
-	public Set<SymbolAbove> above( ) {
+	public Iterable<SymbolAbove> above( ) {
 		return above_set;
 	}
 	

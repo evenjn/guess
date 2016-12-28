@@ -17,6 +17,8 @@
  */
 package org.github.evenjn.guess.m12;
 
+import java.util.function.BiFunction;
+
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
@@ -30,8 +32,11 @@ import org.github.evenjn.yarn.Tuple;
 public class M12MapleFileTrainer<I, O> {
 
 	private M12FileTrainer<I, O> m12_file_trainer;
+	private BiFunction<I, I, Boolean> demux;
 
-	public M12MapleFileTrainer(M12FileTrainerBlueprint<I, O> blueprint) {
+	public M12MapleFileTrainer(M12FileTrainerBlueprint<I, O> blueprint,
+			BiFunction<I, I, Boolean> demux) {
+		this.demux = demux;
 		this.m12_file_trainer = blueprint.create( );
 	}
 
@@ -47,6 +52,7 @@ public class M12MapleFileTrainer<I, O> {
 					progress_spawner,
 					m12_file_trainer.getDeserializerAbove( ),
 					m12_file_trainer.getDeserializerBelow( ),
+					demux,
 					filefool.getRoot( ) );
 			return maple;
 		}

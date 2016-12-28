@@ -73,6 +73,9 @@ public class NumericLogarithm {
 
 	public static final Double oneLogValue = 0d;
 
+	public static double elnsumIterable( Iterable<Double> values ) {
+		return elnsum(KnittingCursable.wrap(values));
+	}
 	/**
 	 * 
 	 * The logarithm of the sum of the numbers obtained by raising e to the power
