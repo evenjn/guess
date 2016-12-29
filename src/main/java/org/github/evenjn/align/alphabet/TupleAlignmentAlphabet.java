@@ -31,14 +31,17 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 	private Vector<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> alphabet =
 			new Vector<>( );
 
-	private Vector<SymbolAbove> alphabet_above = new Vector<>( );
-
-	private Vector<Tuple<SymbolBelow>> sequences_below = new Vector<>( );
-
-	private HashMap<SymbolAbove, HashSet<Tuple<SymbolBelow>>> map =
+	private HashMap<Tuple<SymbolAbove>, HashSet<Tuple<SymbolBelow>>> map_above_to_below =
 			new HashMap<>( );
 
-	private HashSet<SymbolAbove> above_set = new HashSet<>( );
+	private Vector<Tuple<SymbolAbove>> above_vector = new Vector<>( );
+
+	private Vector<Tuple<SymbolBelow>> below_vector = new Vector<>( );
+
+	private HashSet<Tuple<SymbolAbove>> above_set = new HashSet<>( );
+
+	private HashSet<Tuple<SymbolBelow>> below_set = new HashSet<>( );
+
 	
 	private int min_below = 0;
 	
@@ -52,17 +55,25 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		if (integer != null) {
 			return integer;
 		}
-		alphabet_above.add( pair.above );
-		sequences_below.add( pair.below );
 		encode_map.put( pair, alphabet.size( ) );
 		alphabet.add( pair );
 
-		HashSet<Tuple<SymbolBelow>> m = map.get( pair.above );
+		Tuple<SymbolAbove> kabove = KnittingTuple.on(pair.above);
+		HashSet<Tuple<SymbolBelow>> m = map_above_to_below.get( kabove );
 		if ( m == null ) {
 			m = new HashSet<>( );
-			map.put( pair.above, m );
-			above_set.add( pair.above );
+			map_above_to_below.put( kabove, m );
 		}
+
+		if (!above_set.contains( kabove )) {
+			above_set.add( kabove );
+			above_vector.add( kabove );
+		}
+		if (!below_set.contains( pair.below )) {
+			below_set.add( pair.below );
+			below_vector.add( pair.below );
+		}
+		
 		m.add( pair.below );
 		if (min_below > pair.below.size( )) {
 			min_below = pair.below.size( );
@@ -73,8 +84,12 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		return alphabet.size( );
 	}
 
-	public Iterable<SymbolAbove> above( ) {
-		return above_set;
+	public KnittingTuple<Tuple<SymbolAbove>> above( ) {
+		return KnittingTuple.wrap(above_vector);
+	}
+
+	public KnittingTuple<Tuple<SymbolBelow>> below( ) {
+		return KnittingTuple.wrap(below_vector);
 	}
 	
 	public int getMinBelow() {
@@ -85,8 +100,8 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		return max_below;
 	}
 
-	public Set<Tuple<SymbolBelow>> correspondingBelow( SymbolAbove above ) {
-		return map.get( above );
+	public Set<Tuple<SymbolBelow>> correspondingBelow( Tuple<SymbolAbove> above ) {
+		return map_above_to_below.get( above );
 	}
 
 	public TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> get( int t ) {

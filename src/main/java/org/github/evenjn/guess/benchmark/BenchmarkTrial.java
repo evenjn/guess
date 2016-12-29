@@ -23,6 +23,7 @@ import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.PastTheEndException;
 import org.github.evenjn.yarn.Progress;
 
@@ -95,22 +96,33 @@ public class BenchmarkTrial<I, O> {
 			System.out.println( evaluator.printEvaluation( ) );
 
 			StringBuilder sb = new StringBuilder( );
-			BenchmarkDatum<I, O> next =
-					problem.data( ).pull( hook ).next( );
-			O predicted = guesser.apply( next.observed );
+			
+			
+			BenchmarkDatum<I, O> next = null;
+			O predicted = null;
+			Cursor<BenchmarkDatum<I, O>> search = training_data.pull( hook );
+			try {
+				for ( ;; ) {
+					next = search.next( );
+					predicted = guesser.apply( next.observed );
+					if ( !next.good_teacher .equals( predicted ) ) {
+						break;
+					}
+				}
+			}
+			catch ( PastTheEndException e ) {
+			}
+			
 
 			sb.append( "\nSample input          : " );
 			sb.append( problem.inputPrinter( ).apply( next.observed ) );
-			sb.append( "\nSample gold output    : " );
-			sb.append( problem.outputPrinter( ).apply( next.good_teacher ) );
 			sb.append( "\nSample training output: " );
 			sb.append( problem.outputPrinter( ).apply( next.bad_teacher ) );
+			sb.append( "\nSample gold output    : " );
+			sb.append( problem.outputPrinter( ).apply( next.good_teacher ) );
 			sb.append( "\nPredicted             : " );
 			sb.append( problem.outputPrinter( ).apply( predicted ) );
 			System.out.println( sb.toString( ) );
-		}
-		catch ( PastTheEndException t ) {
-			throw new RuntimeException( t );
 		}
 		return evaluator;
 	}

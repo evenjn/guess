@@ -28,7 +28,7 @@ import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;
 
-public class TestM12MapleTrainer {
+public class TestM12MapletonTrainer {
 
 	private static final FileFool training_cache_path = FileFool.nu(
 			Paths.get( ".", "target", "training_cache" ));
@@ -65,8 +65,8 @@ public class TestM12MapleTrainer {
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
 		removeModelFiles( );
 		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
-		M12MapleFileTrainer<Boolean, Boolean> trainer =
-				new M12MapleFileTrainer<>( blueprint, Object::equals );
+		M12MapletonFileTrainer<Boolean, Boolean> trainer =
+				new M12MapletonFileTrainer<>( blueprint );
 		return ( p, d ) -> trainer.train( p, training_cache_path, d );
 	}
 
@@ -76,19 +76,17 @@ public class TestM12MapleTrainer {
 		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( )
 				.states( 4 )
 				.trainingTime( 1, 100 );
-		M12MapleFileTrainer<Boolean, Boolean> trainer =
-				new M12MapleFileTrainer<>( blueprint, Object::equals );
+		M12MapletonFileTrainer<Boolean, Boolean> trainer =
+				new M12MapletonFileTrainer<>( blueprint );
 		return ( p, d ) -> trainer.train( p, training_cache_path, d );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
 		removeModelFiles( );
 		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( )
-				.trainingTime( 1, 20 )
-				.states( 8 )
-				;
-		M12MapleFileTrainer<Boolean, Boolean> trainer =
-				new M12MapleFileTrainer<>( blueprint, Object::equals );
+				.states( 8 );
+		M12MapletonFileTrainer<Boolean, Boolean> trainer =
+				new M12MapletonFileTrainer<>( blueprint );
 		return ( p, d ) -> trainer.train( p, training_cache_path, d );
 	}
 

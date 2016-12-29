@@ -62,18 +62,64 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 		if ( closed ) {
 			throw new IllegalStateException( );
 		}
-		String[] split = splitter.split( object );
-		int id = Integer.parseInt( split[0] );
+		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> cp =
+				new TupleAlignmentAlphabetPair<>( );
+		
+		int prev_stop = 0;
+		int next_stop = object.indexOf( ';', prev_stop );
+		if ( next_stop == -1 ) {
+			// this block is for backward-compatibility
+			String[] split = splitter.split( object );
+			int id = Integer.parseInt( split[0] );
+			if ( result.size( ) != id ) {
+				throw new IllegalStateException( );
+			}
+			SymbolAbove sa = a_deserializer.apply( split[1] );
+			cp.above = sa;
+
+			Vector<SymbolBelow> below = new Vector<>( );
+			for ( int i = 2; i < split.length; i++ ) {
+				below.add( b_deserializer.apply( split[i] ) );
+			}
+			cp.below = KnittingTuple.wrap( below );
+			result.add( cp );
+			throw SkipException.neo;
+		}
+		
+		String chunk = object.substring( prev_stop, next_stop ); 
+		
+		int id = Integer.parseInt( chunk );
 		if ( result.size( ) != id ) {
 			throw new IllegalStateException( );
 		}
-		SymbolAbove sa = a_deserializer.apply( split[1] );
-		Vector<SymbolBelow> below = new Vector<>( );
-		for ( int i = 2; i < split.length; i++ ) {
-			below.add( b_deserializer.apply( split[i] ) );
+
+		prev_stop = next_stop + 1;
+		next_stop = object.indexOf( ';', prev_stop);
+		chunk = object.substring( prev_stop, next_stop );
+		
+		
+		String[] split;
+		
+		Vector<SymbolAbove> above = new Vector<>( );
+		if ( !chunk.isEmpty( ) ) {
+			split = splitter.split( chunk );
+		for ( int i = 0; i < split.length; i++ ) {
+			above.add( a_deserializer.apply( split[i] ) );
 		}
-		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> cp = new TupleAlignmentAlphabetPair<>( );
-		cp.above = sa;
+		}
+		prev_stop = next_stop + 1;
+		next_stop = object.indexOf( ';', prev_stop);
+		chunk = object.substring( prev_stop, next_stop );
+
+		Vector<SymbolBelow> below = new Vector<>( );
+		if ( !chunk.isEmpty( ) ) {
+			split = splitter.split( chunk );
+			for ( int i = 0; i < split.length; i++ ) {
+				below.add( b_deserializer.apply( split[i] ) );
+			}
+		}
+		
+		cp.above = KnittingTuple.wrap( above ).get( 0 );
 		cp.below = KnittingTuple.wrap( below );
 		result.add( cp );
 		throw SkipException.neo;

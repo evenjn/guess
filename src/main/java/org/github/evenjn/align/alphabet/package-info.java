@@ -15,25 +15,11 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.numeric;
 
-import java.util.Iterator;
-import java.util.function.BiFunction;
+/**
+ * Package Align Alphabet is a toolkit to create and manage tuple alignment alphabets.
+ * 
+ * 
+ */
+package org.github.evenjn.align.alphabet;
 
-public interface Matrix<T extends Number> extends
-		BiFunction<Integer, Integer, T> {
-
-	void set( Integer row, Integer col, T val );
-
-	void add( Integer row, Integer col, T val );
-
-	default T apply( Integer row, Integer col ) {
-		return get( row, col );
-	}
-	
-	T get( Integer row, Integer col );
-
-	Iterable<T> walk();
-	
-	void setAll(Iterator<T> values);
-}

@@ -58,14 +58,21 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 				}
 				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> next = alphabet.get( id );
 				StringBuilder builder = new StringBuilder( );
+				String separator = "";
 				builder.append( id );
 				id++;
-				builder.append( "," );
+				builder.append( ";" );
+				
 				builder.append( a_serializer.apply( next.above ) );
+
+				builder.append( ";" );
+				
 				for ( SymbolBelow sb : next.below.asIterable( ) ) {
-					builder.append( "," );
+					builder.append( separator );
 					builder.append( b_serializer.apply( sb ) );
+					separator = ",";
 				}
+				builder.append( ";" );
 				return builder.toString( );
 			}
 		};

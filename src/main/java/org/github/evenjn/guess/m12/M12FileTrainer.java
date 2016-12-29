@@ -49,7 +49,8 @@ public class M12FileTrainer<I, O> {
 		boolean check(
 				Consumer<String> logger,
 				TupleAlignmentAlphabet<I, O> alphabet,
-				Markov core );
+				Markov core,
+				ProgressSpawner spawn );
 	}
 	
 	private final Function<String, I> a_deserializer;
@@ -252,10 +253,11 @@ public class M12FileTrainer<I, O> {
 						.get( hook, FileFool.nu( ).open( m12core_log_file ).write( hook ) );
 				
 				if (checker != null) {
-					m12ctb.qualityControl( core -> checker.check(
+					m12ctb.qualityControl( (core, spawn) -> checker.check(
 							training_logger,
 							taadm.getAlphabet( ),
-							core ) );
+							core,
+							spawn ) );
 				}
 				
 				m12ctb.logger( training_logger );

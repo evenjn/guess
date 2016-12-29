@@ -15,25 +15,9 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.numeric;
 
-import java.util.Iterator;
-import java.util.function.BiFunction;
+/**
+ * Package Align Graph is a toolkit to create tuple alignment graphs.
+ */
+package org.github.evenjn.align.graph;
 
-public interface Matrix<T extends Number> extends
-		BiFunction<Integer, Integer, T> {
-
-	void set( Integer row, Integer col, T val );
-
-	void add( Integer row, Integer col, T val );
-
-	default T apply( Integer row, Integer col ) {
-		return get( row, col );
-	}
-	
-	T get( Integer row, Integer col );
-
-	Iterable<T> walk();
-	
-	void setAll(Iterator<T> values);
-}

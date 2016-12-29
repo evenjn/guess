@@ -77,7 +77,7 @@ public class M12Maple<I, O> implements
 	public M12Maple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			Markov core,
-			BiFunction<I, I, Boolean> descendant_test,
+			BiFunction<Tuple<I>, Tuple<I>, Boolean> descendant_test,
 			boolean fail_on_unknown_input_symbol,
 			ProgressSpawner progress_spawner) {
 		this.fail_on_unknown_input_symbol = fail_on_unknown_input_symbol;
@@ -100,12 +100,12 @@ public class M12Maple<I, O> implements
 				cache_prediction[s] = new HashMap<I, Tuple<O>>( );
 				cache_partial_prob[s] = new HashMap<I, Double>( );
 
-				for ( I sa : coalignment_alphabet.above( ) ) {
+				for ( Tuple<I> sa : coalignment_alphabet.above( ).asIterable( ) ) {
 					int len = 0;
 					double max = 0;
 					Tuple<O> best = null;
 					for ( Tuple<O> sb : coalignment_alphabet.correspondingBelow( sa ) ) {
-						int encode = coalignment_alphabet.encode( KnittingTuple.on(sa), sb );
+						int encode = coalignment_alphabet.encode( sa, sb );
 						double prob = core.emission_table[s][encode];
 						if ( best == null || prob > max ) {
 							max = prob;
@@ -126,13 +126,13 @@ public class M12Maple<I, O> implements
 						 * This symbol above is not a leaf in the tree of symbols.
 						 */
 						HashMap<Tuple<O>, Summation> sum_map = new HashMap<>( );
-						for ( I sa_descendant : coalignment_alphabet.above( ) ) {
+						for ( Tuple<I> sa_descendant : coalignment_alphabet.above( ).asIterable( ) ) {
 							if (! descendant_test.apply( sa, sa_descendant )) {
 								continue;
 							}
 
 							for ( Tuple<O> sb : coalignment_alphabet.correspondingBelow( sa_descendant ) ) {
-								int encode = coalignment_alphabet.encode( KnittingTuple.on(sa_descendant), sb );
+								int encode = coalignment_alphabet.encode( sa_descendant, sb );
 								double prob = core.emission_table[s][encode];
 								
 								Summation summation = sum_map.get( sb );
@@ -168,8 +168,8 @@ public class M12Maple<I, O> implements
 //						actual_pairs.put( sa, fd );
 //					}
 //					fd.add( best );
-					cache_prediction[s].put( sa, best );
-					cache_partial_prob[s].put( sa,
+					cache_prediction[s].put( sa.get( 0 ), best );
+					cache_partial_prob[s].put( sa.get( 0 ),
 							NumericLogarithm.elnsum( max, buffer, len ) );
 				}
 
@@ -298,7 +298,7 @@ public class M12Maple<I, O> implements
 						}
 					}
 
-					pointers.map( t, s, best_source );
+					pointers.set( t, s, best_source );
 					cost = elnproduct(
 							cost, probability.apply( t, best_source ),
 							core.transition_table[best_source][s] );
@@ -306,7 +306,7 @@ public class M12Maple<I, O> implements
 				} else {
 					cost = elnproduct( cost, core.initial_table[s] );
 				}
-				probability.map( t + 1, s, cost );
+				probability.set( t + 1, s, cost );
 
 			}
 		}

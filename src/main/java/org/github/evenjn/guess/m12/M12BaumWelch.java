@@ -25,8 +25,8 @@ import static org.github.evenjn.numeric.NumericLogarithm.elnsum;
 import static org.github.evenjn.numeric.NumericLogarithm.elnsum2;
 
 import java.util.Iterator;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
@@ -70,11 +70,11 @@ public class M12BaumWelch {
 
 	private final static boolean print_debug_maximization = false;
 
-	private Function<Markov, Boolean> core_inspector;
+	private BiFunction<Markov, ProgressSpawner, Boolean> core_inspector;
 
 	public M12BaumWelch(
 			Markov hmm,
-			Function<Markov, Boolean> core_inspector,
+			BiFunction<Markov, ProgressSpawner, Boolean> core_inspector,
 			int total_number_of_edges,
 			int max_length_above,
 			int max_length_below) {
@@ -165,7 +165,7 @@ public class M12BaumWelch {
 
 				if ( core_inspector != null ) {
 					spawn.info( "core inspection at the beginning of epoch " + epoch  );
-					Boolean quality_is_ok = core_inspector.apply( hmm );
+					Boolean quality_is_ok = core_inspector.apply( hmm, spawn );
 					if ( quality_is_ok ) {
 						return hmm;
 					}
@@ -257,7 +257,7 @@ public class M12BaumWelch {
 
 			if ( core_inspector != null ) {
 				spawn.info( "final core inspection" );
-				Boolean quality_is_ok = core_inspector.apply( hmm );
+				Boolean quality_is_ok = core_inspector.apply( hmm, spawn );
 				if ( quality_is_ok ) {
 					return hmm;
 				}

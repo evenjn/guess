@@ -17,12 +17,14 @@
  */
 package org.github.evenjn.guess.m12;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12CoreTrainerBlueprint {
 
@@ -36,7 +38,7 @@ public class M12CoreTrainerBlueprint {
 
 	private Cursable<String> reader_core;
 
-	private Function<Markov, Boolean> quality_control;
+	private BiFunction<Markov, ProgressSpawner, Boolean> quality_control;
 	
 	private long seed;
 
@@ -54,7 +56,7 @@ public class M12CoreTrainerBlueprint {
 	}
 
 	public M12CoreTrainerBlueprint qualityControl(
-			Function<Markov, Boolean> quality_control ) {
+			BiFunction<Markov, ProgressSpawner, Boolean> quality_control ) {
 		this.quality_control = quality_control;
 		return this;
 	}

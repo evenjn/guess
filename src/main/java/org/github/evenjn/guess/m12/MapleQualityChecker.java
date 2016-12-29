@@ -17,33 +17,30 @@
  */
 package org.github.evenjn.guess.m12;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
-import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.numeric.NumericLogarithm;
+import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.numeric.SixCharFormat;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Maple;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12LibraQualityChecker<I, O> implements
-		M12FileTrainer.QualityChecker<I, O> {
+public class MapleQualityChecker<I, O> {
 
 	private Double previous_training = null;
-
 	private Double previous_test = null;
-
-	private int epoch = 0;
 
 	private Cursable<Bi<Tuple<I>, Tuple<O>>> training_data;
 	
@@ -52,64 +49,70 @@ public class M12LibraQualityChecker<I, O> implements
 	private Cursable<Bi<Tuple<I>, Tuple<O>>> test_data;
 
 	private int test_data_size = 0;
+	private BiFunction<TupleAlignmentAlphabet<I, O>, Markov, Maple<I, O>> maple_builder;
 
-	public M12LibraQualityChecker(
+	public MapleQualityChecker(
 			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
+			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data,
+			BiFunction<TupleAlignmentAlphabet<I, O>, Markov, Maple<I, O>> maple_builder) {
 		this.training_data = training_data;
+		this.maple_builder = maple_builder;
 		this.training_data_size = KnittingCursable.wrap( training_data ).size( );
 		this.test_data = test_data;
 		this.test_data_size = KnittingCursable.wrap( test_data ).size( );
 	}
-
+	
+	
 	private double do_check(
-			M12Libra<I, O> m12Libra,
+		  Maple<I, O> maple,
 			Consumer<String> logger,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
 			Double previous,
 			ProgressSpawner spawn,
 			int target) {
-		int total = 0;
-		int not_aligneable = 0;
-		Summation summation = NumericUtils.summation( 10000,
-				x -> NumericLogarithm.elnsum( KnittingCursable.wrap( x ) ) );
 		try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 			Progress spawn2 = spawn.spawn( hook2, "check" ).target( target );
+			int total = 0;
+			int zero_length = 0;
+			Summation summation =
+					NumericUtils.summation( 10000, NumericUtils::sumDoubles );
+
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
 					.wrap( data ).pull( hook2 ).tap( x->spawn2.step(1) ).once( ) ) {
-				try {
-					double p = m12Libra.weigh( g );
-					summation.add( p );
+					Tuple<O> guess = maple.apply( g.front( ) );
+					if ( g.back( ).size( ) == 0) {
+						zero_length++;
+						continue;
+					}
+					int distance = KnittingTuple.wrap( guess ).distance( g.back( ) );
+					double errors_per_target_symbol = (1.0 * distance) / (1.0 * g.back( ).size( ) );
+					summation.add( errors_per_target_symbol );
 					total = total + 1;
-				}
-				catch ( NotAlignableException e ) {
-					not_aligneable++;
-				}
 			}
 
-			double current_probability =
-					NumericLogarithm.eexp( summation.getSum( ) ) / ( 1.0 * total );
+			double current_average_error_per_target_symbol = summation.getSum( ) / ( 1.0 * total );
 			if ( previous != null ) {
 				double change =
-						current_probability / previous;
-				logger.accept( "  Average probability: "
-						+ SixCharFormat.nu( false ).apply( current_probability ) );
+						current_average_error_per_target_symbol / previous;
+				logger.accept( "  Average distance/targetlength: "
+						+ SixCharFormat.nu( false )
+								.apply( current_average_error_per_target_symbol ) );
 				logger.accept( "  new/old: "
 						+ SixCharFormat.nu( false ).apply( change ) );
 			}
 			else {
-				logger
-						.accept( "  Not aligneable: " + not_aligneable + " out of " + total
-								+ " (" + PercentPrinter.printRatioAsPercent( 4, not_aligneable,
-										total ) + ")" );
-				logger.accept( "  Average probability: "
-						+ SixCharFormat.nu( false ).apply( current_probability ) );
+				logger.accept(
+						"  Zero-length: " + zero_length + " out of " + total
+						+ " (" + PercentPrinter.printRatioAsPercent( 4, zero_length, total ) + ")" );
+				
+				logger.accept( "  Average distance/targetlength: "
+						+ SixCharFormat.nu( false ).apply( current_average_error_per_target_symbol ) );
 			}
-			return current_probability;
 
+			return current_average_error_per_target_symbol;
 		}
 	}
-	
+
 	private static final String decorator_line =
 			">---------" + "----------" + "----------" + "----------"
 					+ "----------" + "----------" + "----------" + "---------<";
@@ -118,22 +121,20 @@ public class M12LibraQualityChecker<I, O> implements
 			Consumer<String> logger,
 			TupleAlignmentAlphabet<I, O> alphabet,
 			Markov core,
-			ProgressSpawner spawn ) {
-		M12Libra<I, O> m12Libra =
-				new M12Libra<I, O>( alphabet, core );
+			ProgressSpawner spawn   ) {
+		Maple<I, O> m12Mapleton = maple_builder.apply( alphabet, core );
 		logger.accept( decorator_line );
 		if ( test_data != null ) {
-			logger.accept( "Libra check on test data" );
-			previous_test = do_check( m12Libra, logger, test_data, previous_test, spawn, test_data_size );
+			logger.accept( "Maple check on test data" );
+			previous_test = do_check( m12Mapleton, logger, test_data, previous_test, spawn, test_data_size );
 		}
 		logger.accept( decorator_line );
 		if ( training_data != null ) {
-			logger.accept( "Libra check on training data" );
+			logger.accept( "Maple check on training data");
 			previous_training =
-					do_check( m12Libra, logger, training_data, previous_training, spawn, training_data_size );
+					do_check( m12Mapleton, logger, training_data, previous_training, spawn, training_data_size );
 		}
 		logger.accept( decorator_line );
-		epoch++;
 		return false;
 	}
 }

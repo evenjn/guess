@@ -17,6 +17,7 @@
  */
 package org.github.evenjn.guess.m12;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -50,7 +51,7 @@ public class M12CoreTrainer {
 
 	private long seed;
 
-	private Function<Markov, Boolean> quality_control;
+	private BiFunction<Markov, ProgressSpawner, Boolean> quality_control;
 
 	private Consumer<String> logger;
 
@@ -61,7 +62,7 @@ public class M12CoreTrainer {
 			Consumer<String> logger,
 			Function<Hook, Consumer<String>> putter_core,
 			Cursable<String> reader_core,
-			Function<Markov, Boolean> quality_control,
+			BiFunction<Markov, ProgressSpawner, Boolean> quality_control,
 			long seed) {
 		this.number_of_states = number_of_states;
 		this.period = period;
@@ -123,18 +124,19 @@ public class M12CoreTrainer {
 
 			spawn.info( "Creating baumwelch data structures." );
 			
-			Function<Markov, Boolean> local_core_inspector =
-					new Function<Markov, Boolean>( ) {
+			BiFunction<Markov, ProgressSpawner, Boolean> local_core_inspector =
+					new BiFunction<Markov, ProgressSpawner, Boolean>( ) {
 						@Override
-						public Boolean apply( Markov t ) {
+						public Boolean apply( Markov t, ProgressSpawner spawn ) {
 							KnittingCursor.wrap( new MarkovSerializer( t ) )
 									.consume( putter_core );
 							MarkovChecker.check( t );
 							if ( quality_control != null ) {
-								return quality_control.apply( t );
+								return quality_control.apply( t, spawn );
 							}
 							return false;
 						}
+
 					};
 			M12BaumWelch baum_welch = new M12BaumWelch(
 					core,

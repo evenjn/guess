@@ -26,17 +26,16 @@ import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12MapleQualityChecker<I, O> implements
+public class M12MapletonQualityChecker<I, O> implements
 		M12FileTrainer.QualityChecker<I, O> {
 
 	private final MapleQualityChecker<I, O> mqc;
 
-	public M12MapleQualityChecker(
+	public M12MapletonQualityChecker(
 			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
 		mqc = new MapleQualityChecker<>( training_data, test_data,
-				( alphabet, core ) -> new M12Maple<I, O>( alphabet, core, false,
-						null ) );
+				( alphabet, core ) -> new M12Mapleton<I, O>( alphabet, core ) );
 	}
 
 	public boolean check(

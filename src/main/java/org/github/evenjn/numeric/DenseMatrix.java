@@ -53,10 +53,10 @@ public class DenseMatrix<T extends Number> implements
 		this.sum = sum;
 		this.fill = fill;
 		matrix = (T[][]) new Number[sizex][sizey];
-		set( values );
+		setAll( values );
 	}
 
-	public void map( Integer row, Integer col, T val ) {
+	public void set( Integer row, Integer col, T val ) {
 		matrix[row][col] = val;
 	}
 
@@ -67,7 +67,7 @@ public class DenseMatrix<T extends Number> implements
 		matrix[row][col] = sum.apply( val, t );
 	}
 
-	public T apply( Integer row, Integer col ) {
+	public T get( Integer row, Integer col ) {
 		T t = matrix[row][col];
 		return t == null ? fill : t;
 	}
@@ -103,7 +103,7 @@ public class DenseMatrix<T extends Number> implements
 	}
 
 	@Override
-	public void set( Iterator<T> values ) {
+	public void setAll( Iterator<T> values ) {
 		int i = 0;
 		while ( values.hasNext( ) ) {
 			T value = values.next( );
@@ -113,7 +113,7 @@ public class DenseMatrix<T extends Number> implements
 
 	}
 
-	public String toString( ) {
+	public String print( ) {
 		Cursor<String> rows =
 				KnittingCursor.wrap( NumericUtils.range( sizex ) ).map(
 						x -> "row " + x );

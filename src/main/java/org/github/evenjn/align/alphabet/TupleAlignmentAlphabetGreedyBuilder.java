@@ -281,7 +281,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 	public Cursor<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> greedy(
 			TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis ) {
 		int total_symbols = analysis.getTotalNumberOfCandidatePairs( );
-		KnittingTuple<SymbolAbove> symbols = analysis.getSymbolsAbove( );
+		KnittingTuple<Tuple<SymbolAbove>> symbols = analysis.getSymbolsAbove( );
 		return new Cursor<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>( ) {
 
 			int symbol = 0;
@@ -306,12 +306,15 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 						size = min_below;
 					}
 
-					SymbolAbove symbolAbove = symbols.get( symbol );
+					Tuple<SymbolAbove> symbolAbove = symbols.get( symbol );
 					KnittingTuple<Tuple<SymbolBelow>> symbolsBelow =
 							analysis.getSymbolsBelow( symbolAbove, size );
 					if ( symbolsBelow.size( ) > rank ) {
 						result = new TupleAlignmentAlphabetPair<>( );
-						result.above = symbolAbove;
+						if (symbolAbove.size( ) != 1) {
+							throw new IllegalStateException( );
+						}
+						result.above = symbolAbove.get( 0 );
 						result.below = KnittingTuple.wrap( symbolsBelow.get( rank ) );
 					}
 					if ( symbol + 1 == symbols.size( ) ) {
