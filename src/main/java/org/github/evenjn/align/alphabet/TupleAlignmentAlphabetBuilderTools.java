@@ -181,7 +181,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 
 						TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
 								new TupleAlignmentAlphabetPair<>( );
-						pair.above = suba.get( 0 );
+						pair.above = KnittingTuple.wrap( suba );
 						pair.below = KnittingTuple.wrap( subb );
 						boolean test = filter.test( pair );
 						if ( !test ) {
@@ -221,7 +221,10 @@ public class TupleAlignmentAlphabetBuilderTools {
 			if (di.front( ) != 1) {
 				throw NotAlignableException.neo;
 			}
-			pair.above = above.get( a_so_far );
+			Vector<SymbolAbove> suba = KnittingTuple.wrap( above )
+					.head( a_so_far, di.front( ) ).asCursor( ).collect( new Vector<>( ) );
+
+			pair.above = KnittingTuple.wrap( suba );
 			Vector<SymbolBelow> subb = KnittingTuple.wrap( below )
 					.head( b_so_far, di.back( ) ).asCursor( ).collect( new Vector<>( ) );
 			pair.below = KnittingTuple.wrap( subb );
@@ -263,7 +266,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 						}
 						TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
 								new TupleAlignmentAlphabetPair<>( );
-						pair.above = suba.get( 0 );
+						pair.above = KnittingTuple.wrap( suba );
 						pair.below = KnittingTuple.wrap( subb );
 						buffer.add( pair );
 						return buffer.size( );

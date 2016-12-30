@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.knit.Bi;
+import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -12,11 +13,11 @@ import org.github.evenjn.yarn.Tuple;
 public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBelow> implements TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow>{
 
 	private TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> wrapped;
-	private Function<SymbolAbove, Iterable<SymbolAbove>> ascendants_provider;
+	private Function<Tuple<SymbolAbove>, Iterable<Tuple<SymbolAbove>>> ascendants_provider;
 
 	private TupleAlignmentAlphabetBuilderAscendantWrapper(
 			TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> wrapped,
-			Function<SymbolAbove, Iterable<SymbolAbove>> ascendants_provider) {
+			Function<Tuple<SymbolAbove>, Iterable<Tuple<SymbolAbove>>> ascendants_provider) {
 		this.wrapped = wrapped;
 		this.ascendants_provider = ascendants_provider;
 	}
@@ -24,7 +25,7 @@ public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBe
 	public static <SymbolAbove, SymbolBelow>
 			TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow>
 			wrap( TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> builder,
-					Function<SymbolAbove, Iterable<SymbolAbove>> demux ) {
+					Function<Tuple<SymbolAbove>, Iterable<Tuple<SymbolAbove>>> demux ) {
 		return new TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBelow>(
 				builder, demux );
 
@@ -40,11 +41,11 @@ public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBe
 		for (int z = 0; z < build.size( ); z++) {
 			TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp =
 					build.get( z );
-			Iterable<SymbolAbove> ascendants = ascendants_provider.apply( pp.above );
-			for (SymbolAbove ascendant : ascendants) {
+			Iterable<Tuple<SymbolAbove>> ascendants = ascendants_provider.apply( pp.above );
+			for (Tuple<SymbolAbove> ascendant : ascendants) {
 				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> nu =
 						new TupleAlignmentAlphabetPair<>( );
-				nu.above = ascendant;
+				nu.above = KnittingTuple.wrap( ascendant );
 				nu.below = pp.below;
 			}
 		}

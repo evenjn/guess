@@ -84,8 +84,8 @@ public class TestM12MapleTrainer {
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
 		removeModelFiles( );
 		M12FileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( )
-				.trainingTime( 1, 20 )
-				.states( 8 )
+				.trainingTime( 1, 50 )
+				.states( 4 )
 				;
 		M12MapleFileTrainer<Boolean, Boolean> trainer =
 				new M12MapleFileTrainer<>( blueprint, Object::equals );
@@ -153,7 +153,7 @@ public class TestM12MapleTrainer {
 	}
 
 	/**
-	 * m12 fails badly on zebra.
+	 * This can be modeled perfectly using a 1:1 HMM with four states.
 	 */
 	@Test
 	public void testM12Zebra( ) {
@@ -162,7 +162,7 @@ public class TestM12MapleTrainer {
 				.builder( trainerZebra( ), trainer_label )
 				.problem( TestUtils.zebra )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( 1000, null );
+				.build( ).run( limit, null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );

@@ -63,9 +63,15 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 				id++;
 				builder.append( ";" );
 				
-				builder.append( a_serializer.apply( next.above ) );
+				for ( SymbolAbove sa : next.above.asIterable( ) ) {
+					builder.append( separator );
+					builder.append( a_serializer.apply( sa ) );
+					separator = ",";
+				}
 
 				builder.append( ";" );
+				
+				separator = "";
 				
 				for ( SymbolBelow sb : next.below.asIterable( ) ) {
 					builder.append( separator );

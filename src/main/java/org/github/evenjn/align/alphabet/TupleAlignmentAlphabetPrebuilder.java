@@ -36,11 +36,12 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 			new TupleAlignmentAlphabet<Above, Below>( );
 	
 	public TupleAlignmentAlphabetPrebuilder(
-			Iterable<Bi<Above, Tuple<Below>>> data ) {
-		for (Bi<Above, Tuple<Below>> d : data) {
+			Iterable<Bi<Tuple<Above>, Tuple<Below>>> data ) {
+		for (Bi<Tuple<Above>, Tuple<Below>> d : data) {
 			TupleAlignmentAlphabetPair<Above, Below> pair
 			= new TupleAlignmentAlphabetPair<>( );
-			pair.above = d.first;
+			pair.above = KnittingTuple.wrap( KnittingTuple.wrap( d.first )
+					.asCursor( ).collect( new Vector<>( ) ) );
 			pair.below = KnittingTuple.wrap( KnittingTuple.wrap( d.second )
 					.asCursor( ).collect( new Vector<>( ) ) );
 			result.add( pair );

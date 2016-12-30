@@ -25,7 +25,7 @@ import org.github.evenjn.yarn.AutoHook;
 
 public class TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> {
 
-	public SymbolAbove above;
+	public KnittingTuple<SymbolAbove> above;
 
 	public KnittingTuple<SymbolBelow> below;
 
@@ -47,8 +47,11 @@ public class TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			StringBuilder sb = new StringBuilder( );
-			sb.append( sa_label.apply( above ) );
-			sb.append( " >-> [" );
+			sb.append( "[" );
+			for ( SymbolAbove a : above.asIterable( ) ) {
+				sb.append( " " ).append( sa_label.apply( a ) );
+			}
+			sb.append( "] >-> [" );
 			for ( SymbolBelow b : below.asIterable( ) ) {
 				sb.append( " " ).append( sb_label.apply( b ) );
 			}

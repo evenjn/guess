@@ -96,6 +96,16 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 	/**
 	 * 
+	 * @return Pairs Sorted By Descending Frequency
+	 */
+	public KnittingTuple<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
+			getPairs( ) {
+		KnittingTuple<FrequencyData<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>> dataSorted =
+				fd_all_pairs.dataSorted( true );
+		return dataSorted.map( x -> x.front( ) );
+	}
+	/**
+	 * 
 	 * @return tuples of SymbolsBelow for the given SymbolAbove Sorted By
 	 *         Descending Frequency
 	 */
@@ -178,7 +188,8 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			logger.accept( "" );
 			logger.accept( " Distribution of a/b pairs" );
 			logger.accept( fd_all_pairs.plot( ).setLabels(
-					x -> a_printer.apply( x.above ) + " >-> "
+					x -> TupleAlignmentAlphabetBuilderTools.tuple_printer( a_printer,
+							x.above ) + " >-> "
 							+ TupleAlignmentAlphabetBuilderTools.tuple_printer( b_printer,
 									x.below ) )
 					.print( ) );
@@ -282,7 +293,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
 
-						record( KnittingTuple.on(pp.above), pp.below );
+						record( pp.above, pp.below );
 						fd_all_pairs.accept( pp );
 						complete_alphabet.add( pp );
 					}

@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
+import org.github.evenjn.guess.markov.MarkovPrinter;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
@@ -236,9 +237,12 @@ public class M12BaumWelch {
 								+ "  probability indicator: "
 								+ SixCharFormat.nu( false ).apply( current_probability )
 								+ "  new/old: "
-								+ SixCharFormat.nu( false ).apply( probability_change ) );
+								+ SixCharFormat.nu( false ).apply( probability_change )
+								+ " ( " + probability_change + " ) "
+								+ ( not_increased_for_n_epochs == 0 ? " just increased." : " plateau'd for " +not_increased_for_n_epochs + " epoch(s)." )
+								);
+						logger.accept( MarkovPrinter.print( hmm, x->x.toString( ) ) );
 					}
-					previous_probability = current_probability;
 				}
 				else {
 					if ( logger != null ) {
@@ -247,6 +251,7 @@ public class M12BaumWelch {
 								+ SixCharFormat.nu( false ).apply( current_probability ) );
 					}
 				}
+				previous_probability = current_probability;
 				maximization(
 						new_initial,
 						new_transition,

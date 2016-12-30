@@ -58,7 +58,7 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		encode_map.put( pair, alphabet.size( ) );
 		alphabet.add( pair );
 
-		Tuple<SymbolAbove> kabove = KnittingTuple.on(pair.above);
+		Tuple<SymbolAbove> kabove = pair.above;
 		HashSet<Tuple<SymbolBelow>> m = map_above_to_below.get( kabove );
 		if ( m == null ) {
 			m = new HashSet<>( );
@@ -122,7 +122,7 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		if (above.size( ) != 1) {
 			throw new IllegalArgumentException( );
 		}
-		pair.above = above.get( 0 );
+		pair.above = KnittingTuple.wrap( above );
 		pair.below = KnittingTuple.wrap( below );
 		return encode_map.get( pair );
 	}

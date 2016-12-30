@@ -108,9 +108,12 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					"TupleAlignmentAlphabetBuilder::shrinkAlphabet" )
 					.target( initial_alphabet.size( ) );
 
-			for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> candidate : KnittingCursor
-					.wrap( initial_alphabet.iterator( ) )
-					.once( ) ) {
+			
+			for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> candidate :
+				analysis.getPairs( ).reverse( ).asIterable( ) ) {
+				if (! alphabet.contains( candidate ) ) {
+					continue;
+				}
 				alphabet.remove( candidate );
 				int not_aligneable = TupleAlignmentAlphabetBuilderTools.computeCoverage(
 						progress_spawner,
@@ -121,16 +124,24 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 						analysis.getTotal( ), analysis.getTotalAligneable( ) );
 				spawn.step( 1 );
 
+				boolean remove_this = false;
 				if ( ( 1.0 * not_aligneable )
 						/ ( 1.0 * analysis.getTotalAligneable( ) ) < threshold ) {
 					/**
 					 * removing this pair is harmless
 					 */
+					remove_this = true;
+					
+				}
 					if ( a_printer != null && b_printer != null ) {
 						int total_candidates = analysis.getTotalNumberOfCandidatePairs( );
 						StringBuilder sb = new StringBuilder( );
+						if (remove_this)
 						sb.append( "Removed element: " );
-						sb.append( a_printer.apply( candidate.above ) );
+						else
+							sb.append( "Will not remove element: " );
+						sb.append( TupleAlignmentAlphabetBuilderTools
+								.tuple_printer( a_printer, candidate.above ) );
 						sb.append( " >-> " );
 						sb.append( TupleAlignmentAlphabetBuilderTools
 								.tuple_printer( b_printer, candidate.below ) );
@@ -145,6 +156,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 						sb.append( ")." );
 						logger.accept( sb.toString( ) );
 					}
+				if ( remove_this ) {
 					continue;
 				}
 				alphabet.add( candidate );
@@ -175,7 +187,8 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					.head( 0, 42 )
 					.once( ) ) {
 				StringBuilder sb = new StringBuilder( );
-				sb.append( a_printer.apply( best_candidate.above ) );
+				sb.append( TupleAlignmentAlphabetBuilderTools
+						.tuple_printer( a_printer, best_candidate.above ) );
 				sb.append( " >-> " );
 				sb.append( TupleAlignmentAlphabetBuilderTools
 						.tuple_printer( b_printer, best_candidate.below ) );
@@ -229,7 +242,8 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 				if ( a_printer != null && b_printer != null ) {
 					StringBuilder sb = new StringBuilder( );
 					sb.append( "Added new element: " );
-					sb.append( a_printer.apply( best_candidate.above ) );
+					sb.append( TupleAlignmentAlphabetBuilderTools
+							.tuple_printer( a_printer, best_candidate.above ) );
 					sb.append( " >-> " );
 					sb.append( TupleAlignmentAlphabetBuilderTools
 							.tuple_printer( b_printer, best_candidate.below ) );
@@ -314,7 +328,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 						if (symbolAbove.size( ) != 1) {
 							throw new IllegalStateException( );
 						}
-						result.above = symbolAbove.get( 0 );
+						result.above = KnittingTuple.wrap( symbolAbove );
 						result.below = KnittingTuple.wrap( symbolsBelow.get( rank ) );
 					}
 					if ( symbol + 1 == symbols.size( ) ) {

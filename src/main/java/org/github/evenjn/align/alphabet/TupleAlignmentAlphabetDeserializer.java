@@ -75,7 +75,7 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 				throw new IllegalStateException( );
 			}
 			SymbolAbove sa = a_deserializer.apply( split[1] );
-			cp.above = sa;
+			cp.above = KnittingTuple.on( sa );
 
 			Vector<SymbolBelow> below = new Vector<>( );
 			for ( int i = 2; i < split.length; i++ ) {
@@ -119,7 +119,7 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 			}
 		}
 		
-		cp.above = KnittingTuple.wrap( above ).get( 0 );
+		cp.above = KnittingTuple.wrap( above );
 		cp.below = KnittingTuple.wrap( below );
 		result.add( cp );
 		throw SkipException.neo;

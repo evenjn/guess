@@ -57,7 +57,7 @@ public class MapleZebraData implements
 			next( )
 					throws PastTheEndException {
 
-		int size = 3 + input_size.nextInt( 3 );
+		int size = 10 + input_size.nextInt( 3 );
 
 		Vector<Boolean> input = new Vector<>( size );
 		boolean first = root.nextBoolean( );
@@ -82,11 +82,11 @@ public class MapleZebraData implements
 		Vector<Boolean> bad_output = new Vector<>( size );
 		for ( int i = 0; i < size; i++ ) {
 			int this_noise = noise.nextInt( 100 );
-			if ( this_noise < 2 ) {
+			if ( this_noise < 10 ) {
 				bad_output.add( true );
 				continue;
 			}
-			if ( this_noise >= 98 ) {
+			if ( this_noise >= 90 ) {
 				bad_output.add( false );
 				continue;
 			}
