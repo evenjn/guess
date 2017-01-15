@@ -15,11 +15,14 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.aligner;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
+import java.util.function.BiFunction;
 
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
@@ -28,8 +31,6 @@ import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BiHashMap;
-import org.github.evenjn.knit.Bis;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.Cubix;
 import org.github.evenjn.numeric.DenseCubix;
@@ -64,8 +65,8 @@ public class M12Aligner<I, O> implements
 			Tuple<I> above,
 			Tuple<O> below ) {
 
-		int length_above = above.size( );
-		int length_below = below.size( );
+		Integer length_above = above.size( );
+		Integer length_below = below.size( );
 
 		TupleAlignmentGraph coalign;
 		try {
@@ -79,7 +80,20 @@ public class M12Aligner<I, O> implements
 					coalignment_alphabet.getMaxBelow( ) );
 		}
 		catch ( NotAlignableException e ) {
-			return KnittingTuple.on( Bis.nu( length_above, length_below ) );
+			final Integer front = length_above;
+			final Integer back = length_below;
+			return KnittingTuple.on( new Di<Integer, Integer>( ) {
+
+				@Override
+				public Integer front( ) {
+					return front;
+				}
+
+				@Override
+				public Integer back( ) {
+					return back;
+				}
+			} );
 		}
 
 		// find the path with the max probability.
@@ -239,7 +253,19 @@ public class M12Aligner<I, O> implements
 		while ( length_above != 0 || length_below != 0 ) {
 			Source source =
 					all_pointers.get( state ).apply( length_above, length_below );
-			result.add( Bis.nu( length_above - source.x, length_below - source.y ) );
+			final Integer front = length_above - source.x;
+			final Integer back = length_below - source.y;
+			result.add( new Di<Integer, Integer>() {
+
+				@Override
+				public Integer front( ) {
+					return front;
+				}
+
+				@Override
+				public Integer back( ) {
+					return back;
+				}});
 			state = source.state;
 			length_above = source.x;
 			length_below = source.y;
@@ -247,5 +273,38 @@ public class M12Aligner<I, O> implements
 		Collections.reverse( result );
 		return KnittingTuple.wrap( result );
 	}
+
+}
+
+class BiHashMap<K1, K2, V> implements
+BiFunction<K1, K2, V> {
+
+protected Map<K1, Map<K2, V>> core = new HashMap<K1, Map<K2, V>>( );
+
+protected final V ifAbsent;
+
+public BiHashMap(V ifAbsent) {
+this.ifAbsent = ifAbsent;
+}
+
+public void map( K1 row, K2 col, V val ) {
+Map<K2, V> map = core.get( row );
+if ( map == null ) {
+	map = new HashMap<K2, V>( );
+	core.put( row, map );
+}
+map.put( col, val );
+}
+
+public V apply( K1 row, K2 col ) {
+Map<K2, V> map = core.get( row );
+if ( map == null ) {
+	return ifAbsent;
+}
+V double1 = map.get( col );
+if ( double1 == null )
+	return ifAbsent;
+return double1;
+}
 
 }

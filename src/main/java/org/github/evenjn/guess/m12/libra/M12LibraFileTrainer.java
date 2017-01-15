@@ -15,11 +15,13 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.libra;
 
-import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import org.github.evenjn.file.FileFool;
+import org.github.evenjn.guess.m12.M12FileTrainer;
+import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.ProgressManager;
@@ -29,32 +31,37 @@ import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12MapleFileTrainer<I, O> {
+public class M12LibraFileTrainer<I, O> {
 
-	private M12FileTrainer<I, O> m12_file_trainer;
-	private BiFunction<I, I, Boolean> demux;
+	private M12FileTrainer<I, O> file_trainer;
 
-	public M12MapleFileTrainer(M12FileTrainerBlueprint<I, O> blueprint,
-			BiFunction<I, I, Boolean> demux) {
-		this.demux = demux;
-		this.m12_file_trainer = blueprint.create( );
+	public M12LibraFileTrainer(Supplier<? extends M12FileTrainer<I, O>> blueprint) {
+		this.file_trainer = blueprint.get( );
 	}
 
-	public M12Maple<I, O> train(
+	@Deprecated
+	public M12Libra<I, O> train(
 			ProgressSpawner progress_spawner,
 			FileFool filefool,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
+		return train( progress_spawner, filefool, data, null );
+	}
+
+	public M12Libra<I, O> train(
+			ProgressSpawner progress_spawner,
+			FileFool filefool,
+			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
+			M12QualityChecker<I, O> checker ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress progress = ProgressManager
-					.safeSpawn( hook, progress_spawner, "M12MapleFileTrainer::train" );
-			m12_file_trainer.train( progress, filefool, data );
-			M12Maple<I, O> maple = M12MapleFileDeserializer.deserialize(
-					progress_spawner,
-					m12_file_trainer.getDeserializerAbove( ),
-					m12_file_trainer.getDeserializerBelow( ),
-					demux,
+					.safeSpawn( hook, progress_spawner, "M12LibraFileTrainer::train" );
+			file_trainer.train( progress, filefool, data, checker );
+			M12Libra<I, O> aligner = M12LibraFileDeserializer.deserialize(
+					progress,
+					file_trainer.getDeserializerAbove( ),
+					file_trainer.getDeserializerBelow( ),
 					filefool.getRoot( ) );
-			return maple;
+			return aligner;
 		}
 	}
 }

@@ -15,20 +15,24 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.v;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
-import org.github.evenjn.guess.m12.M12FileTrainer.QualityChecker;
 
-public class M12FileTrainerBlueprint<I, O> {
+public class M12VFileTrainerBlueprint<I, O> implements Supplier<M12VFileTrainer<I, O>> {
 
 	private TupleAlignmentAlphabetBuilder<I, O> builder;
 
 	private int min_below;
 
 	private int max_below;
+	
+	private int min_above;
+
+	private int max_above;
 
 	private Function<I, String> a_printer;
 
@@ -42,36 +46,27 @@ public class M12FileTrainerBlueprint<I, O> {
 
 	private Function<String, O> b_deserializer;
 
-	private int period;
-
-	private int epochs;
-
-	private long seed;
-
-	private int number_of_states;
-
-	private QualityChecker<I, O> checker;
-
-	public M12FileTrainerBlueprint<I, O> setBuilder(
+	public M12VFileTrainerBlueprint<I, O> setBuilder(
 					TupleAlignmentAlphabetBuilder<I, O> builder ) {
 		this.builder = builder;
 		return this;
 	}
-	
-	public M12FileTrainerBlueprint<I, O> setQualityChecker(
-			M12FileTrainer.QualityChecker<I, O> checker ) {
-		this.checker = checker;
-		return this;
-	}
 
-	public M12FileTrainerBlueprint<I, O>
+	public M12VFileTrainerBlueprint<I, O>
 			setMinMaxBelow( int min, int max ) {
 		this.min_below = min;
 		this.max_below = max;
 		return this;
 	}
 
-	public M12FileTrainerBlueprint<I, O> setPrinter(
+	public M12VFileTrainerBlueprint<I, O>
+			setMinMaxAbove( int min, int max ) {
+		this.min_above = min;
+		this.max_above = max;
+		return this;
+	}
+
+	public M12VFileTrainerBlueprint<I, O> setPrinter(
 			Function<I, String> a_printer,
 			Function<O, String> b_printer ) {
 		this.a_printer = a_printer;
@@ -79,7 +74,7 @@ public class M12FileTrainerBlueprint<I, O> {
 		return this;
 	}
 
-	public M12FileTrainerBlueprint<I, O> setInputCoDec(
+	public M12VFileTrainerBlueprint<I, O> setInputCoDec(
 			Function<I, String> a_serializer,
 			Function<String, I> a_deserializer ) {
 		this.a_serializer = a_serializer;
@@ -87,7 +82,7 @@ public class M12FileTrainerBlueprint<I, O> {
 		return this;
 	}
 
-	public M12FileTrainerBlueprint<I, O> setOutputCoDec(
+	public M12VFileTrainerBlueprint<I, O> setOutputCoDec(
 			Function<O, String> b_serializer,
 			Function<String, O> b_deserializer ) {
 		this.b_serializer = b_serializer;
@@ -95,37 +90,18 @@ public class M12FileTrainerBlueprint<I, O> {
 		return this;
 	}
 
-	public M12FileTrainerBlueprint<I, O> trainingTime( int period, int epochs ) {
-		this.period = period;
-		this.epochs = epochs;
-		return this;
-	}
-
-	public M12FileTrainerBlueprint<I, O> seed( long seed ) {
-		this.seed = seed;
-		return this;
-	}
-
-	public M12FileTrainerBlueprint<I, O> states( int number_of_states ) {
-		this.number_of_states = number_of_states;
-		return this;
-	}
-
-	public M12FileTrainer<I, O> create( ) {
-		return new M12FileTrainer<>(
+	public M12VFileTrainer<I, O> get( ) {
+		return new M12VFileTrainer<>(
+				min_above,
+				max_above,
 				min_below,
 				max_below,
 				builder,
-				checker,
 				a_printer,
 				b_printer,
 				a_serializer,
 				b_serializer,
 				a_deserializer,
-				b_deserializer,
-				period,
-				epochs,
-				seed,
-				number_of_states);
+				b_deserializer );
 	}
 }

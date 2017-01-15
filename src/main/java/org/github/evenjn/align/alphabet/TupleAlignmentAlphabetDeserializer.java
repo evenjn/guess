@@ -21,6 +21,7 @@ import java.util.Vector;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.SkipException;
 import org.github.evenjn.yarn.SkipFold;
@@ -62,8 +63,8 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 		if ( closed ) {
 			throw new IllegalStateException( );
 		}
-		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> cp =
-				new TupleAlignmentAlphabetPair<>( );
+		Tael<SymbolAbove, SymbolBelow> cp =
+				new Tael<>( );
 		
 		int prev_stop = 0;
 		int next_stop = object.indexOf( ';', prev_stop );

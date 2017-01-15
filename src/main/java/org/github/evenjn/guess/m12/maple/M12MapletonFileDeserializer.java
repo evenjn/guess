@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.maple;
 
 import java.nio.file.Path;
 import java.util.function.Function;

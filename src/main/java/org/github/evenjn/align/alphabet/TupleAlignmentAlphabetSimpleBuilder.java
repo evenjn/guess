@@ -3,6 +3,7 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
@@ -70,12 +71,12 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 				spawn.step( 1 );
 
 				try {
-					Iterable<TupleAlignmentAlphabetPair<Above, Below>> localAlphabet =
+					Iterable<Tael<Above, Below>> localAlphabet =
 							TupleAlignmentAlphabetBuilderTools.localAlphabet(
 									min_above, max_above,
 									min_below, max_below,
 									datum.front( ), datum.back( ) );
-					for ( TupleAlignmentAlphabetPair<Above, Below> pp : localAlphabet ) {
+					for ( Tael<Above, Below> pp : localAlphabet ) {
 						result.add( pp );
 					}
 				}

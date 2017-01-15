@@ -3,6 +3,7 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Cursable;
@@ -39,12 +40,12 @@ public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBe
 		
 		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result = new TupleAlignmentAlphabet<>( );
 		for (int z = 0; z < build.size( ); z++) {
-			TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp =
+			Tael<SymbolAbove, SymbolBelow> pp =
 					build.get( z );
 			Iterable<Tuple<SymbolAbove>> ascendants = ascendants_provider.apply( pp.above );
 			for (Tuple<SymbolAbove> ascendant : ascendants) {
-				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> nu =
-						new TupleAlignmentAlphabetPair<>( );
+				Tael<SymbolAbove, SymbolBelow> nu =
+						new Tael<>( );
 				nu.above = KnittingTuple.wrap( ascendant );
 				nu.below = pp.below;
 			}

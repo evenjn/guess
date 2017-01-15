@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.bw;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -37,11 +37,11 @@ import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 
-public class M12CoreTrainer {
+public class M12BWCoreTrainer {
 
 	private int number_of_states;
 
-	private int period;
+	private int grace_period;
 
 	private int epochs;
 
@@ -55,7 +55,7 @@ public class M12CoreTrainer {
 
 	private Consumer<String> logger;
 
-	public M12CoreTrainer(
+	public M12BWCoreTrainer(
 			int number_of_states,
 			int period,
 			int epochs,
@@ -65,7 +65,7 @@ public class M12CoreTrainer {
 			BiFunction<Markov, ProgressSpawner, Boolean> quality_control,
 			long seed) {
 		this.number_of_states = number_of_states;
-		this.period = period;
+		this.grace_period = period;
 		this.epochs = epochs;
 		this.logger = logger;
 		this.putter_core = putter_core;
@@ -146,7 +146,7 @@ public class M12CoreTrainer {
 					record_max_length_below );
 			
 			spawn.info( "Training." );
-			baum_welch.BaumWelch( logger, graphs, period, epochs, spawn );
+			baum_welch.BaumWelch( logger, graphs, grace_period, epochs, spawn );
 
 			if ( putter_core != null ) {
 				KnittingCursor.wrap( new MarkovSerializer( core ) )

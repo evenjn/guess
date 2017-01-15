@@ -15,11 +15,15 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.maple;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
+import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
+import org.github.evenjn.guess.benchmark.MapleQualityChecker;
+import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.yarn.Cursable;
@@ -27,15 +31,18 @@ import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
 public class M12MapletonQualityChecker<I, O> implements
-		M12FileTrainer.QualityChecker<I, O> {
+		M12QualityChecker<I, O> {
 
 	private final MapleQualityChecker<I, O> mqc;
 
 	public M12MapletonQualityChecker(
 			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
-		mqc = new MapleQualityChecker<>( training_data, test_data,
-				( alphabet, core ) -> new M12Mapleton<I, O>( alphabet, core ) );
+			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data,
+			TupleAligner<I, O> aligner,
+			Function<I, String> a_printer,
+			Function<O, String> b_printer) {
+		mqc = new MapleQualityChecker<>( training_data, test_data, aligner,
+				a_printer, b_printer );
 	}
 
 	public boolean check(
@@ -43,6 +50,7 @@ public class M12MapletonQualityChecker<I, O> implements
 			TupleAlignmentAlphabet<I, O> alphabet,
 			Markov core,
 			ProgressSpawner spawn ) {
-		return mqc.check( logger, alphabet, core, spawn );
+		M12Mapleton<I, O> maple = new M12Mapleton<I, O>( alphabet, core );
+		return mqc.check( logger, alphabet, maple, spawn );
 	}
 }

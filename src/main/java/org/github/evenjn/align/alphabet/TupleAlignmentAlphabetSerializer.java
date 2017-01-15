@@ -19,6 +19,7 @@ package org.github.evenjn.align.alphabet;
 
 import java.util.function.Function;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.Hook;
@@ -56,7 +57,7 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 				if (id >= alphabet.size( )) {
 					throw PastTheEndException.neo;
 				}
-				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> next = alphabet.get( id );
+				Tael<SymbolAbove, SymbolBelow> next = alphabet.get( id );
 				StringBuilder builder = new StringBuilder( );
 				String separator = "";
 				builder.append( id );

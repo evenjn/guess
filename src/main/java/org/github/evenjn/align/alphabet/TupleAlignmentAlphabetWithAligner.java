@@ -20,22 +20,24 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
-implements
-TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
+		implements
+		TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	private TupleAligner<SymbolAbove, SymbolBelow> aligner;
 
@@ -51,18 +53,18 @@ TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 	}
 
 	@Override
-	public void setMinMax( 
+	public void setMinMax(
 			int min_above, int max_above,
 			int min_below, int max_below ) {
 	}
-	
+
 	public void setPrinters(
 			Function<Hook, Consumer<String>> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
-				this.logger = logger;
-				this.a_printer = a_printer;
-				this.b_printer = b_printer;
+		this.logger = logger;
+		this.a_printer = a_printer;
+		this.b_printer = b_printer;
 	}
 
 	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
@@ -72,7 +74,7 @@ TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 				KnittingCursable.wrap( data );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Consumer<String> open_logger = null;
-			if (logger != null) {
+			if ( logger != null ) {
 				open_logger = logger.apply( hook );
 			}
 			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
@@ -81,35 +83,35 @@ TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 					"TupleAlignmentAlphabetWithAligner::build" );
 
 			spawn.info( "Computing dataset size." );
-		  spawn.target( kd.size( ) );
+			spawn.target( kd.size( ) );
 			spawn.info( "Collecting alphabet elements." );
 			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( hook )
 					.once( ) ) {
 
 				spawn.step( 1 );
 
-				try {
-					Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> localAlphabet =
-							TupleAlignmentAlphabetBuilderTools.localAlphabetWithAligner(
-									datum.front( ), datum.back( ), aligner );
-					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
-						result.add( pp );
-					}
+				Tuple<Di<Integer, Integer>> alignment =
+						aligner.align( datum.front( ), datum.back( ) );
+				KnittingTuple<Tael<SymbolAbove, SymbolBelow>> localAlphabet =
+						KnittingTuple.wrap(
+								Tael.tael(
+										datum.front( ), datum.back( ), alignment ) );
+				for ( Tael<SymbolAbove, SymbolBelow> pp : localAlphabet
+						.asIterable( ) ) {
+					result.add( pp );
 				}
-				catch ( NotAlignableException e ) {
-					if ( open_logger != null ) {
-						open_logger.accept( "Not aligneable: " +
-								TupleAlignmentAlphabetBuilderTools.tuple_printer( b_printer,
-										datum.back( ) )
-								+ " "
-								+ TupleAlignmentAlphabetBuilderTools.tuple_printer( a_printer,
-										datum.front( ) ) );
-					}
-					// simply ignore them.
+				if ( alignment.size( ) < 2 && open_logger != null ) {
+
+					open_logger.accept( "Possible degenerate alignment: " +
+							TupleAlignmentAlphabetBuilderTools.tuple_printer( b_printer,
+									datum.back( ) )
+							+ " "
+							+ TupleAlignmentAlphabetBuilderTools.tuple_printer( a_printer,
+									datum.front( ) ) );
 				}
 			}
 			return result;
 		}
-		
+
 	}
 }

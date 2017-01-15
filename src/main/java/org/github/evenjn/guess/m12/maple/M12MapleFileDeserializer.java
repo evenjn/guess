@@ -15,9 +15,10 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.maple;
 
 import java.nio.file.Path;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
@@ -32,18 +33,19 @@ import org.github.evenjn.plaintext.PlainText;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.ProgressSpawner;
 
-public class M12AlignerFileDeserializer {
+public class M12MapleFileDeserializer {
 
-	public static <I, O> M12Aligner<I, O> deserialize(
+	public static <I, O> M12Maple<I, O> deserialize(
 			ProgressSpawner progress_spawner,
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer,
-			Path dojo_path ) {
+			BiFunction<I, I, Boolean> demux,
+			Path training_cache_path ) {
 
 		TupleAlignmentAlphabet<I, O> alphabet;
 		Markov core;
-		Path m12core_stable_file = dojo_path.resolve( "./m12_core.stable.txt" );
-		Path alphabet_stable_file = dojo_path.resolve( "./ta_alphabet.stable.txt" );
+		Path m12core_stable_file = training_cache_path.resolve( "./m12_core.stable.txt" );
+		Path alphabet_stable_file = training_cache_path.resolve( "./ta_alphabet.stable.txt" );
 		FileFool ff = FileFool.nu( );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			/**
@@ -69,6 +71,6 @@ public class M12AlignerFileDeserializer {
 
 			MarkovChecker.check( core );
 		}
-		return new M12Aligner<>( alphabet, core );
+		return new M12Maple<>( alphabet, core, false, progress_spawner );
 	}
 }

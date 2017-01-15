@@ -21,6 +21,7 @@ import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Cursable;
@@ -38,8 +39,8 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 	public TupleAlignmentAlphabetPrebuilder(
 			Iterable<Bi<Tuple<Above>, Tuple<Below>>> data ) {
 		for (Bi<Tuple<Above>, Tuple<Below>> d : data) {
-			TupleAlignmentAlphabetPair<Above, Below> pair
-			= new TupleAlignmentAlphabetPair<>( );
+			Tael<Above, Below> pair
+			= new Tael<>( );
 			pair.above = KnittingTuple.wrap( KnittingTuple.wrap( d.first )
 					.asCursor( ).collect( new Vector<>( ) ) );
 			pair.below = KnittingTuple.wrap( KnittingTuple.wrap( d.second )

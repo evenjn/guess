@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.libra;
 
 import static org.github.evenjn.numeric.NumericLogarithm.elnproduct;
 import static org.github.evenjn.numeric.NumericLogarithm.elnsum;
@@ -69,8 +69,8 @@ public class M12Libra<I, O> {
 				(a, b) -> coalignment_alphabet.encode( a,  b ),
 				above,
 				below,
-				1,
-				1,
+				coalignment_alphabet.getMinAbove( ),
+				coalignment_alphabet.getMaxAbove( ),
 				coalignment_alphabet.getMinBelow( ),
 				coalignment_alphabet.getMaxBelow( ) );
 		

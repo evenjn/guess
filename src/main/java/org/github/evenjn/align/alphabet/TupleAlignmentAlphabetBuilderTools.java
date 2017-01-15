@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.github.evenjn.align.TupleAligner;
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
@@ -21,7 +21,6 @@ import org.github.evenjn.knit.ProgressManager;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -119,7 +118,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 			int min_below,
 			int max_below,
 			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
-			Predicate<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> filter,
+			Predicate<Tael<SymbolAbove, SymbolBelow>> filter,
 			int total,
 			int min_max_total ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
@@ -167,7 +166,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 			int max_below,
 			Tuple<SymbolAbove> above,
 			Tuple<SymbolBelow> below,
-			Predicate<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> filter )
+			Predicate<Tael<SymbolAbove, SymbolBelow>> filter )
 			throws NotAlignableException {
 		BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer> pair_encoder =
 				new BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer>( ) {
@@ -179,8 +178,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 							throw new IllegalArgumentException( );
 						}
 
-						TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
-								new TupleAlignmentAlphabetPair<>( );
+						Tael<SymbolAbove, SymbolBelow> pair =
+								new Tael<>( );
 						pair.above = KnittingTuple.wrap( suba );
 						pair.below = KnittingTuple.wrap( subb );
 						boolean test = filter.test( pair );
@@ -199,44 +198,9 @@ public class TupleAlignmentAlphabetBuilderTools {
 				min_below,
 				max_below );
 	}
-
+                  
 	public static <SymbolAbove, SymbolBelow>
-			Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
-			localAlphabetWithAligner(
-					Tuple<SymbolAbove> above,
-					Tuple<SymbolBelow> below,
-					TupleAligner<SymbolAbove, SymbolBelow> aligner)
-					throws NotAlignableException {
-		LinkedList<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> result =
-				new LinkedList<>( );
-		Tuple<Di<Integer, Integer>> align = aligner.align( above, below );
-		int a_so_far = 0;
-		int b_so_far = 0;
-		for (int i = 0; i < align.size( ); i++) {
-			Di<Integer, Integer> di = align.get( i );
-			
-
-			TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
-					new TupleAlignmentAlphabetPair<>( );
-			if (di.front( ) != 1) {
-				throw NotAlignableException.neo;
-			}
-			Vector<SymbolAbove> suba = KnittingTuple.wrap( above )
-					.head( a_so_far, di.front( ) ).asCursor( ).collect( new Vector<>( ) );
-
-			pair.above = KnittingTuple.wrap( suba );
-			Vector<SymbolBelow> subb = KnittingTuple.wrap( below )
-					.head( b_so_far, di.back( ) ).asCursor( ).collect( new Vector<>( ) );
-			pair.below = KnittingTuple.wrap( subb );
-			a_so_far = a_so_far + di.front( );
-			b_so_far = b_so_far + di.back( );
-			result.add( pair );
-		}
-		return result;
-	}
-
-	public static <SymbolAbove, SymbolBelow>
-			Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
+			Iterable<Tael<SymbolAbove, SymbolBelow>>
 			localAlphabet(
 					int min_above,
 					int max_above,
@@ -251,9 +215,9 @@ public class TupleAlignmentAlphabetBuilderTools {
 		 * appends the requested pair to a buffer vector and returns the size of the
 		 * buffer.
 		 */
-		final Vector<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> buffer =
+		final Vector<Tael<SymbolAbove, SymbolBelow>> buffer =
 				new Vector<>( );
-		LinkedList<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> result =
+		LinkedList<Tael<SymbolAbove, SymbolBelow>> result =
 				new LinkedList<>( );
 		BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer> pair_encoder =
 				new BiFunction<Tuple<SymbolAbove>, Tuple<SymbolBelow>, Integer>( ) {
@@ -264,8 +228,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 						if (suba.size( ) != 1) {
 							throw new IllegalArgumentException( );
 						}
-						TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
-								new TupleAlignmentAlphabetPair<>( );
+						Tael<SymbolAbove, SymbolBelow> pair =
+								new Tael<>( );
 						pair.above = KnittingTuple.wrap( suba );
 						pair.below = KnittingTuple.wrap( subb );
 						buffer.add( pair );
@@ -287,7 +251,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 			TupleAlignmentNode node = forward.next( );
 			for ( int ie = 0; ie < node.number_of_incoming_edges; ie++ ) {
 				int index = node.incoming_edges[ie][2];
-				TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
+				Tael<SymbolAbove, SymbolBelow> pair =
 						buffer.get( index - 1 );
 				result.add( pair );
 			}

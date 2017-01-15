@@ -23,6 +23,7 @@ import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
@@ -65,7 +66,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	/**
 	 * Frequency distribution of all pairs [symbol_above, tuple_of_symbol_below]
 	 */
-	private FrequencyDistribution<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> //
+	private FrequencyDistribution<Tael<SymbolAbove, SymbolBelow>> //
 	fd_all_pairs = new FrequencyDistribution<>( );
 
 	/**
@@ -98,9 +99,9 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	 * 
 	 * @return Pairs Sorted By Descending Frequency
 	 */
-	public KnittingTuple<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>
+	public KnittingTuple<Tael<SymbolAbove, SymbolBelow>>
 			getPairs( ) {
-		KnittingTuple<FrequencyData<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>>> dataSorted =
+		KnittingTuple<FrequencyData<Tael<SymbolAbove, SymbolBelow>>> dataSorted =
 				fd_all_pairs.dataSorted( true );
 		return dataSorted.map( x -> x.front( ) );
 	}
@@ -246,7 +247,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 		}
 	}
 
-	public HashSet<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> complete_alphabet =
+	public HashSet<Tael<SymbolAbove, SymbolBelow>> complete_alphabet =
 			new HashSet<>( );
 
 	private int total;
@@ -286,12 +287,12 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 				try {
 
-					Iterable<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> localAlphabet =
+					Iterable<Tael<SymbolAbove, SymbolBelow>> localAlphabet =
 							TupleAlignmentAlphabetBuilderTools.localAlphabet(
 									min_above, max_above,
 									min_below, max_below, ka, kb );
 
-					for ( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
+					for ( Tael<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
 
 						record( pp.above, pp.below );
 						fd_all_pairs.accept( pp );

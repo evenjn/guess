@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.bw;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -26,11 +26,11 @@ import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.ProgressSpawner;
 
-public class M12CoreTrainerBlueprint {
+public class M12BWCoreTrainerBlueprint {
 
 	private int number_of_states;
 
-	private int period;
+	private int grace_period;
 
 	private int epochs;
 
@@ -44,50 +44,50 @@ public class M12CoreTrainerBlueprint {
 
 	private Consumer<String> logger;
 
-	public M12CoreTrainerBlueprint trainingTime( int period, int epochs ) {
-		this.period = period;
+	public M12BWCoreTrainerBlueprint trainingTime( int grace_period, int epochs ) {
+		this.grace_period = grace_period;
 		this.epochs = epochs;
 		return this;
 	}
 
-	public M12CoreTrainerBlueprint seed( long seed ) {
+	public M12BWCoreTrainerBlueprint seed( long seed ) {
 		this.seed = seed;
 		return this;
 	}
 
-	public M12CoreTrainerBlueprint qualityControl(
+	public M12BWCoreTrainerBlueprint qualityControl(
 			BiFunction<Markov, ProgressSpawner, Boolean> quality_control ) {
 		this.quality_control = quality_control;
 		return this;
 	}
 
-	public M12CoreTrainerBlueprint states( int number_of_states ) {
+	public M12BWCoreTrainerBlueprint states( int number_of_states ) {
 		this.number_of_states = number_of_states;
 		return this;
 	}
 
-	public M12CoreTrainerBlueprint
+	public M12BWCoreTrainerBlueprint
 			logger( Consumer<String> logger ) {
 		this.logger = logger;
 		return this;
 	}
 
-	public M12CoreTrainerBlueprint
+	public M12BWCoreTrainerBlueprint
 			serializeModel( Function<Hook, Consumer<String>> putter_core ) {
 		this.putter_core = putter_core;
 		return this;
 	}
 
-	public M12CoreTrainerBlueprint
+	public M12BWCoreTrainerBlueprint
 			deserializeModel( Cursable<String> reader_coalignments ) {
 		this.reader_core = reader_coalignments;
 		return this;
 	}
 
-	public M12CoreTrainer create( ) {
-		return new M12CoreTrainer(
+	public M12BWCoreTrainer create( ) {
+		return new M12BWCoreTrainer(
 				number_of_states,
-				period,
+				grace_period,
 				epochs,
 				logger,
 				putter_core,

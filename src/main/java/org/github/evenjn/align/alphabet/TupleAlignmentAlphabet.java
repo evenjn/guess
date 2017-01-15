@@ -23,12 +23,13 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.function.BiFunction;
 
+import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 
-	private Vector<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>> alphabet =
+	private Vector<Tael<SymbolAbove, SymbolBelow>> alphabet =
 			new Vector<>( );
 
 	private HashMap<Tuple<SymbolAbove>, HashSet<Tuple<SymbolBelow>>> map_above_to_below =
@@ -43,14 +44,18 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 	private HashSet<Tuple<SymbolBelow>> below_set = new HashSet<>( );
 
 	
-	private int min_below = 0;
+	private int min_above = -1;
+	
+	private int max_above = 0;
+	
+	private int min_below = -1;
 	
 	private int max_below = 0;
 
-	private HashMap<TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow>, Integer> encode_map =
+	private HashMap<Tael<SymbolAbove, SymbolBelow>, Integer> encode_map =
 			new HashMap<>( );
 
-	int add( TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair ) {
+	int add( Tael<SymbolAbove, SymbolBelow> pair ) {
 		Integer integer = encode_map.get( pair );
 		if (integer != null) {
 			return integer;
@@ -59,6 +64,14 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		alphabet.add( pair );
 
 		Tuple<SymbolAbove> kabove = pair.above;
+
+		if (min_above == -1 || min_above > kabove.size( )) {
+			min_above = kabove.size( );
+		}
+		if (max_above < kabove.size( )) {
+			max_above = kabove.size( );
+		}
+		
 		HashSet<Tuple<SymbolBelow>> m = map_above_to_below.get( kabove );
 		if ( m == null ) {
 			m = new HashSet<>( );
@@ -75,7 +88,7 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		}
 		
 		m.add( pair.below );
-		if (min_below > pair.below.size( )) {
+		if (min_below == -1 || min_below > pair.below.size( )) {
 			min_below = pair.below.size( );
 		}
 		if (max_below < pair.below.size( )) {
@@ -99,12 +112,20 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 	public int getMaxBelow() {
 		return max_below;
 	}
+	
+	public int getMinAbove() {
+		return min_above;
+	}
+
+	public int getMaxAbove() {
+		return max_above;
+	}
 
 	public Set<Tuple<SymbolBelow>> correspondingBelow( Tuple<SymbolAbove> above ) {
 		return map_above_to_below.get( above );
 	}
 
-	public TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> get( int t ) {
+	public Tael<SymbolAbove, SymbolBelow> get( int t ) {
 		return alphabet.get( t );
 	}
 
@@ -117,8 +138,8 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 	}
 
 	public Integer encode( Tuple<SymbolAbove> above, Tuple<SymbolBelow> below ) {
-		TupleAlignmentAlphabetPair<SymbolAbove, SymbolBelow> pair =
-				new TupleAlignmentAlphabetPair<>( );
+		Tael<SymbolAbove, SymbolBelow> pair =
+				new Tael<>( );
 		if (above.size( ) != 1) {
 			throw new IllegalArgumentException( );
 		}

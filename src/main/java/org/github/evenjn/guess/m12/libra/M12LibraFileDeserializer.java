@@ -15,10 +15,9 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12;
+package org.github.evenjn.guess.m12.libra;
 
 import java.nio.file.Path;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
@@ -33,13 +32,12 @@ import org.github.evenjn.plaintext.PlainText;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.ProgressSpawner;
 
-public class M12MapleFileDeserializer {
+public class M12LibraFileDeserializer {
 
-	public static <I, O> M12Maple<I, O> deserialize(
+	public static <I, O> M12Libra<I, O> deserialize(
 			ProgressSpawner progress_spawner,
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer,
-			BiFunction<I, I, Boolean> demux,
 			Path training_cache_path ) {
 
 		TupleAlignmentAlphabet<I, O> alphabet;
@@ -71,6 +69,6 @@ public class M12MapleFileDeserializer {
 
 			MarkovChecker.check( core );
 		}
-		return new M12Maple<>( alphabet, core, false, progress_spawner );
+		return new M12Libra<>( alphabet, core );
 	}
 }
