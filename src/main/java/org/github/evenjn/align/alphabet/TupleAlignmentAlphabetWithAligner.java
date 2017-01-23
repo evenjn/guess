@@ -26,7 +26,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
@@ -79,7 +79,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 			}
 			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 					new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetWithAligner::build" );
 
 			spawn.info( "Computing dataset size." );

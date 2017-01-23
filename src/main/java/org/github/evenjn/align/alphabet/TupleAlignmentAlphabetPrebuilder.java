@@ -41,9 +41,9 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 		for (Bi<Tuple<Above>, Tuple<Below>> d : data) {
 			Tael<Above, Below> pair
 			= new Tael<>( );
-			pair.above = KnittingTuple.wrap( KnittingTuple.wrap( d.first )
+			pair.above = KnittingTuple.wrap( KnittingTuple.wrap( d.front( ) )
 					.asCursor( ).collect( new Vector<>( ) ) );
-			pair.below = KnittingTuple.wrap( KnittingTuple.wrap( d.second )
+			pair.below = KnittingTuple.wrap( KnittingTuple.wrap( d.back( ) )
 					.asCursor( ).collect( new Vector<>( ) ) );
 			result.add( pair );
 		}

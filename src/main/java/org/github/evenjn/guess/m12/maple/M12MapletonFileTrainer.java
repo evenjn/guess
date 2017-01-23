@@ -24,7 +24,7 @@ import org.github.evenjn.guess.m12.M12FileTrainer;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Progress;
@@ -53,7 +53,7 @@ public class M12MapletonFileTrainer<I, O> {
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
 			M12QualityChecker<I, O> checker ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress progress = ProgressManager
+			Progress progress = SafeProgressSpawner
 					.safeSpawn( hook, progress_spawner, "M12MapletonFileTrainer::train" );
 			file_trainer.train( progress, filefool, data, checker );
 			M12Mapleton<I, O> maple = M12MapletonFileDeserializer.deserialize(

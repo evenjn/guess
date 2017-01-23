@@ -110,8 +110,7 @@ public class NumericUtils {
 				result = input;
 			}
 		}
-		bi.first = result;
-		bi.second = max;
+		bi.set( result, max );
 	}
 
 	public static <I> I argmax( Iterable<I> set, Function<I, Double> function ) {
@@ -214,24 +213,24 @@ public class NumericUtils {
 
 			@Override
 			public Iterator<Bi<Integer, Integer>> iterator( ) {
-				final Bi<Integer, Integer> bi = new Bi<Integer, Integer>( );
-				bi.first = 0;
-				bi.second = -1;
+				final Bi<Integer, Integer> bi = Bi.nu( 0, -1 );
 				return asIterator( new Cursor<Bi<Integer, Integer>>( ) {
 
 					@Override
 					public Bi<Integer, Integer> next( )
 							throws PastTheEndException {
-						if ( bi.second + 1 == max ) {
-							if ( bi.first + 1 == max )
+						int first = bi.front( );
+						int second = bi.back( );
+						if ( second + 1 == max ) {
+							if ( first + 1 == max )
 								throw PastTheEndException.neo;
-							bi.first = bi.first + 1;
-							bi.second = 0;
+							first = first + 1;
+							second = 0;
 						}
 						else {
-							bi.second = bi.second + 1;
+							second = second + 1;
 						}
-						// System.err.println(bi.first + " " + bi.second);
+						bi.set( first, second );
 						return bi;
 					}
 

@@ -11,7 +11,7 @@ import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.yarn.AutoHook;
@@ -48,7 +48,7 @@ public class M12VCoreBuilder {
 			ProgressSpawner progress_spawner ) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
 			int data_size = observed_cursable.size( );
 			if ( logger != null ) {

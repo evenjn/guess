@@ -29,7 +29,7 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.DenseMatrix;
 import org.github.evenjn.numeric.Matrix;
 import org.github.evenjn.numeric.NumericLogarithm;
@@ -90,7 +90,7 @@ public class M12Maple<I, O> implements
 
 			double[] buffer = new double[coalignment_alphabet.size( )];
 
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner, "M12Maple::constructor" );
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner, "M12Maple::constructor" );
 			spawn.target( core.number_of_states * coalignment_alphabet.size( ) );
 			/**
 			 * for each state we want to cache: for each symbol above, the probability
@@ -248,6 +248,10 @@ public class M12Maple<I, O> implements
 		return result;
 	}
 
+	/**
+	 * The classic viterbi algorithm.
+	 * 
+	 */
 	public Vector<Integer> mostLikelySequenceOfStates(
 			Tuple<? extends I> observed ) {
 

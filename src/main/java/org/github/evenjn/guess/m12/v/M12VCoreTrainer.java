@@ -29,7 +29,7 @@ import org.github.evenjn.guess.markov.MarkovSerializer;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
@@ -70,7 +70,7 @@ public class M12VCoreTrainer {
 			ProgressSpawner progress_spawner ) {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"M12VCoreTrainer::prepareCore" );
 
 			Markov core = null;

@@ -87,9 +87,9 @@ public class FrequencyDistributionPlot<K> {
 			@Override
 			public int compare( Bi<K, Integer> o1, Bi<K, Integer> o2 ) {
 				if ( comparator != null ) {
-					return comparator.compare( o1.first, o2.first );
+					return comparator.compare( o1.front( ), o2.front( ) );
 				}
-				return o2.second.compareTo( o1.second );
+				return o2.back( ).compareTo( o1.back( ) );
 			}
 		} );
 		return data;
@@ -105,7 +105,7 @@ public class FrequencyDistributionPlot<K> {
 				break;
 			}
 			int len = 0;
-			double n = d.second;
+			double n = d.back( );
 			if ( display_fraction ) {
 				sb.append( numeral_printer.apply( n ) ).append( " " );
 				String percent = numeral_printer.apply( n / denominator );
@@ -113,7 +113,7 @@ public class FrequencyDistributionPlot<K> {
 				len = percent.length( ) + 1;
 			}
 			else {
-				String num = "" + d.second;
+				String num = "" + d.back( );
 				sb.append( num ).append( " " );
 				len = num.length( ) + 1;
 			}
@@ -134,7 +134,7 @@ public class FrequencyDistributionPlot<K> {
 				len++;
 			}
 			sb.append( "| " );
-			sb.append( labels.apply( d.first ) );
+			sb.append( labels.apply( d.front( ) ) );
 			sb.append( "\n" );
 			printed++;
 		}

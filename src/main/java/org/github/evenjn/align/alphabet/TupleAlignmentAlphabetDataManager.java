@@ -23,7 +23,7 @@ import java.util.function.Function;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
@@ -157,12 +157,11 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			 */
 			KnittingCursable<Bi<Tuple<I>, Tuple<O>>> map =
 					data
-							.map( x -> ( new Bi<Tuple<I>, Tuple<O>>( )
-									.set( x.front( ), x.back( ) ) ) );
+							.map( x -> ( Bi.nu( x.front( ), x.back( ) ) ) );
 
 			try ( AutoHook hook = new BasicAutoHook( ) ) {
 				Progress spawn =
-						ProgressManager.safeSpawn( hook, progress_spawner, "prepareAlphabet" );
+						SafeProgressSpawner.safeSpawn( hook, progress_spawner, "prepareAlphabet" );
 
 				spawn.info( "Computing dataset size." );
 				int size = data.size( );

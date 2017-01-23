@@ -33,8 +33,7 @@ import org.github.evenjn.guess.m12.M12FileTrainer;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
-import org.github.evenjn.knit.ProgressManager;
-import org.github.evenjn.knit.Suppressor;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.plaintext.PlainText;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
@@ -111,7 +110,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 		mvctb.serializeModel( null );
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress progress = ProgressManager
+			Progress progress = SafeProgressSpawner
 					.safeSpawn( hook, progress_spawner, "M12VFileTrainer::train" );
 
 			/**
@@ -276,7 +275,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 			}
 		}
 		catch ( IOException t ) {
-			throw Suppressor.quit( t );
+			throw new RuntimeException( t );
 		}
 	}
 }

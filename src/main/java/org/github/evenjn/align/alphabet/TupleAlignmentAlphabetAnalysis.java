@@ -29,7 +29,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.FrequencyData;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.AutoHook;
@@ -275,7 +275,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetAnalysis::computeCompleteAlphabet" );
 			int not_aligneable = 0;
 			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable

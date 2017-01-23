@@ -17,7 +17,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
@@ -54,7 +54,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 			int total ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilderTools::computeMinMaxCoverage" )
 					.target( total );
 			int not_aligneable = 0;
@@ -122,7 +122,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 			int total,
 			int min_max_total ) {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilderTools::computeCoverage" )
 					.target( total );
 			int not_aligneable = 0;

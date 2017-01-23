@@ -8,7 +8,7 @@ import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
@@ -59,7 +59,7 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 
 			TupleAlignmentAlphabet<Above, Below> result =
 					new TupleAlignmentAlphabet<Above, Below>( );
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetSimpleBuilder::build" );
 
 			spawn.info( "Computing dataset size." );

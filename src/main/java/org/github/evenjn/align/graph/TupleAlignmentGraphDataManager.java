@@ -27,7 +27,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
@@ -142,7 +142,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kc = KnittingCursable.wrap( data );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn =
-					ProgressManager.safeSpawn( hook, progress_spawner,
+					SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 							"prepareGraphs" );
 			exposed_graphs = prepareGraphs( kc, pair_encoder, spawn );
 		}

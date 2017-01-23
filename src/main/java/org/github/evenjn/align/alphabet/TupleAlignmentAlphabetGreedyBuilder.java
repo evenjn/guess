@@ -27,7 +27,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.knit.ProgressManager;
+import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
@@ -105,7 +105,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 		}
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::shrinkAlphabet" )
 					.target( initial_alphabet.size( ) );
 
@@ -206,7 +206,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			int total_candidates = analysis.getTotalNumberOfCandidatePairs( );
 			int batch_size = 0;
 
-			Progress spawn = ProgressManager.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::growAlphabetQuickly" )
 					.target( analysis.getTotalAligneable( ) );
 			int prev = analysis.getTotalAligneable( );
