@@ -45,6 +45,12 @@ public class NumericRandom {
 				return input;
 			}
 
+			@Override
+			public K end( )
+					throws SkipException {
+				throw SkipException.neo;
+			}
+
 		};
 	}
 
@@ -63,6 +69,12 @@ public class NumericRandom {
 				return input;
 			}
 
+			@Override
+			public K end( )
+					throws SkipException {
+				throw SkipException.neo;
+			}
+
 		};
 	}
 
@@ -79,6 +91,12 @@ public class NumericRandom {
 					throw SkipException.neo;
 				}
 				return input;
+			}
+
+			@Override
+			public K end( )
+					throws SkipException {
+				throw SkipException.neo;
 			}
 
 		};

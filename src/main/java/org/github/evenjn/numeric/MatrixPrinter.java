@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 
 public class MatrixPrinter {
 
@@ -79,7 +79,7 @@ public class MatrixPrinter {
 						sb.append( " " );
 					}
 				}
-				catch ( PastTheEndException e ) {
+				catch ( EndOfCursorException e ) {
 					throw new IllegalArgumentException( );
 				}
 

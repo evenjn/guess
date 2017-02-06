@@ -25,7 +25,7 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.benchmark.MapleQualityChecker;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.Bi;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;

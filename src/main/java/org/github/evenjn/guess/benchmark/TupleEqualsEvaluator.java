@@ -20,10 +20,10 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.knit.BasicAutoHook;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Tuple;
 

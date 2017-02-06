@@ -28,8 +28,8 @@ import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.numeric.NumericLogarithm;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Tuple;
 
 public class M12Libra<I, O> {

@@ -41,7 +41,7 @@ import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.SixCharFormat;
 import org.github.evenjn.yarn.AutoHook;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 
@@ -215,7 +215,7 @@ public class M12BaumWelch {
 						summation.add( probability_of_this_graph[0] );
 						total++;
 					}
-					catch ( PastTheEndException e ) {
+					catch ( EndOfCursorException e ) {
 						throw new IllegalArgumentException( "Empty training set" );
 					}
 

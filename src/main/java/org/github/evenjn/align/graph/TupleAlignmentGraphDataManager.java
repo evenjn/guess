@@ -18,23 +18,23 @@
 package org.github.evenjn.align.graph;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.github.evenjn.knit.BasicAutoHook;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.OptionMap;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.SkipException;
-import org.github.evenjn.yarn.SkipMap;
 import org.github.evenjn.yarn.Tuple;
 
 /**
@@ -188,25 +188,24 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 					KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> data,
 					BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 					Progress progress ) {
-		SkipMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph> skipMap =
-				new SkipMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph>( ) {
+		OptionMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph> optmap =
+				new OptionMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph>( ) {
 
 					@Override
-					public TupleAlignmentGraph get(
-							Bi<Tuple<Above>, Tuple<Below>> x )
-							throws SkipException {
+					public Optional<TupleAlignmentGraph> get(
+							Bi<Tuple<Above>, Tuple<Below>> x )  {
 						try {
-							return TupleAlignmentGraphFactory.graph(
+							return Optional.of(TupleAlignmentGraphFactory.graph(
 									pair_encoder,
 									x.front( ),
 									x.back( ),
 									min_above,
 									max_above,
 									min_below,
-									max_below );
+									max_below ));
 						}
 						catch ( NotAlignableException e ) {
-							throw SkipException.neo;
+							return Optional.empty( );
 						}
 					}
 				};
@@ -231,12 +230,12 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				
 				progress.info( "Computing limits." );
 				computeLimits( progress,
-						data.tap( x -> progress.step( 1 ) ).skipmap( skipMap ) );
+						data.tap( x -> progress.step( 1 ) ).flatmapOptional( optmap ) );
 				
 				progress.info( "Caching graphs." );
 				KnittingCursable<TupleAlignmentGraph> graphs_to_write = data
 						.tap( x -> progress.step( 1 ) )
-						.skipmap( skipMap );
+						.flatmapOptional( optmap );
 
 				StringBuilder header = new StringBuilder( );
 				header.append( record_max_length_front );
@@ -248,7 +247,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 					KnittingCursor.on( header.toString( ) ).chain(
 							graphs_to_write
 									.pull( hook )
-									.unfoldCursable(
+									.flatmapIterable(
 											x -> new TupleAlignmentGraphSerializer( x ) ) )
 							.consume( putter_coalignment_graphs );
 				}
@@ -292,9 +291,9 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				progress.target( progress_target );
 				progress.info( "Computing limits." );
 				computeLimits( progress,
-						data.tap( x -> progress.step( 1 ) ).skipmap( skipMap ) );
+						data.tap( x -> progress.step( 1 ) ).flatmapOptional( optmap ) );
 			}
-			return data.skipmap( skipMap );
+			return data.flatmapOptional( optmap );
 		}
 	}
 }

@@ -17,14 +17,17 @@
  */
 package org.github.evenjn.align.graph;
 
+import java.util.Iterator;
+
+import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.Hook;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 
 public class TupleAlignmentGraphSerializer
 		implements
-		Cursable<String> {
+		Iterable<String> {
 
 	private TupleAlignmentGraph graph;
 
@@ -33,8 +36,8 @@ public class TupleAlignmentGraphSerializer
 	}
 
 	@Override
-	public Cursor<String> pull( Hook hook ) {
-		return new Cursor<String>( ) {
+	public Iterator<String> iterator( ) {
+		return KnittingCursor.wrap(new Cursor<String>( ) {
 
 			boolean started = false;
 
@@ -46,7 +49,7 @@ public class TupleAlignmentGraphSerializer
 
 			@Override
 			public String next( )
-					throws PastTheEndException {
+					throws EndOfCursorException {
 				if ( !started ) {
 					started = true;
 					return "";
@@ -78,9 +81,9 @@ public class TupleAlignmentGraphSerializer
 					}
 					b = 0;
 				}
-				throw PastTheEndException.neo;
+				throw EndOfCursorException.neo();
 			}
-		};
+		}).asIterator( );
 	}
 
 }

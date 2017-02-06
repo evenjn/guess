@@ -21,10 +21,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.knit.BasicAutoHook;
-import org.github.evenjn.knit.Bi;
+import org.github.evenjn.knit.Bik;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
@@ -157,7 +158,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			 */
 			KnittingCursable<Bi<Tuple<I>, Tuple<O>>> map =
 					data
-							.map( x -> ( Bi.nu( x.front( ), x.back( ) ) ) );
+							.map( x -> ( Bik.nu( x.front( ), x.back( ) ) ) );
 
 			try ( AutoHook hook = new BasicAutoHook( ) ) {
 				Progress spawn =

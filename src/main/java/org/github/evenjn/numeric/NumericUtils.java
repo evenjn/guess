@@ -22,10 +22,11 @@ import java.util.LinkedList;
 import java.util.Vector;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.Bi;
+import org.github.evenjn.knit.Bik;
 import org.github.evenjn.knit.KnittingCursor;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 
 public class NumericUtils {
 
@@ -94,8 +95,7 @@ public class NumericUtils {
 	}
 
 
-	public static <I> void argmax( Function<I, Double> function, Cursor<I> set,
-			Bi<I, Double> bi ) {
+	public static <I> Bi<I, Double> argmax( Function<I, Double> function, Cursor<I> set ) {
 		double max = 0d;
 		I result = null;
 		for ( I input : KnittingCursor.wrap( set ).once( ) ) {
@@ -110,7 +110,7 @@ public class NumericUtils {
 				result = input;
 			}
 		}
-		bi.set( result, max );
+		return Bik.nu( result, max );
 	}
 
 	public static <I> I argmax( Iterable<I> set, Function<I, Double> function ) {
@@ -213,17 +213,17 @@ public class NumericUtils {
 
 			@Override
 			public Iterator<Bi<Integer, Integer>> iterator( ) {
-				final Bi<Integer, Integer> bi = Bi.nu( 0, -1 );
+				final Bik<Integer, Integer> bi = Bik.nu( 0, -1 );
 				return asIterator( new Cursor<Bi<Integer, Integer>>( ) {
 
 					@Override
 					public Bi<Integer, Integer> next( )
-							throws PastTheEndException {
+							throws EndOfCursorException {
 						int first = bi.front( );
 						int second = bi.back( );
 						if ( second + 1 == max ) {
 							if ( first + 1 == max )
-								throw PastTheEndException.neo;
+								throw EndOfCursorException.neo();
 							first = first + 1;
 							second = 0;
 						}
@@ -261,9 +261,9 @@ public class NumericUtils {
 
 					@Override
 					public Integer next( )
-							throws PastTheEndException {
+							throws EndOfCursorException {
 						if ( current >= to )
-							throw PastTheEndException.neo;
+							throw EndOfCursorException.neo();
 						return current++;
 					}
 				} );
@@ -286,9 +286,9 @@ public class NumericUtils {
 
 					@Override
 					public Long next( )
-							throws PastTheEndException {
+							throws EndOfCursorException {
 						if ( current >= to )
-							throw PastTheEndException.neo;
+							throw EndOfCursorException.neo();
 						return current++;
 					}
 				} );

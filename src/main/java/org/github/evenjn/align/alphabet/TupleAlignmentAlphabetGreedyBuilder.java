@@ -24,16 +24,16 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.BasicAutoHook;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.Hook;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -309,9 +309,9 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			
 			@Override
 			public Tael<SymbolAbove, SymbolBelow> next( )
-					throws PastTheEndException {
+					throws EndOfCursorException {
 				if (retrieved >= total_symbols) {
-					throw PastTheEndException.neo;
+					throw EndOfCursorException.neo();
 				}
 				Tael<SymbolAbove, SymbolBelow> result = null;
 				for ( ; result == null; ) {

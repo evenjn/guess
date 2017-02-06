@@ -27,13 +27,13 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.numeric.SixCharFormat;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Tuple;
 

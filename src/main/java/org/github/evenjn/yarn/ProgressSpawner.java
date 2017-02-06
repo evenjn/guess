@@ -1,6 +1,6 @@
 /**
  *
- * Copyright 2016 Marco Trevisan
+ * Copyright 2017 Marco Trevisan
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,10 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess;
+package org.github.evenjn.yarn;
 
-import org.github.evenjn.yarn.Bi;
-import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
+@Deprecated
+public interface ProgressSpawner {
 
-/**
- * A Teacher is a system that produces a discriminative model.
- * 
- * Produces a function that returns the probability of Output conditional to
- * Input.
- */
-public interface Teacher<I, O> {
-
-	Libra<Bi<I, O>> teach(
-			ProgressSpawner progress_spawner,
-			Cursable<Bi<I, O>> data );
+	Progress spawn( Hook hook, String name );
 }

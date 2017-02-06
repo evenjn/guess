@@ -19,7 +19,7 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.knit.Bi;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 
 public interface Evaluator<I, O> {

@@ -3,7 +3,7 @@ package org.github.evenjn.guess.m12;
 import java.util.function.Function;
 
 import org.github.evenjn.file.FileFool;
-import org.github.evenjn.knit.Bi;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;

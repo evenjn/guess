@@ -18,7 +18,7 @@
 package org.github.evenjn.guess.markov;
 
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 
 public class MarkovSerializer implements
 		Cursor<String> {
@@ -39,7 +39,7 @@ public class MarkovSerializer implements
 
 	@Override
 	public String next( )
-			throws PastTheEndException {
+			throws EndOfCursorException {
 		if ( step == 4 ) {
 			step = 3;
 			return "" + core.number_of_states + " " + core.number_of_symbols;
@@ -78,7 +78,7 @@ public class MarkovSerializer implements
 			step = 0;
 			return "---" + step + "---";
 		}
-		throw PastTheEndException.neo;
+		throw EndOfCursorException.neo();
 	}
 
 }

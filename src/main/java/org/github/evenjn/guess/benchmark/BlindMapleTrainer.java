@@ -20,10 +20,10 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -43,7 +43,7 @@ public class BlindMapleTrainer<I, O> implements
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
 		KnittingCursable.wrap( data )
 		.flatmapCursable( d -> KnittingTuple.wrap( d.back( ) ).asCursable( ) )
-		.tap( fd ).consume( );
+		.tap( fd ).roll( );
 		O mostFrequent = fd.getMostFrequent( );
 						
 

@@ -23,7 +23,7 @@ import org.github.evenjn.align.Tael;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.Hook;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 
 public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 		implements Cursable<String> {
@@ -53,9 +53,9 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 
 			@Override
 			public String next( )
-					throws PastTheEndException {
+					throws EndOfCursorException {
 				if (id >= alphabet.size( )) {
-					throw PastTheEndException.neo;
+					throw EndOfCursorException.neo();
 				}
 				Tael<SymbolAbove, SymbolBelow> next = alphabet.get( id );
 				StringBuilder builder = new StringBuilder( );

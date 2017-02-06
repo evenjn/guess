@@ -17,10 +17,7 @@
  */
 package org.github.evenjn.align.graph;
 
-import org.github.evenjn.align.graph.NotAlignableException;
-import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.align.graph.TupleAlignmentGraph;
 
 public class DisplayAlignmentGraph {
 

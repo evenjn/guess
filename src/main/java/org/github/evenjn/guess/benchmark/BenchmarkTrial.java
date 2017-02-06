@@ -24,7 +24,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 import org.github.evenjn.yarn.Progress;
 
 public class BenchmarkTrial<I, O> {
@@ -110,7 +110,7 @@ public class BenchmarkTrial<I, O> {
 					}
 				}
 			}
-			catch ( PastTheEndException e ) {
+			catch ( EndOfCursorException e ) {
 			}
 			
 

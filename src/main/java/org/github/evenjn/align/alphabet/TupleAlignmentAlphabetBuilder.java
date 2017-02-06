@@ -20,7 +20,7 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.Bi;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.ProgressSpawner;

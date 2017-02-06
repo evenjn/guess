@@ -20,9 +20,9 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.knit.Bi;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.numeric.FrequencyDistribution;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
 
@@ -38,7 +38,7 @@ public class BlindGuesserTrainer<I, O> implements
 			ProgressSpawner progress_spawner,
 			Cursable<Bi<I, O>> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
-		KnittingCursable.wrap( data ).map( d -> d.back( ) ).tap( fd ).consume( );
+		KnittingCursable.wrap( data ).map( d -> d.back( ) ).tap( fd ).roll( );
 		return x -> fd.getMostFrequent( );
 	}
 

@@ -19,7 +19,8 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.knit.Bi;
+import org.github.evenjn.knit.Bik;
+import org.github.evenjn.yarn.Bi;
 
 public class BenchmarkDatum<I, O> {
 
@@ -34,7 +35,7 @@ public class BenchmarkDatum<I, O> {
 			Function<K, I> observer, Function<K, O> teacher ) {
 		I input = observer.apply( k );
 		O gold = teacher.apply( k );
-		return Bi.nu( input, gold );
+		return Bik.nu( input, gold );
 	}
 
 	public I observed;
@@ -48,11 +49,11 @@ public class BenchmarkDatum<I, O> {
 	}
 
 	public Bi<I, O> asGoodTeacherWouldTell( ) {
-		return Bi.nu( observed, good_teacher );
+		return Bik.nu( observed, good_teacher );
 	}
 
 	public Bi<I, O> asBadTeacherWouldTell( ) {
-		return Bi.nu( observed, bad_teacher );
+		return Bik.nu( observed, bad_teacher );
 	}
 
 	public BenchmarkDatum(I observed, O good_teacher, O bad_teacher) {

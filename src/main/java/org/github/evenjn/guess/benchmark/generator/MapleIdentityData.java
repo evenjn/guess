@@ -23,7 +23,7 @@ import java.util.Vector;
 import org.github.evenjn.guess.benchmark.BenchmarkDatum;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 import org.github.evenjn.yarn.Tuple;
 
 /**
@@ -54,7 +54,7 @@ public class MapleIdentityData implements
 	@Override
 	public BenchmarkDatum<Tuple<Boolean>, Tuple<Boolean>>
 			next( )
-					throws PastTheEndException {
+					throws EndOfCursorException {
 
 		int size = 20 + input_size.nextInt( 10 );
 

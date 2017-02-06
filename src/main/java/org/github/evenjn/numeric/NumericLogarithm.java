@@ -22,7 +22,7 @@ import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.PastTheEndException;
+import org.github.evenjn.yarn.EndOfCursorException;
 
 public class NumericLogarithm {
 
@@ -94,7 +94,7 @@ public class NumericLogarithm {
 						max = v;
 					}
 				}
-				catch ( PastTheEndException e ) {
+				catch ( EndOfCursorException e ) {
 					break;
 				}
 			}
@@ -112,7 +112,7 @@ public class NumericLogarithm {
 					double raised = Math.exp( dif );
 					sum += raised;
 				}
-				catch ( PastTheEndException e ) {
+				catch ( EndOfCursorException e ) {
 					break;
 				}
 			}
