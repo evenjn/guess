@@ -202,7 +202,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 				 */
 				coalignment_alphabet = KnittingCursable
 						.wrap( reader ).pull( hook )
-						.skipfold( new TupleAlignmentAlphabetDeserializer<>(
+						.purlOptional( new TupleAlignmentAlphabetDeserializer<>(
 								a_deserializer,
 								b_deserializer ) )
 						.one( );

@@ -17,11 +17,12 @@
  */
 package org.github.evenjn.guess.markov;
 
-import org.github.evenjn.yarn.SkipException;
-import org.github.evenjn.yarn.SkipFold;
+import java.util.Optional;
+
+import org.github.evenjn.yarn.OptionalPurl;
 
 public class MarkovDeserializer implements
-		SkipFold<String, Markov> {
+		OptionalPurl<String, Markov> {
 
 	private int step = 4;
 
@@ -34,17 +35,15 @@ public class MarkovDeserializer implements
 	private int state_d = 0;
 
 	@Override
-	public Markov end( )
-			throws SkipException {
+	public Optional<Markov> end( ) {
 		if ( core == null ) {
 			throw new IllegalArgumentException( );
 		}
-		return core;
+		return Optional.of( core );
 	}
 
 	@Override
-	public Markov next( String object )
-			throws SkipException {
+	public Optional<Markov> next( String object ) {
 		try {
 			if ( step == 4 ) {
 				step = 3;
@@ -52,21 +51,21 @@ public class MarkovDeserializer implements
 				core = new Markov(
 						Integer.parseInt( object.substring( 0, indexOf ) ),
 						Integer.parseInt( object.substring( indexOf + 1 ) ) );
-				throw SkipException.neo;
+				return Optional.empty( );
 			}
 			if ( step == 3 ) {
 				/* initial */
 				if ( state_s < core.number_of_states ) {
 					double val = Double.parseDouble( object );
 					core.initial_table[state_s++] = val;
-					throw SkipException.neo;
+					return Optional.empty( );
 				}
 				step = 2;
 				state_s = 0;
 				if ( !object.equals( "---" + step + "---" ) ) {
 					throw new IllegalArgumentException( );
 				}
-				throw SkipException.neo;
+				return Optional.empty( );
 			}
 			if ( step == 2 ) {
 				/* transition */
@@ -74,7 +73,7 @@ public class MarkovDeserializer implements
 					if ( state_d < core.number_of_states ) {
 						double val = Double.parseDouble( object );
 						core.transition_table[state_s][state_d++] = val;
-						throw SkipException.neo;
+						return Optional.empty( );
 					}
 					state_d = 0;
 					state_s++;
@@ -84,7 +83,7 @@ public class MarkovDeserializer implements
 				if ( !object.equals( "---" + step + "---" ) ) {
 					throw new IllegalArgumentException( );
 				}
-				throw SkipException.neo;
+				return Optional.empty( );
 			}
 			if ( step == 1 ) {
 				/* emission */
@@ -92,7 +91,7 @@ public class MarkovDeserializer implements
 					if ( state_s < core.number_of_states ) {
 						double val = Double.parseDouble( object );
 						core.emission_table[state_s++][symbol] = val;
-						throw SkipException.neo;
+						return Optional.empty( );
 					}
 					state_s = 0;
 					symbol++;
@@ -101,12 +100,12 @@ public class MarkovDeserializer implements
 				if ( !object.equals( "---" + step + "---" ) ) {
 					throw new IllegalArgumentException( );
 				}
-				throw SkipException.neo;
+				return Optional.empty( );
 			}
 		}
 		catch ( IndexOutOfBoundsException | NumberFormatException t ) {
 			throw new IllegalArgumentException( object, t );
 		}
-		throw SkipException.neo;
+		return Optional.empty( );
 	}
 }

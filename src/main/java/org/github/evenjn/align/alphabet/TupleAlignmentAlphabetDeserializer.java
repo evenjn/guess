@@ -17,18 +17,18 @@
  */
 package org.github.evenjn.align.alphabet;
 
+import java.util.Optional;
 import java.util.Vector;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.SkipException;
-import org.github.evenjn.yarn.SkipFold;
+import org.github.evenjn.yarn.OptionalPurl;
 
 public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 		implements
-		SkipFold<String, TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>> {
+		OptionalPurl<String, TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>> {
 
 	private final Function<String, SymbolAbove> a_deserializer;
 
@@ -42,12 +42,12 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 	private boolean closed = false;
 
 	@Override
-	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> end( ) {
+	public Optional<TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>> end( ) {
 		if ( closed ) {
 			throw new IllegalStateException( );
 		}
 		closed = true;
-		return result;
+		return Optional.of( result );
 	}
 
 	public TupleAlignmentAlphabetDeserializer(
@@ -58,14 +58,13 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 	}
 
 	@Override
-	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> next( String object )
-			throws SkipException {
+	public Optional<TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>> next( String object )  {
 		if ( closed ) {
 			throw new IllegalStateException( );
 		}
 		Tael<SymbolAbove, SymbolBelow> cp =
 				new Tael<>( );
-		
+
 		int prev_stop = 0;
 		int next_stop = object.indexOf( ';', prev_stop );
 		if ( next_stop == -1 ) {
@@ -84,32 +83,31 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 			}
 			cp.below = KnittingTuple.wrap( below );
 			result.add( cp );
-			throw SkipException.neo;
+			return Optional.empty( );
 		}
-		
-		String chunk = object.substring( prev_stop, next_stop ); 
-		
+
+		String chunk = object.substring( prev_stop, next_stop );
+
 		int id = Integer.parseInt( chunk );
 		if ( result.size( ) != id ) {
 			throw new IllegalStateException( );
 		}
 
 		prev_stop = next_stop + 1;
-		next_stop = object.indexOf( ';', prev_stop);
+		next_stop = object.indexOf( ';', prev_stop );
 		chunk = object.substring( prev_stop, next_stop );
-		
-		
+
 		String[] split;
-		
+
 		Vector<SymbolAbove> above = new Vector<>( );
 		if ( !chunk.isEmpty( ) ) {
 			split = splitter.split( chunk );
-		for ( int i = 0; i < split.length; i++ ) {
-			above.add( a_deserializer.apply( split[i] ) );
-		}
+			for ( int i = 0; i < split.length; i++ ) {
+				above.add( a_deserializer.apply( split[i] ) );
+			}
 		}
 		prev_stop = next_stop + 1;
-		next_stop = object.indexOf( ';', prev_stop);
+		next_stop = object.indexOf( ';', prev_stop );
 		chunk = object.substring( prev_stop, next_stop );
 
 		Vector<SymbolBelow> below = new Vector<>( );
@@ -119,11 +117,11 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 				below.add( b_deserializer.apply( split[i] ) );
 			}
 		}
-		
+
 		cp.above = KnittingTuple.wrap( above );
 		cp.below = KnittingTuple.wrap( below );
 		result.add( cp );
-		throw SkipException.neo;
+		return Optional.empty( );
 	}
 
 }

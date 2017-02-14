@@ -56,7 +56,7 @@ public class M12MapleFileDeserializer {
 					.wrap( h -> PlainText.reader( )
 							.build( ).get( h, ff.open( alphabet_stable_file ).read( h ) ) )
 					.pull( hook )
-					.skipfold( new TupleAlignmentAlphabetDeserializer<>(
+					.purlOptional( new TupleAlignmentAlphabetDeserializer<>(
 							a_deserializer,
 							b_deserializer ) )
 					.one( );
@@ -66,7 +66,7 @@ public class M12MapleFileDeserializer {
 					.wrap( h -> PlainText.reader( )
 							.build( ).get( h, ff.open( m12core_stable_file ).read( h ) ) )
 					.pull( hook )
-					.skipfold( new MarkovDeserializer( ) )
+					.purlOptional( new MarkovDeserializer( ) )
 					.one( );
 
 			MarkovChecker.check( core );

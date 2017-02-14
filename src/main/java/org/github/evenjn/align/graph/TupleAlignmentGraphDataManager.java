@@ -244,7 +244,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				header.append( "," );
 				header.append( record_max_number_of_edges );
 				try ( AutoHook hook = new BasicAutoHook( ) ) {
-					KnittingCursor.on( header.toString( ) ).chain(
+					KnittingCursor.on( header.toString( ) ).append(
 							graphs_to_write
 									.pull( hook )
 									.flatmapIterable(
@@ -275,7 +275,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			return KnittingCursable
 					.wrap( reader_coalignment_graphs )
 					.headless( 1 )
-					.skipfold( ( ) -> new TupleAlignmentGraphDeserializer(
+					.purlOptional( ( ) -> new TupleAlignmentGraphDeserializer(
 							record_max_length_front,
 							record_max_length_back ) );
 		}

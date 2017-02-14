@@ -98,7 +98,7 @@ public class M12VCoreTrainer {
 					core = KnittingCursable
 							.wrap( reader_core )
 							.pull( hook2 )
-							.skipfold( new MarkovDeserializer( ) )
+							.purlOptional( new MarkovDeserializer( ) )
 							.one( );
 
 					MarkovChecker.check( core );
