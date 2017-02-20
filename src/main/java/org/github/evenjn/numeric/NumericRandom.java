@@ -22,85 +22,8 @@ import java.util.Random;
 import java.util.function.Function;
 
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.SkipException;
-import org.github.evenjn.yarn.SkipFold;
 
 public class NumericRandom {
-
-	public static <K> SkipFold<K, K> filterPartition(
-			int partition_id,
-			int number_of_partitions,
-			boolean match_means_skip,
-			long seed ) {
-		Random random = new Random( seed );
-		return new SkipFold<K, K>( ) {
-
-			@Override
-			public K next( K input )
-					throws SkipException {
-				if ( match_means_skip == ( random
-						.nextInt( number_of_partitions ) == partition_id ) ) {
-					throw SkipException.neo;
-				}
-				return input;
-			}
-
-			@Override
-			public K end( )
-					throws SkipException {
-				throw SkipException.neo;
-			}
-
-		};
-	}
-
-	public static <K> SkipFold<K, K> filterBlockFraction(
-			int permille,
-			long seed ) {
-		Random random = new Random( seed );
-		return new SkipFold<K, K>( ) {
-
-			@Override
-			public K next( K input )
-					throws SkipException {
-				if ( random.nextInt( 1000 ) < permille ) {
-					throw SkipException.neo;
-				}
-				return input;
-			}
-
-			@Override
-			public K end( )
-					throws SkipException {
-				throw SkipException.neo;
-			}
-
-		};
-	}
-
-	public static <K> SkipFold<K, K> filterPassFraction(
-			int permille,
-			long seed ) {
-		Random random = new Random( seed );
-		return new SkipFold<K, K>( ) {
-
-			@Override
-			public K next( K input )
-					throws SkipException {
-				if ( random.nextInt( 1000 ) >= permille ) {
-					throw SkipException.neo;
-				}
-				return input;
-			}
-
-			@Override
-			public K end( )
-					throws SkipException {
-				throw SkipException.neo;
-			}
-
-		};
-	}
 
 	public static RandomProbabilityMassGenerator generator( long seed ) {
 		return new RandomProbabilityMassGenerator( seed );

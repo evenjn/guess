@@ -90,7 +90,7 @@ public class MapleQualityChecker<I, O> {
 			Progress spawn2 = spawn.spawn( hook2, "check" ).target( target );
 			
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
-					.wrap( data ).pull( hook2 ).tap( x->spawn2.step(1) ).once( ) ) {
+					.wrap( data ).pull( hook2 ).peek( x->spawn2.step(1) ).once( ) ) {
 
 				Tuple<O> guess = maple.apply( g.front( ) );
 				evaluation.record( logger, g.front( ), g.back( ), guess );

@@ -184,7 +184,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 									a_serializer,
 									b_serializer );
 					KnittingCursable.wrap( serializer )
-							.tap( x -> spawn.step( 1 ) )
+							.peek( x -> spawn.step( 1 ) )
 							.consume(
 									writer );
 				}

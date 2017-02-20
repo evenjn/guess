@@ -69,7 +69,7 @@ public class TestM12BWMapleTrainer {
 		M12BWFileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
 		M12MapleFileTrainer<Boolean, Boolean> trainer =
 				new M12MapleFileTrainer<>( blueprint, Object::equals );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>>
@@ -80,7 +80,7 @@ public class TestM12BWMapleTrainer {
 				.trainingTime( 1, 100 );
 		M12MapleFileTrainer<Boolean, Boolean> trainer =
 				new M12MapleFileTrainer<>( blueprint, Object::equals );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
@@ -91,7 +91,7 @@ public class TestM12BWMapleTrainer {
 				;
 		M12MapleFileTrainer<Boolean, Boolean> trainer =
 				new M12MapleFileTrainer<>( blueprint, Object::equals );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
 	}
 
 	@Test

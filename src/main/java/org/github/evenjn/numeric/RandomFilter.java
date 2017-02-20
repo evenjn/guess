@@ -17,11 +17,11 @@
  */
 package org.github.evenjn.numeric;
 
+import java.util.Optional;
 import java.util.Random;
 
-import org.github.evenjn.yarn.SkipException;
-import org.github.evenjn.yarn.SkipFold;
-import org.github.evenjn.yarn.SkipFoldFactory;
+import org.github.evenjn.yarn.OptionalPurl;
+import org.github.evenjn.yarn.OptionalPurlFactory;
 
 public class RandomFilter<K> {
 
@@ -37,19 +37,17 @@ public class RandomFilter<K> {
 	
 	private RandomFilter() {}
 	
-	public SkipFold<K, K> asSkipFold() {
-		return new SkipFold<K, K>( ) {
+	public OptionalPurl<K, K> asOptionalPurl() {
+		return new OptionalPurl<K, K>( ) {
 
 			@Override
-			public K next( K input )
-					throws SkipException {
+			public Optional<K> next( K input ) {
 				return filter(input);
 			}
 
 			@Override
-			public K end( )
-					throws SkipException {
-				throw SkipException.neo;
+			public Optional<K> end( ) {
+				return Optional.empty( );
 			}
 		};
 	}
@@ -94,61 +92,60 @@ public class RandomFilter<K> {
 //		return randomFilter;
 //	}
 
-	public K filter( K object )
-			throws SkipException {
+	public Optional<K> filter( K object ) {
 		// block is false. filter blocks 9 out of 10. throw when (random != id)
 		// block is true. filter blocks 1 out of 10. throw when (random == id)
 		if (is_fraction) {
 			if ( block == ( random.nextInt( outof ) < id ) )
-				throw SkipException.neo;
+				return Optional.empty( );
 		}
 		else {
 			if ( block == ( random.nextInt( outof ) == id ) )
-				throw SkipException.neo;
+				return Optional.empty( );
 		}
-		return object;
+		return Optional.ofNullable( object );
 	}
 	
 
-	public static <K> SkipFoldFactory<K, K> block( int id,
+	public static <K> OptionalPurlFactory<K, K> block( int id,
 			int outof, long seed ) {
-		return new SkipFoldFactory<K, K>( ) {
+		return new OptionalPurlFactory<K, K>( ) {
 
 			@Override
-			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( true, id, false, outof, seed ).asSkipFold( );
+			public OptionalPurl<K, K> get() {
+				return new RandomFilter<K>( true, id, false, outof, seed ).asOptionalPurl( );
 			}
 		};
 	}
 
-	public static <K> SkipFoldFactory<K, K> pass( int id,
+	public static <K> OptionalPurlFactory<K, K> pass( int id,
 			int outof, long seed ) {
-		return new SkipFoldFactory<K, K>( ) {
+		return new OptionalPurlFactory<K, K>( ) {
 
 			@Override
-			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( false, id, false, outof, seed ).asSkipFold( );
+			public OptionalPurl<K, K> get() {
+				return new RandomFilter<K>( false, id, false, outof, seed ).asOptionalPurl( );
 			}
 		};
 	}
-	public static <K> SkipFoldFactory<K, K> blockFraction( int id,
+	public static <K> OptionalPurlFactory<K, K> blockFraction( int id,
 			int outof, long seed ) {
-		return new SkipFoldFactory<K, K>( ) {
+		return new OptionalPurlFactory<K, K>( ) {
 
 			@Override
-			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( true, id, true, outof, seed ).asSkipFold( );
+			public OptionalPurl<K, K> get() {
+				return new RandomFilter<K>( true, id, true, outof, seed ).asOptionalPurl( );
 			}
 		};
 	}
 
-	public static <K> SkipFoldFactory<K, K> passFraction( int id,
+	public static <K> OptionalPurlFactory<K, K> passFraction( int id,
 			int outof, long seed ) {
-		return new SkipFoldFactory<K, K>( ) {
+		return new OptionalPurlFactory<K, K>( ) {
 
 			@Override
-			public SkipFold<K, K> create() {
-				return new RandomFilter<K>( false, id, true, outof, seed ).asSkipFold( );
+			public OptionalPurl<K, K> get() {
+				return new RandomFilter<K>( false, id, true, outof, seed ).asOptionalPurl( );
 			}
 		};
 	}

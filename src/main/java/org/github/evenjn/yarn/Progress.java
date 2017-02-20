@@ -17,7 +17,6 @@
  */
 package org.github.evenjn.yarn;
 
-@Deprecated
 public interface Progress extends
 		ProgressSpawner {
 

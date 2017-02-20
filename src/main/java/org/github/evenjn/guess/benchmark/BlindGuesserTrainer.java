@@ -38,7 +38,7 @@ public class BlindGuesserTrainer<I, O> implements
 			ProgressSpawner progress_spawner,
 			Cursable<Bi<I, O>> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
-		KnittingCursable.wrap( data ).map( d -> d.back( ) ).tap( fd ).roll( );
+		KnittingCursable.wrap( data ).map( d -> d.back( ) ).peek( fd ).roll( );
 		return x -> fd.getMostFrequent( );
 	}
 

@@ -224,17 +224,17 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				int progress_target = 0;
 				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 					Progress spawn = progress.spawn( hook2, "computing dataset size" );
-					progress_target = data.tap( x -> spawn.step( 1 ) ).size( );
+					progress_target = data.peek( x -> spawn.step( 1 ) ).size( );
 				}
 				progress.target( 2 * progress_target );
 				
 				progress.info( "Computing limits." );
 				computeLimits( progress,
-						data.tap( x -> progress.step( 1 ) ).flatmapOptional( optmap ) );
+						data.peek( x -> progress.step( 1 ) ).flatmapOptional( optmap ) );
 				
 				progress.info( "Caching graphs." );
 				KnittingCursable<TupleAlignmentGraph> graphs_to_write = data
-						.tap( x -> progress.step( 1 ) )
+						.peek( x -> progress.step( 1 ) )
 						.flatmapOptional( optmap );
 
 				StringBuilder header = new StringBuilder( );
@@ -257,18 +257,16 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 		if ( null != reader_coalignment_graphs ) {
 
-			try ( AutoHook hook = new BasicAutoHook( ) ) {
 
 				Pattern splitter = Pattern.compile( "," );
 
 				String[] split = splitter.split(
 						KnittingCursable.wrap( reader_coalignment_graphs ).head( 0, 1 )
-								.one( hook ) );
+								.one( ) );
 				record_max_length_front = Integer.parseInt( split[0] );
 				record_max_length_back = Integer.parseInt( split[1] );
 				record_max_number_of_edges = Integer.parseInt( split[2] );
 				limits_are_computed = true;
-			}
 			/*
 			 * de-serialize them from the reader.
 			 */
@@ -286,12 +284,12 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				int progress_target = 0;
 				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 					Progress spawn = progress.spawn( hook2, "computing dataset size" );
-					progress_target = data.tap( x -> spawn.step( 1 ) ).size( );
+					progress_target = data.peek( x -> spawn.step( 1 ) ).size( );
 				}
 				progress.target( progress_target );
 				progress.info( "Computing limits." );
 				computeLimits( progress,
-						data.tap( x -> progress.step( 1 ) ).flatmapOptional( optmap ) );
+						data.peek( x -> progress.step( 1 ) ).flatmapOptional( optmap ) );
 			}
 			return data.flatmapOptional( optmap );
 		}

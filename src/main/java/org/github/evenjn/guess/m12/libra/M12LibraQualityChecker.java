@@ -77,7 +77,7 @@ public class M12LibraQualityChecker<I, O> implements
 		try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 			Progress spawn2 = spawn.spawn( hook2, "check" ).target( target );
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
-					.wrap( data ).pull( hook2 ).tap( x -> spawn2.step( 1 ) ).once( ) ) {
+					.wrap( data ).pull( hook2 ).peek( x -> spawn2.step( 1 ) ).once( ) ) {
 				try {
 					double p = m12Libra.weigh( g );
 					summation.add( p );

@@ -20,9 +20,7 @@ package org.github.evenjn.align.graph;
 import java.util.Iterator;
 
 import org.github.evenjn.knit.KnittingCursor;
-import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.EndOfCursorException;
 
 public class TupleAlignmentGraphSerializer

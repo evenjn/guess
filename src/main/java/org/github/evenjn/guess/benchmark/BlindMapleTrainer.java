@@ -43,7 +43,7 @@ public class BlindMapleTrainer<I, O> implements
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
 		KnittingCursable.wrap( data )
 		.flatmapCursable( d -> KnittingTuple.wrap( d.back( ) ).asCursable( ) )
-		.tap( fd ).roll( );
+		.peek( fd ).roll( );
 		O mostFrequent = fd.getMostFrequent( );
 						
 

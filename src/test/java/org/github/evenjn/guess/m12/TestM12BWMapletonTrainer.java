@@ -69,7 +69,7 @@ public class TestM12BWMapletonTrainer {
 		M12BWFileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
 		M12MapletonFileTrainer<Boolean, Boolean> trainer =
 				new M12MapletonFileTrainer<>( blueprint );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>>
@@ -80,7 +80,7 @@ public class TestM12BWMapletonTrainer {
 				.trainingTime( 1, 100 );
 		M12MapletonFileTrainer<Boolean, Boolean> trainer =
 				new M12MapletonFileTrainer<>( blueprint );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
@@ -90,7 +90,7 @@ public class TestM12BWMapletonTrainer {
 				.states( 4 );
 		M12MapletonFileTrainer<Boolean, Boolean> trainer =
 				new M12MapletonFileTrainer<>( blueprint );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
 	}
 
 	@Test
