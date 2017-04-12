@@ -117,7 +117,7 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 		Tuple<? extends T> guessed_output = guessed;
 		KnittingTuple<T> kgo = KnittingTuple.wrap( guessed_output ).map( x -> x );
 		KnittingTuple<T> koo = KnittingTuple.wrap( target_output ).map( x -> x );
-		int distance = koo.distance( guessed_output );
+		int distance = koo.distance( KnittingTuple.wrap(guessed_output).map( x->x ));
 		total_distance += distance;
 		int size_go = kgo.size( );
 		int size_oo = koo.size( );
