@@ -31,7 +31,6 @@ import java.util.function.Consumer;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.guess.markov.MarkovPrinter;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
