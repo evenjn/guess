@@ -56,9 +56,9 @@ public class MapleQualityChecker<I, O> {
 		this.aligner = null;
 		this.a_printer = null;
 		this.b_printer = null;
-		this.training_data_size = KnittingCursable.wrap( training_data ).size( );
+		this.training_data_size = KnittingCursable.wrap( training_data ).count( );
 		this.test_data = test_data;
-		this.test_data_size = KnittingCursable.wrap( test_data ).size( );
+		this.test_data_size = KnittingCursable.wrap( test_data ).count( );
 	}
 
 	public MapleQualityChecker(
@@ -71,9 +71,9 @@ public class MapleQualityChecker<I, O> {
 		this.aligner = aligner;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
-		this.training_data_size = KnittingCursable.wrap( training_data ).size( );
+		this.training_data_size = KnittingCursable.wrap( training_data ).count( );
 		this.test_data = test_data;
-		this.test_data_size = KnittingCursable.wrap( test_data ).size( );
+		this.test_data_size = KnittingCursable.wrap( test_data ).count( );
 	}
 	
 	

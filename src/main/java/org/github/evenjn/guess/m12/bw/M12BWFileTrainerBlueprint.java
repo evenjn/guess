@@ -50,7 +50,7 @@ public class M12BWFileTrainerBlueprint<I, O> implements Supplier<M12BWFileTraine
 
 	private int number_of_states;
 
-	public M12BWFileTrainerBlueprint<I, O> setBuilder(
+	public M12BWFileTrainerBlueprint<I, O> setTupleAlignmentAlphabetBuilder(
 					TupleAlignmentAlphabetBuilder<I, O> builder ) {
 		this.builder = builder;
 		return this;

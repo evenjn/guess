@@ -46,7 +46,7 @@ public class M12VFileTrainerBlueprint<I, O> implements Supplier<M12VFileTrainer<
 
 	private Function<String, O> b_deserializer;
 
-	public M12VFileTrainerBlueprint<I, O> setBuilder(
+	public M12VFileTrainerBlueprint<I, O> setTupleAlignmentAlphabetBuilder(
 					TupleAlignmentAlphabetBuilder<I, O> builder ) {
 		this.builder = builder;
 		return this;

@@ -240,25 +240,25 @@ public class MapleEvaluation<I, O> {
 
 		out.accept( "Average distance/input per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( input_accuracy_summation.getSum( ) )
+						.apply( input_accuracy_summation.getSum( ) / total_io_pairs  )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_input_elements ) );
 
 		out.accept( "Average distance/gold per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( gold_accuracy_summation.getSum( ) )
+						.apply( gold_accuracy_summation.getSum( ) / total_io_pairs  )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_gold_elements ) );
 
 		out.accept( "Average distance/guessed per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( guessed_accuracy_summation.getSum( ) )
+						.apply( guessed_accuracy_summation.getSum( ) / total_io_pairs  )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_guessed_elements ) );
 
 		out.accept( "Average distance/longest per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( longest_accuracy_summation.getSum( ) )
+						.apply( longest_accuracy_summation.getSum( ) / total_io_pairs  )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_longest_elements ) );
 

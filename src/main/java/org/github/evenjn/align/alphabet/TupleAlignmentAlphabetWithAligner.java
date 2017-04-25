@@ -83,7 +83,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 					"TupleAlignmentAlphabetWithAligner::build" );
 
 			spawn.info( "Computing dataset size." );
-			spawn.target( kd.size( ) );
+			spawn.target( kd.count( ) );
 			spawn.info( "Collecting alphabet elements." );
 			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( hook )
 					.once( ) ) {

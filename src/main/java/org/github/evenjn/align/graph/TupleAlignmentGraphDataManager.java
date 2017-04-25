@@ -224,7 +224,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				int progress_target = 0;
 				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 					Progress spawn = progress.spawn( hook2, "computing dataset size" );
-					progress_target = data.peek( x -> spawn.step( 1 ) ).size( );
+					progress_target = data.peek( x -> spawn.step( 1 ) ).count( );
 				}
 				progress.target( 2 * progress_target );
 				
@@ -284,7 +284,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				int progress_target = 0;
 				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
 					Progress spawn = progress.spawn( hook2, "computing dataset size" );
-					progress_target = data.peek( x -> spawn.step( 1 ) ).size( );
+					progress_target = data.peek( x -> spawn.step( 1 ) ).count( );
 				}
 				progress.target( progress_target );
 				progress.info( "Computing limits." );

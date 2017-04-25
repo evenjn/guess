@@ -109,7 +109,7 @@ public class M12BaumWelch {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
-			int data_size = observed_cursable.size( );
+			int data_size = observed_cursable.count( );
 			if ( logger != null ) {
 				logger.accept( "Baum-Welch using " + epochs + 
 						" epochs, with " + data_size + " data points each." );
@@ -241,7 +241,7 @@ public class M12BaumWelch {
 								+ " ( " + probability_change + " ) "
 								+ ( not_increased_for_n_epochs == 0 ? " just increased." : " plateau'd for " +not_increased_for_n_epochs + " epoch(s)." )
 								);
-						logger.accept( MarkovPrinter.print( hmm, x->x.toString( ) ) );
+//						logger.accept( MarkovPrinter.print( hmm, x->x.toString( ) ) );
 					}
 				}
 				else {

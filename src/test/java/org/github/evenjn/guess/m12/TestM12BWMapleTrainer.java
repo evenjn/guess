@@ -58,7 +58,7 @@ public class TestM12BWMapleTrainer {
 				.setMinMaxBelow( 0, 2 )
 				.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
 				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setBuilder( new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
+				.setTupleAlignmentAlphabetBuilder( new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
 				.setPrinter(
 						x -> x ? "1" : "0",
 						x -> x ? "1" : "0" );

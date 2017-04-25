@@ -50,7 +50,7 @@ public class M12VCoreBuilder {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
-			int data_size = observed_cursable.size( );
+			int data_size = observed_cursable.count( );
 			if ( logger != null ) {
 				logger.accept( "Building a Markov model using visible states." );
 			}

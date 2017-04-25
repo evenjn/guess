@@ -165,7 +165,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 						SafeProgressSpawner.safeSpawn( hook, progress_spawner, "prepareAlphabet" );
 
 				spawn.info( "Computing dataset size." );
-				int size = data.size( );
+				int size = data.count( );
 				spawn.target( null != writer ? 2 * size : size );
 				spawn.info( "Working out alphabet" );
 

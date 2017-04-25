@@ -63,7 +63,7 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 					"TupleAlignmentAlphabetSimpleBuilder::build" );
 
 			spawn.info( "Computing dataset size." );
-			spawn.target( kd.size( ) );
+			spawn.target( kd.count( ) );
 			spawn.info( "Collecting alphabet elements." );
 			for ( Bi<Tuple<Above>, Tuple<Below>> datum : kd.pull( hook )
 					.once( ) ) {

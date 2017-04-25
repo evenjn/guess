@@ -58,9 +58,9 @@ public class M12LibraQualityChecker<I, O> implements
 			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
 		this.training_data = training_data;
-		this.training_data_size = KnittingCursable.wrap( training_data ).size( );
+		this.training_data_size = KnittingCursable.wrap( training_data ).count( );
 		this.test_data = test_data;
-		this.test_data_size = KnittingCursable.wrap( test_data ).size( );
+		this.test_data_size = KnittingCursable.wrap( test_data ).count( );
 	}
 
 	private double do_check(
