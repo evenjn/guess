@@ -179,9 +179,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 						}
 
 						Tael<SymbolAbove, SymbolBelow> pair =
-								new Tael<>( );
-						pair.above = KnittingTuple.wrap( suba );
-						pair.below = KnittingTuple.wrap( subb );
+								new Tael<>( KnittingTuple.wrap( suba ).asTupleValue( ) , KnittingTuple.wrap( subb ).asTupleValue( ));
 						boolean test = filter.test( pair );
 						if ( !test ) {
 							return null;
@@ -229,9 +227,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 							throw new IllegalArgumentException( );
 						}
 						Tael<SymbolAbove, SymbolBelow> pair =
-								new Tael<>( );
-						pair.above = KnittingTuple.wrap( suba );
-						pair.below = KnittingTuple.wrap( subb );
+								new Tael<>( KnittingTuple.wrap( suba ).asTupleValue( ), KnittingTuple.wrap( subb ).asTupleValue( ) );
 						buffer.add( pair );
 						return buffer.size( );
 					}

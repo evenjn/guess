@@ -32,7 +32,7 @@ import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Hook;
-import org.github.evenjn.yarn.OptionMap;
+import org.github.evenjn.yarn.OptionalMap;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -188,8 +188,8 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 					KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> data,
 					BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 					Progress progress ) {
-		OptionMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph> optmap =
-				new OptionMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph>( ) {
+		OptionalMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph> optmap =
+				new OptionalMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph>( ) {
 
 					@Override
 					public Optional<TupleAlignmentGraph> get(

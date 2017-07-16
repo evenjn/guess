@@ -31,12 +31,12 @@ public class TestCheatTrainer {
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
 
 	private final static int limit = 20;
-	
+
 	/** TRAINER */
 	private final static String trainer_label = "cheat";
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
-		CheatingMapleTrainer<Tuple<Boolean>, Tuple<Boolean>> trainer =
+		CheatingMapleTrainer<Boolean, Boolean> trainer =
 				new CheatingMapleTrainer<>( KnittingTuple.<Boolean> empty( ) );
 		return trainer;
 	}

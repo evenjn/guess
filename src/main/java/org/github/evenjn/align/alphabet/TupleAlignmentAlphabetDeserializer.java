@@ -58,12 +58,11 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 	}
 
 	@Override
-	public Optional<TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>> next( String object )  {
+	public Optional<TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>>
+			next( String object ) {
 		if ( closed ) {
 			throw new IllegalStateException( );
 		}
-		Tael<SymbolAbove, SymbolBelow> cp =
-				new Tael<>( );
 
 		int prev_stop = 0;
 		int next_stop = object.indexOf( ';', prev_stop );
@@ -75,14 +74,13 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 				throw new IllegalStateException( );
 			}
 			SymbolAbove sa = a_deserializer.apply( split[1] );
-			cp.above = KnittingTuple.on( sa );
 
 			Vector<SymbolBelow> below = new Vector<>( );
 			for ( int i = 2; i < split.length; i++ ) {
 				below.add( b_deserializer.apply( split[i] ) );
 			}
-			cp.below = KnittingTuple.wrap( below );
-			result.add( cp );
+			result.add(
+					new Tael<>( KnittingTuple.on( sa ).asTupleValue( ), KnittingTuple.wrap( below ).asTupleValue( ) ) );
 			return Optional.empty( );
 		}
 
@@ -118,9 +116,8 @@ public class TupleAlignmentAlphabetDeserializer<SymbolAbove, SymbolBelow>
 			}
 		}
 
-		cp.above = KnittingTuple.wrap( above );
-		cp.below = KnittingTuple.wrap( below );
-		result.add( cp );
+		result.add( new Tael<>( KnittingTuple.wrap( above ).asTupleValue( ),
+				KnittingTuple.wrap( below ).asTupleValue( ) ) );
 		return Optional.empty( );
 	}
 

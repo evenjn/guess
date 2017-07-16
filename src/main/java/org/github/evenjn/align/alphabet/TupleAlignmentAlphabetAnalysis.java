@@ -29,6 +29,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
+import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.numeric.FrequencyData;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.yarn.AutoHook;
@@ -60,7 +61,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	/**
 	 * Frequency distribution of symbols above
 	 */
-	private FrequencyDistribution<Tuple<SymbolAbove>> //
+	private FrequencyDistribution<TupleValue<SymbolAbove>> //
 	fd_all_symbols_above = new FrequencyDistribution<>( );
 
 	/**
@@ -73,7 +74,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	 * maps each symbol_above to a frequency distribution of tuples of symbols
 	 * below
 	 */
-	private HashMap<Tuple<SymbolAbove>, FrequencyDistribution<Tuple<SymbolBelow>>> //
+	private HashMap<TupleValue<SymbolAbove>, FrequencyDistribution<TupleValue<SymbolBelow>>> //
 	fd_tuplebelow_by_symbolabove = new HashMap<>( );
 
 	/**
@@ -81,16 +82,16 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	 * sends each symbol_above to the frequency distribution of all
 	 * [tuple_of_symbol_below] with size J.
 	 */
-	private Vector<HashMap<Tuple<SymbolAbove>, FrequencyDistribution<Tuple<SymbolBelow>>>> //
+	private Vector<HashMap<TupleValue<SymbolAbove>, FrequencyDistribution<TupleValue<SymbolBelow>>>> //
 	fd_tuplebelow_by_symbolabove_and_size = new Vector<>( );
 
 	/**
 	 * 
 	 * @return SymbolsAbove Sorted By Descending Frequency
 	 */
-	public KnittingTuple<Tuple<SymbolAbove>>
+	public KnittingTuple<TupleValue<SymbolAbove>>
 			getSymbolsAbove( ) {
-		KnittingTuple<FrequencyData<Tuple<SymbolAbove>>> dataSorted =
+		KnittingTuple<FrequencyData<TupleValue<SymbolAbove>>> dataSorted =
 				fd_all_symbols_above.dataSorted( true );
 		return dataSorted.map( x -> x.front( ) );
 	}
@@ -110,9 +111,9 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	 * @return tuples of SymbolsBelow for the given SymbolAbove Sorted By
 	 *         Descending Frequency
 	 */
-	public KnittingTuple<Tuple<SymbolBelow>>
-			getSymbolsBelow( Tuple<SymbolAbove> above ) {
-		KnittingTuple<FrequencyData<Tuple<SymbolBelow>>> dataSorted =
+	public KnittingTuple<TupleValue<SymbolBelow>>
+			getSymbolsBelow( TupleValue<SymbolAbove> above ) {
+		KnittingTuple<FrequencyData<TupleValue<SymbolBelow>>> dataSorted =
 				fd_tuplebelow_by_symbolabove.get( above ).dataSorted( true );
 		return dataSorted.map( x -> x.front( ) );
 	}
@@ -122,29 +123,29 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	 * @return tuples of SymbolsBelow for the given SymbolAbove Sorted By
 	 *         Descending Frequency
 	 */
-	public KnittingTuple<Tuple<SymbolBelow>>
-			getSymbolsBelow( Tuple<SymbolAbove> above, int size ) {
+	public KnittingTuple<TupleValue<SymbolBelow>>
+			getSymbolsBelow( TupleValue<SymbolAbove> above, int size ) {
 		if (fd_tuplebelow_by_symbolabove_and_size.size( ) <= size) {
 			return KnittingTuple.empty( );
 		}
 
-		FrequencyDistribution<Tuple<SymbolBelow>> frequencyDistribution =
+		FrequencyDistribution<TupleValue<SymbolBelow>> frequencyDistribution =
 				fd_tuplebelow_by_symbolabove_and_size.get( size ).get( above );
 
 		if (frequencyDistribution == null) {
 			return KnittingTuple.empty( );
 		}
-		KnittingTuple<FrequencyData<Tuple<SymbolBelow>>> dataSorted =
+		KnittingTuple<FrequencyData<TupleValue<SymbolBelow>>> dataSorted =
 				frequencyDistribution.dataSorted( true );
 		
 		return dataSorted.map( x -> x.front( ) );
 	}
 
-	public void record( Tuple<SymbolAbove> above, Tuple<SymbolBelow> below ) {
+	public void record( TupleValue<SymbolAbove> above, TupleValue<SymbolBelow> below ) {
 		
 		fd_all_symbols_above.accept( above );
 
-		FrequencyDistribution<Tuple<SymbolBelow>> fd_tuplebelow_for_this_symbol =
+		FrequencyDistribution<TupleValue<SymbolBelow>> fd_tuplebelow_for_this_symbol =
 				fd_tuplebelow_by_symbolabove.get( above );
 
 		if ( fd_tuplebelow_for_this_symbol == null ) {
@@ -159,7 +160,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			fd_tuplebelow_by_symbolabove_and_size.add( new HashMap<>( ) );
 		}
 
-		FrequencyDistribution<Tuple<SymbolBelow>> frequencyDistribution =
+		FrequencyDistribution<TupleValue<SymbolBelow>> frequencyDistribution =
 				fd_tuplebelow_by_symbolabove_and_size.get( size ).get( above );
 		if ( frequencyDistribution == null ) {
 			frequencyDistribution = new FrequencyDistribution<>( );
@@ -190,9 +191,9 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			logger.accept( " Distribution of a/b pairs" );
 			logger.accept( fd_all_pairs.plot( ).setLabels(
 					x -> TupleAlignmentAlphabetBuilderTools.tuple_printer( a_printer,
-							x.above ) + " >-> "
+							x.getAbove( ) ) + " >-> "
 							+ TupleAlignmentAlphabetBuilderTools.tuple_printer( b_printer,
-									x.below ) )
+									x.getBelow( ) ) )
 					.print( ) );
 			logger.accept( decorator_line );
 			logger.accept( "" );
@@ -203,10 +204,10 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 							.tuple_printer( a_printer, x ) )
 					.print( ) );
 			logger.accept( decorator_line );
-			KnittingTuple<FrequencyData<Tuple<SymbolAbove>>> dataSorted =
+			KnittingTuple<FrequencyData<TupleValue<SymbolAbove>>> dataSorted =
 					fd_all_symbols_above.dataSorted( true );
 			for ( int i = 0; i < dataSorted.size( ); i++ ) {
-				FrequencyData<Tuple<SymbolAbove>> local_fd = dataSorted.get( i );
+				FrequencyData<TupleValue<SymbolAbove>> local_fd = dataSorted.get( i );
 				logger.accept( "" );
 				logger.accept( " Distribution of symbols below "
 				+ TupleAlignmentAlphabetBuilderTools
@@ -228,7 +229,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 						+ " (for a given size of the tuple below)" );
 				logger.accept( decorator_line );
 				for ( int j = 0; j < fd_tuplebelow_by_symbolabove_and_size.size( ); j++ ) {
-					HashMap<Tuple<SymbolAbove>, FrequencyDistribution<Tuple<SymbolBelow>>> hashMap =
+					HashMap<TupleValue<SymbolAbove>, FrequencyDistribution<TupleValue<SymbolBelow>>> hashMap =
 							fd_tuplebelow_by_symbolabove_and_size.get( j );
 					if ( !hashMap.containsKey( local_fd.front( ) ) ) {
 						continue;
@@ -294,7 +295,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 					for ( Tael<SymbolAbove, SymbolBelow> pp : localAlphabet ) {
 
-						record( pp.above, pp.below );
+						record( pp.getAbove( ), pp.getBelow( ) );
 						fd_all_pairs.accept( pp );
 						complete_alphabet.add( pp );
 					}

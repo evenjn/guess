@@ -22,26 +22,41 @@ import java.util.function.Function;
 
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Tuple;
 
 public class Tael<SymbolAbove, SymbolBelow> {
 
-	public KnittingTuple<SymbolAbove> above;
+	public Tael(TupleValue<SymbolAbove> above, TupleValue<SymbolBelow> below) {
+		this.above_as_value = above;
+		this.below_as_value = below;
+	}
+	
+	private TupleValue<SymbolAbove> above_as_value;
 
-	public KnittingTuple<SymbolBelow> below;
+	private TupleValue<SymbolBelow> below_as_value;
+	
 
+	public TupleValue<SymbolAbove> getAbove() {
+		return above_as_value;
+	}
+	
+	public TupleValue<SymbolBelow> getBelow() {
+		return below_as_value;
+	}
+	
 	public boolean equals( Object other ) {
 		if ( other == null || !( other instanceof Tael ) ) {
 			return false;
 		}
 		Tael<?, ?> o = (Tael<?, ?>) other;
-		return above.equals( o.above ) && below.equals( o.below );
+		return above_as_value.equals( o.above_as_value ) && below_as_value.equals( o.below_as_value );
 	}
 
 	public int hashCode( ) {
-		return ( 17 * above.hashCode( ) ) + below.hashCode( );
+		return ( 17 * above_as_value.hashCode( ) ) + below_as_value.hashCode( );
 	}
 
 	public String print(
@@ -51,11 +66,11 @@ public class Tael<SymbolAbove, SymbolBelow> {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			StringBuilder sb = new StringBuilder( );
 			sb.append( "[" );
-			for ( SymbolAbove a : above.asIterable( ) ) {
+			for ( SymbolAbove a : KnittingTuple.wrap(above_as_value).asIterable( ) ) {
 				sb.append( " " ).append( sa_label.apply( a ) );
 			}
 			sb.append( "] >-> [" );
-			for ( SymbolBelow b : below.asIterable( ) ) {
+			for ( SymbolBelow b : KnittingTuple.wrap(below_as_value).asIterable( ) ) {
 				sb.append( " " ).append( sb_label.apply( b ) );
 			}
 			sb.append( " ]" );
@@ -83,18 +98,14 @@ public class Tael<SymbolAbove, SymbolBelow> {
 		for ( int i = 0; i < alignment.size( ); i++ ) {
 			Di<Integer, Integer> di = alignment.get( i );
 
-			Tael<SymbolAbove, SymbolBelow> pair =
-					new Tael<>( );
 			Vector<SymbolAbove> suba = KnittingTuple.wrap( above )
-					.head( a_so_far, di.front( ) ).asCursor( ).collect( new Vector<>( ) );
+					.head( a_so_far, di.front( ) ).asKnittingCursor( ).collect( new Vector<>( ) );
 
-			pair.above = KnittingTuple.wrap( suba );
 			Vector<SymbolBelow> subb = KnittingTuple.wrap( below )
-					.head( b_so_far, di.back( ) ).asCursor( ).collect( new Vector<>( ) );
-			pair.below = KnittingTuple.wrap( subb );
+					.head( b_so_far, di.back( ) ).asKnittingCursor( ).collect( new Vector<>( ) );
 			a_so_far = a_so_far + di.front( );
 			b_so_far = b_so_far + di.back( );
-			result.add( pair );
+			result.add( new Tael<>( KnittingTuple.wrap( suba ).asTupleValue( ),KnittingTuple.wrap( subb ).asTupleValue( ) ) );
 		}
 		return KnittingTuple.wrap(result);
 	}

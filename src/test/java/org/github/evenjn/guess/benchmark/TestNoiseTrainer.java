@@ -30,13 +30,14 @@ public class TestNoiseTrainer {
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
 
 	private final static int limit = 20;
-	
+
 	/** TRAINER */
 	private final static String trainer_label = "noise";
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
 		NoiseMapleTrainer<Boolean, Boolean> trainer = new NoiseMapleTrainer<>(
-				TestUtils.boolean_alphabet.asCursable( ), TestUtils.boolean_alphabet.asCursable( ) );
+				TestUtils.boolean_alphabet.asKnittingCursable( ),
+				TestUtils.boolean_alphabet.asKnittingCursable( ) );
 		return trainer;
 	}
 

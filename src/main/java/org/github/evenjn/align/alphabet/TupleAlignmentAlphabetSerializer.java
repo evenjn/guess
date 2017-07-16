@@ -20,6 +20,7 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
+import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.Hook;
@@ -64,7 +65,7 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 				id++;
 				builder.append( ";" );
 				
-				for ( SymbolAbove sa : next.above.asIterable( ) ) {
+				for ( SymbolAbove sa : KnittingTuple.wrap(next.getAbove( )).asIterable( ) ) {
 					builder.append( separator );
 					builder.append( a_serializer.apply( sa ) );
 					separator = ",";
@@ -74,7 +75,7 @@ public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 				
 				separator = "";
 				
-				for ( SymbolBelow sb : next.below.asIterable( ) ) {
+				for ( SymbolBelow sb : KnittingTuple.wrap(next.getBelow( )).asIterable( ) ) {
 					builder.append( separator );
 					builder.append( b_serializer.apply( sb ) );
 					separator = ",";

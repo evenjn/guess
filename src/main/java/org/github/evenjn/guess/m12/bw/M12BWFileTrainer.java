@@ -237,7 +237,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 				final Consumer<String> training_logger = PlainText
 						.writer( ).setForcedFlush( true )
 						.build( )
-						.get( hook, FileFool.nu( ).open( m12core_log_file ).write( hook ) );
+						.get( hook, ff.open( m12core_log_file ).write( hook ) );
 				
 				if (checker != null) {
 					m12ctb.qualityControl( (core, spawn) -> checker.check(

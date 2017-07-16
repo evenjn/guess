@@ -30,6 +30,7 @@ import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
+import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.numeric.DenseMatrix;
 import org.github.evenjn.numeric.Matrix;
 import org.github.evenjn.numeric.NumericLogarithm;
@@ -100,11 +101,11 @@ public class M12Maple<I, O> implements
 				cache_prediction[s] = new HashMap<I, Tuple<O>>( );
 				cache_partial_prob[s] = new HashMap<I, Double>( );
 
-				for ( Tuple<I> sa : coalignment_alphabet.above( ).asIterable( ) ) {
+				for ( TupleValue<I> sa : coalignment_alphabet.above( ).asIterable( ) ) {
 					int len = 0;
 					double max = 0;
 					Tuple<O> best = null;
-					for ( Tuple<O> sb : coalignment_alphabet.correspondingBelow( sa ) ) {
+					for ( TupleValue<O> sb : coalignment_alphabet.correspondingBelow( sa ) ) {
 						int encode = coalignment_alphabet.encode( sa, sb );
 						double prob = core.emission_table[s][encode];
 						if ( best == null || prob > max ) {
@@ -126,12 +127,12 @@ public class M12Maple<I, O> implements
 						 * This symbol above is not a leaf in the tree of symbols.
 						 */
 						HashMap<Tuple<O>, Summation> sum_map = new HashMap<>( );
-						for ( Tuple<I> sa_descendant : coalignment_alphabet.above( ).asIterable( ) ) {
+						for ( TupleValue<I> sa_descendant : coalignment_alphabet.above( ).asIterable( ) ) {
 							if (! descendant_test.apply( sa, sa_descendant )) {
 								continue;
 							}
 
-							for ( Tuple<O> sb : coalignment_alphabet.correspondingBelow( sa_descendant ) ) {
+							for ( TupleValue<O> sb : coalignment_alphabet.correspondingBelow( sa_descendant ) ) {
 								int encode = coalignment_alphabet.encode( sa_descendant, sb );
 								double prob = core.emission_table[s][encode];
 								

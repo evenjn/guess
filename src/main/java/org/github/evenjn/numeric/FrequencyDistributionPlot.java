@@ -35,6 +35,8 @@ public class FrequencyDistributionPlot<K> {
 
 	private boolean display_fraction = false;
 
+	private boolean display_bars = false;
+
 	private Function<Double, String> numeral_printer = new SixCharFormat( false );
 
 	private Map<K, Integer> the_map;
@@ -54,7 +56,8 @@ public class FrequencyDistributionPlot<K> {
 		return this;
 	}
 
-	public FrequencyDistributionPlot<K> setComparator( Comparator<K> comparator ) {
+	public FrequencyDistributionPlot<K>
+			setComparator( Comparator<K> comparator ) {
 		this.comparator = comparator;
 		return this;
 	}
@@ -64,13 +67,18 @@ public class FrequencyDistributionPlot<K> {
 		return this;
 	}
 
+	public FrequencyDistributionPlot<K> displayBars( boolean display ) {
+		this.display_bars = display;
+		return this;
+	}
+
 	public FrequencyDistributionPlot<K> setData( Map<K, Integer> the_map,
 			int total ) {
 		this.the_map = the_map;
 		this.total = total;
 		return this;
 	}
-	
+
 	public FrequencyDistributionPlot<K> setLimit( int topN ) {
 		this.topN = topN;
 		return this;
@@ -95,14 +103,14 @@ public class FrequencyDistributionPlot<K> {
 		} );
 		return data;
 	}
-	
+
 	public String print( ) {
 
 		double denominator = total;
 		StringBuilder sb = new StringBuilder( );
 		int printed = 0;
 		for ( Bi<K, Integer> d : data( the_map, comparator ) ) {
-			if (topN > 0 && printed > topN) {
+			if ( topN > 0 && printed > topN ) {
 				break;
 			}
 			int len = 0;
@@ -125,16 +133,21 @@ public class FrequencyDistributionPlot<K> {
 			int black = (int) Math.floor( 40 * ( n / denominator ) );
 			int white = 39 - black;
 
-			while ( len < 10 + white ) {
+			if ( display_bars ) {
+				while ( len < 10 + white ) {
+					sb.append( " " );
+					len++;
+				}
+				sb.append( "*" );
+				while ( len < 10 + 40 ) {
+					sb.append( "-" );
+					len++;
+				}
+				sb.append( "| " );
+			}
+			else {
 				sb.append( " " );
-				len++;
 			}
-			sb.append( "*" );
-			while ( len < 10 + 40 ) {
-				sb.append( "-" );
-				len++;
-			}
-			sb.append( "| " );
 			sb.append( labels.apply( d.front( ) ) );
 			sb.append( "\n" );
 			printed++;

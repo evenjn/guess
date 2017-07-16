@@ -25,7 +25,7 @@ public class TestBlindTrainer {
 
 	/** EVALUATOR */
 	private final static String evaluator_label = "equals";
-	
+
 	private final static TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>> evaluator =
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
 
@@ -36,7 +36,8 @@ public class TestBlindTrainer {
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
 		BlindMapleTrainer<Boolean, Boolean> trainer = new BlindMapleTrainer<>(
-				TestUtils.boolean_alphabet.asCursable( ), TestUtils.boolean_alphabet.asCursable( ) );
+				TestUtils.boolean_alphabet.asKnittingCursable( ),
+				TestUtils.boolean_alphabet.asKnittingCursable( ) );
 		return trainer;
 	}
 

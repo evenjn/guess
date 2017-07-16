@@ -156,25 +156,25 @@ public class MapleEvaluation<I, O> {
 				/*
 				 * update the symbol above error rate
 				 */
-				Integer oc = occurrences_per_symbol_above.get( front.above );
+				Integer oc = occurrences_per_symbol_above.get( front.getAbove( ) );
 				if ( oc == null ) {
-					occurrences_per_symbol_above.put( front.above, 0 );
+					occurrences_per_symbol_above.put( front.getAbove( ), 0 );
 					oc = 0;
 				}
-				occurrences_per_symbol_above.put( front.above, oc + 1 );
+				occurrences_per_symbol_above.put( front.getAbove( ), oc + 1 );
 
-				Integer er = errors_per_symbol_above.get( front.above );
+				Integer er = errors_per_symbol_above.get( front.getAbove( ) );
 				if ( er == null ) {
-					errors_per_symbol_above.put( front.above, 0 );
+					errors_per_symbol_above.put( front.getAbove( ), 0 );
 					er = 0;
 				}
 
 				if ( back == null ) {
-					errors_per_symbol_above.put( front.above, er + 1 );
+					errors_per_symbol_above.put( front.getAbove( ), er + 1 );
 					/*
 					 * update the distribution of errors
 					 */
-					errors_above_fd.accept( front.above );
+					errors_above_fd.accept( front.getAbove( ) );
 					continue;
 				}
 

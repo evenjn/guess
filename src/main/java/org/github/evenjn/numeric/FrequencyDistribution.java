@@ -83,6 +83,15 @@ public class FrequencyDistribution<T> implements
 		total++;
 		map.put( t, integer + 1 );
 	}
+	
+	public void accept( T t, int count ) {
+		Integer integer = map.get( t );
+		if ( integer == null ) {
+			integer = 0;
+		}
+		total = total + count;
+		map.put( t, integer + count );
+	}
 
 	public KnittingCursor<FrequencyData<T>> data( ) {
 		Function<Map.Entry<T, Integer>, FrequencyData<T>> mapper =

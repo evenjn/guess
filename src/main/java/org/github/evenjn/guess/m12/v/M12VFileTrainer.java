@@ -235,7 +235,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 				final Consumer<String> training_logger = PlainText
 						.writer( ).setForcedFlush( true )
 						.build( )
-						.get( hook, FileFool.nu( ).open( mvcore_log_file ).write( hook ) );
+						.get( hook, ff.open( mvcore_log_file ).write( hook ) );
 				
 				if (checker != null) {
 					mvctb.qualityControl( (core, spawn) -> checker.check(
@@ -248,7 +248,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 				mvctb.logger( training_logger );
 
 				progress.info( "Training M12 core." );
-				mvctb.unveiler( x->taadm.getAlphabet( ).get( x ).below );
+				mvctb.unveiler( x->taadm.getAlphabet( ).get( x ).getBelow( ) );
 				M12VCoreTrainer mvct = mvctb.create( );
 
 				mvct.load(

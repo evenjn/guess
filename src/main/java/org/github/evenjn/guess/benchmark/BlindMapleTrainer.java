@@ -42,7 +42,7 @@ public class BlindMapleTrainer<I, O> implements
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
 		KnittingCursable.wrap( data )
-		.flatmapCursable( d -> KnittingTuple.wrap( d.back( ) ).asCursable( ) )
+		.flatmapCursable( d -> KnittingTuple.wrap( d.back( ) ).asKnittingCursable( ) )
 		.consume( h -> fd );
 		O mostFrequent = fd.getMostFrequent( );
 						

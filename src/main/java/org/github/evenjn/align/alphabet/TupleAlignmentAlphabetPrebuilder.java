@@ -40,11 +40,10 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 			Iterable<Bi<Tuple<Above>, Tuple<Below>>> data ) {
 		for (Bi<Tuple<Above>, Tuple<Below>> d : data) {
 			Tael<Above, Below> pair
-			= new Tael<>( );
-			pair.above = KnittingTuple.wrap( KnittingTuple.wrap( d.front( ) )
-					.asCursor( ).collect( new Vector<>( ) ) );
-			pair.below = KnittingTuple.wrap( KnittingTuple.wrap( d.back( ) )
-					.asCursor( ).collect( new Vector<>( ) ) );
+			= new Tael<>( KnittingTuple.wrap( KnittingTuple.wrap( d.front( ) )
+					.asKnittingCursor( ).collect( new Vector<>( ) ) ).asTupleValue( ),
+					KnittingTuple.wrap( KnittingTuple.wrap( d.back( ) )
+							.asKnittingCursor( ).collect( new Vector<>( ) ) ).asTupleValue( ));
 			result.add( pair );
 		}
 	}

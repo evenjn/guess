@@ -42,12 +42,11 @@ public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBe
 		for (int z = 0; z < build.size( ); z++) {
 			Tael<SymbolAbove, SymbolBelow> pp =
 					build.get( z );
-			Iterable<Tuple<SymbolAbove>> ascendants = ascendants_provider.apply( pp.above );
+			Iterable<Tuple<SymbolAbove>> ascendants = ascendants_provider.apply( pp.getAbove( ) );
 			for (Tuple<SymbolAbove> ascendant : ascendants) {
 				Tael<SymbolAbove, SymbolBelow> nu =
-						new Tael<>( );
-				nu.above = KnittingTuple.wrap( ascendant );
-				nu.below = pp.below;
+						new Tael<>( KnittingTuple.wrap( ascendant ).asTupleValue( ), pp.getBelow( ) );
+				result.add( nu );
 			}
 		}
 		return result;

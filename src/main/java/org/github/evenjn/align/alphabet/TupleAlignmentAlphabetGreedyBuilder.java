@@ -27,6 +27,7 @@ import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
+import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Bi;
@@ -142,10 +143,10 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 						else
 							sb.append( "Will not remove element: " );
 						sb.append( TupleAlignmentAlphabetBuilderTools
-								.tuple_printer( a_printer, candidate.above ) );
+								.tuple_printer( a_printer, candidate.getAbove( ) ) );
 						sb.append( " >-> " );
 						sb.append( TupleAlignmentAlphabetBuilderTools
-								.tuple_printer( b_printer, candidate.below ) );
+								.tuple_printer( b_printer, candidate.getBelow( ) ) );
 						sb.append( "   Data coverage: " );
 						sb.append( PercentPrinter.printRatioAsPercent( 4,
 								analysis.getTotal( ) - not_aligneable, analysis.getTotal( ) ) );
@@ -189,10 +190,10 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					.once( ) ) {
 				StringBuilder sb = new StringBuilder( );
 				sb.append( TupleAlignmentAlphabetBuilderTools
-						.tuple_printer( a_printer, best_candidate.above ) );
+						.tuple_printer( a_printer, best_candidate.getAbove( ) ) );
 				sb.append( " >-> " );
 				sb.append( TupleAlignmentAlphabetBuilderTools
-						.tuple_printer( b_printer, best_candidate.below ) );
+						.tuple_printer( b_printer, best_candidate.getBelow( ) ) );
 				open_logger.accept( sb.toString( ) );
 
 			}
@@ -244,10 +245,10 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					StringBuilder sb = new StringBuilder( );
 					sb.append( "Added new element: " );
 					sb.append( TupleAlignmentAlphabetBuilderTools
-							.tuple_printer( a_printer, best_candidate.above ) );
+							.tuple_printer( a_printer, best_candidate.getAbove( ) ) );
 					sb.append( " >-> " );
 					sb.append( TupleAlignmentAlphabetBuilderTools
-							.tuple_printer( b_printer, best_candidate.below ) );
+							.tuple_printer( b_printer, best_candidate.getBelow( ) ) );
 					sb.append( "   Data coverage: " );
 					sb.append( PercentPrinter.printRatioAsPercent( 4,
 							analysis.getTotal( ) - not_aligneable, analysis.getTotal( ) ) );
@@ -296,7 +297,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 	public Cursor<Tael<SymbolAbove, SymbolBelow>> greedy(
 			TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis ) {
 		int total_symbols = analysis.getTotalNumberOfCandidatePairs( );
-		KnittingTuple<Tuple<SymbolAbove>> symbols = analysis.getSymbolsAbove( );
+		KnittingTuple<TupleValue<SymbolAbove>> symbols = analysis.getSymbolsAbove( );
 		return new Cursor<Tael<SymbolAbove, SymbolBelow>>( ) {
 
 			int symbol = 0;
@@ -321,16 +322,15 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 						size = min_below;
 					}
 
-					Tuple<SymbolAbove> symbolAbove = symbols.get( symbol );
-					KnittingTuple<Tuple<SymbolBelow>> symbolsBelow =
+					TupleValue<SymbolAbove> symbolAbove = symbols.get( symbol );
+					KnittingTuple<TupleValue<SymbolBelow>> symbolsBelow =
 							analysis.getSymbolsBelow( symbolAbove, size );
 					if ( symbolsBelow.size( ) > rank ) {
-						result = new Tael<>( );
 						if (symbolAbove.size( ) != 1) {
 							throw new IllegalStateException( );
 						}
-						result.above = KnittingTuple.wrap( symbolAbove );
-						result.below = KnittingTuple.wrap( symbolsBelow.get( rank ) );
+						result = new Tael<>( KnittingTuple.wrap( symbolAbove ).asTupleValue( ),
+								KnittingTuple.wrap( symbolsBelow.get( rank ) ).asTupleValue( ) );
 					}
 					if ( symbol + 1 == symbols.size( ) ) {
 						symbol = 0;

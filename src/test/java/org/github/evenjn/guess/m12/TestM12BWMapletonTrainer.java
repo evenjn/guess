@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetGreedyBuilder;
 import org.github.evenjn.file.FileFool;
+import org.github.evenjn.file.FileFoolWriter;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TestUtils;
@@ -32,11 +33,18 @@ import org.junit.Test;
 
 public class TestM12BWMapletonTrainer {
 
-	private static final FileFool training_cache_path = FileFool.nu(
-			Paths.get( ".", "target", "training_cache" ));
+	{
+		FileFoolWriter w = FileFool.w( Paths.get( "." ).toAbsolutePath( ).resolve( "target" ) );
+		w.create( w.mold( Paths.get( "training_cache" ) ).asDirectory( ).eraseIfExists( ) );
+		training_cache_path = FileFool.rw(
+				Paths.get( "." ).toAbsolutePath( ).resolve( "target" )
+						.resolve( "training_cache" ) );
+	}
+	
+	private static FileFool training_cache_path;
 
 	private static void removeModelFiles( ) {
-		training_cache_path.create( training_cache_path.mold( training_cache_path.getRoot( ) ).asDirectory( ).eraseIfExists( ) );
+		training_cache_path.delete( training_cache_path.getRoot( ) );
 	}
 
 	private final static int limit = 20;
@@ -50,7 +58,8 @@ public class TestM12BWMapletonTrainer {
 	/** TRAINER */
 	private final static String trainer_label = "m12 baum-welch mapleton";
 
-	private static final M12BWFileTrainerBlueprint<Boolean, Boolean> blueprint( ) {
+	private static final M12BWFileTrainerBlueprint<Boolean, Boolean>
+			blueprint( ) {
 		return new M12BWFileTrainerBlueprint<Boolean, Boolean>( )
 				.seed( 43 )
 				.states( 3 )
@@ -58,7 +67,8 @@ public class TestM12BWMapletonTrainer {
 				.setMinMaxBelow( 0, 2 )
 				.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
 				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setTupleAlignmentAlphabetBuilder( new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
+				.setTupleAlignmentAlphabetBuilder(
+						new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
 				.setPrinter(
 						x -> x ? "1" : "0",
 						x -> x ? "1" : "0" );

@@ -105,9 +105,7 @@ public class BenchmarkTrial<I, O> {
 				for ( ;; ) {
 					next = search.next( );
 					predicted = guesser.apply( next.observed );
-					if ( !next.good_teacher .equals( predicted ) ) {
-						break;
-					}
+					break;
 				}
 			}
 			catch ( EndOfCursorException e ) {

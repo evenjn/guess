@@ -23,37 +23,40 @@ import java.util.function.Function;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.knit.BasicAutoHook;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.yarn.AutoHook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.Tuple;
 
 public class CheatingMapleTrainer<I, O> implements
-		Trainer<I, O> {
+		Trainer<Tuple<I>, Tuple<O>> {
 
-	public CheatingMapleTrainer(O last) {
+	public CheatingMapleTrainer(Tuple<O> last) {
 		this.last = last;
 	}
 
-	private final O last;
+	private final Tuple<O> last;
 
 	@Override
-	public Function<I, O> train(
+	public Function<Tuple<I>, Tuple<O>> train(
 			ProgressSpawner progress_spawner,
-			Cursable<Bi<I, O>> data ) {
-		HashMap<I, O> cheat_sheet = new HashMap<>( );
+			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
+		HashMap<TupleValue<I>, TupleValue<O>> cheat_sheet = new HashMap<>( );
 
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			for ( Bi<I, O> td : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
-				cheat_sheet.put( td.front( ), td.back( ) );
+			for ( Bi<Tuple<I>, Tuple<O>> td : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
+				cheat_sheet.put( KnittingTuple.wrap(td.front( )).asTupleValue(), KnittingTuple.wrap(td.back( )).asTupleValue() );
 			}
 		}
-		return new Function<I, O>( ) {
+		return new Function<Tuple<I>, Tuple<O>>( ) {
 
 			@Override
-			public O apply(
-					I t ) {
-				O o = cheat_sheet.get( t );
+			public Tuple<O> apply(
+					Tuple<I> t ) {
+				Tuple<O> o = cheat_sheet.get( KnittingTuple.wrap( t ).asTupleValue( ) );
 				if ( o == null )
 					return last;
 				return o;

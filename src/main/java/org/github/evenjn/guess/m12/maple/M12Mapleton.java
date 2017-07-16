@@ -27,6 +27,7 @@ import java.util.function.BiFunction;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.numeric.Cubix;
 import org.github.evenjn.numeric.DenseCubix;
 import org.github.evenjn.numeric.DenseMatrix;
@@ -147,7 +148,7 @@ public class M12Mapleton<I, O> implements
 		 * of emitting that output in all real states.
 		 */
 
-		KnittingTuple<Tuple<O>> ka_below = coalignment_alphabet.below( );
+		KnittingTuple<TupleValue<O>> ka_below = coalignment_alphabet.below( );
 		
 		Matrix<Double> probability_real = new DenseMatrix<>(
 						length,
@@ -170,8 +171,8 @@ public class M12Mapleton<I, O> implements
 
 		for ( int t = 0; t < length; t++ ) {
 			I current_above = observed.get( t );
-			KnittingTuple<I> current_above_tuple = KnittingTuple.on( current_above );
-			Set<Tuple<O>> correspondingBelow = coalignment_alphabet.correspondingBelow( current_above_tuple );
+			TupleValue<I> current_above_tuple = KnittingTuple.on( current_above ).asTupleValue( );
+			Set<TupleValue<O>> correspondingBelow = coalignment_alphabet.correspondingBelow( current_above_tuple );
 			for ( int s = 0; s < core.number_of_states; s++ ) {
 				
 				double prob_for_each_output_max = NumericLogarithm.smallLogValue;
@@ -180,7 +181,7 @@ public class M12Mapleton<I, O> implements
 				
 				
 				for (int below_id = 0; below_id < ka_below.size( ); below_id++ ) { 
-					Tuple<O> sb = ka_below.get( below_id );
+					TupleValue<O> sb = ka_below.get( below_id );
 					
 					if (! correspondingBelow.contains( sb )) {
 						continue;
@@ -231,7 +232,7 @@ public class M12Mapleton<I, O> implements
 
 
 			for ( int below_id = 0; below_id < ka_below.size( ); below_id++) {
-				Tuple<O> sb = ka_below.get( below_id );
+				TupleValue<O> sb = ka_below.get( below_id );
 				
 				if (! correspondingBelow.contains( sb )) {
 					continue;
@@ -304,8 +305,8 @@ public class M12Mapleton<I, O> implements
 		for ( int t = 0; t < length; t++ ) {
 
 			I current_above = observed.get( t );
-			KnittingTuple<I> current_above_tuple = KnittingTuple.on( current_above );
-			Set<Tuple<O>> correspondingBelow = coalignment_alphabet.correspondingBelow( current_above_tuple );
+			TupleValue<I> current_above_tuple = KnittingTuple.on( current_above ).asTupleValue( );
+			Set<TupleValue<O>> correspondingBelow = coalignment_alphabet.correspondingBelow( current_above_tuple );
 			/*
 			 * For each state s, we must compute the probability of the most probable
 			 * state sequence responsible for input:0..t that have s as the final
@@ -313,7 +314,7 @@ public class M12Mapleton<I, O> implements
 			 * == gap.
 			 */
 			for ( int vs_dest = 0; vs_dest < ka_below.size( ); vs_dest++ ) {
-				Tuple<O> vs_dest_below = ka_below.get( vs_dest );
+				TupleValue<O> vs_dest_below = ka_below.get( vs_dest );
 
 				if (! correspondingBelow.contains( vs_dest_below )) {
 					continue;
@@ -325,8 +326,8 @@ public class M12Mapleton<I, O> implements
 				if ( t > 0 ) {
 
 					I previous_above = observed.get( t - 1 );
-					KnittingTuple<I> previous_above_tuple = KnittingTuple.on( previous_above );
-					Set<Tuple<O>> previous_correspondingBelow = coalignment_alphabet.correspondingBelow( previous_above_tuple );
+					TupleValue<I> previous_above_tuple = KnittingTuple.on( previous_above ).asTupleValue( );
+					Set<TupleValue<O>> previous_correspondingBelow = coalignment_alphabet.correspondingBelow( previous_above_tuple );
 					
 					double max = 0d;
 					boolean found = false;

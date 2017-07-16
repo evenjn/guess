@@ -39,12 +39,10 @@ public class M12LibraFileDeserializer {
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer,
 			Path training_cache_path ) {
-
 		TupleAlignmentAlphabet<I, O> alphabet;
 		Markov core;
 		Path m12core_stable_file = training_cache_path.resolve( "./m12_core.stable.txt" );
 		Path alphabet_stable_file = training_cache_path.resolve( "./ta_alphabet.stable.txt" );
-		FileFool ff = FileFool.nu( );
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			/**
 			 * This is interesting, because the output of the serializer is not
@@ -52,7 +50,7 @@ public class M12LibraFileDeserializer {
 			 */
 			alphabet = KnittingCursable
 					.wrap( h -> PlainText.reader( )
-							.build( ).get( h, ff.open( alphabet_stable_file ).read( h ) ) )
+							.build( ).get( h, FileFool.r().open( alphabet_stable_file ).read( h ) ) )
 					.pull( hook )
 					.purlOptional( new TupleAlignmentAlphabetDeserializer<>(
 							a_deserializer,
@@ -62,7 +60,7 @@ public class M12LibraFileDeserializer {
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
 			core = KnittingCursable
 					.wrap( h -> PlainText.reader( )
-							.build( ).get( h, ff.open( m12core_stable_file ).read( h ) ) )
+							.build( ).get( h, FileFool.r().open( m12core_stable_file ).read( h ) ) )
 					.pull( hook )
 					.purlOptional( new MarkovDeserializer( ) )
 					.one( );
