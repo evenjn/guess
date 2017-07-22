@@ -39,6 +39,8 @@ public class BenchmarkTrial<I, O> {
 
 	private String evaluator_label;
 
+	public BenchmarkHandicap handicap = new BenchmarkHandicap( );
+
 	public static <I, O> Builder<I, O> builder( Trainer<I, O> trainer,
 			String label ) {
 		return new Builder<I, O>( trainer, label );
@@ -74,23 +76,33 @@ public class BenchmarkTrial<I, O> {
 		public BenchmarkTrial<?, ?> build( ) {
 			return built;
 		}
+		
+		public Builder<I, O> handicap(BenchmarkHandicap handicap) {
+			built.handicap = handicap;
+			return this;
+		}
 	}
 
 	private BenchmarkTrial() {
 	}
 
-	public Evaluator<I, O> run( int limit, Progress progress ) {
+	public Evaluator<I, O> run( Progress progress ) {
 		System.out.println( "\n\n\n" );
 		System.out.println( "Problem: " + problem.label( ) );
 		System.out.println( "Trainer: " + trainer_label );
 		System.out.println( "Evaluator: " + evaluator_label );
+		int local_limit =  handicap.size_of_traning_data;
 		try ( AutoHook hook = new BasicAutoHook( ) ) {
+			
 			KnittingCursable<BenchmarkDatum<I, O>> training_data =
-					KnittingCursable.wrap( problem.data( ) ).head( 0, limit );
-			Function<I, O> guesser = trainer.train(
+					KnittingCursable.wrap( problem.data( ) ).head( 0, local_limit );
+			
+			Function<I, O> guesser = null;
+
+			guesser = trainer.train(
 					progress,
-					training_data.map( x -> x.asBadTeacherWouldTell( ) )
-					);
+					training_data.map( x -> handicap.use_noise
+							? x.asBadTeacherWouldTell( ) : x.asGoodTeacherWouldTell( ) ) );
 			evaluator.reset( );
 			evaluator.evaluate( guesser, training_data.map( x->x.asGoodTeacherWouldTell( ) ) );
 			System.out.println( evaluator.printEvaluation( ) );

@@ -33,9 +33,9 @@ import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Tuple;
 
-public class TestUtils {
+public class Benchmark {
 
-	public static <X, Y>
+	private static <X, Y>
 			BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>>
 			benchmarkProblem(
 					String label,
@@ -65,46 +65,46 @@ public class TestUtils {
 			};
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> identity =
-			TestUtils.benchmarkProblem( "Identity",
+			Benchmark.benchmarkProblem( "Identity",
 					x -> new MapleIdentityData( ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> reverse =
-			TestUtils.benchmarkProblem( "Reverse",
+			Benchmark.benchmarkProblem( "Reverse",
 					x -> new MapleReverseData( ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> constant_true =
-			TestUtils.benchmarkProblem( "Constant True",
+			Benchmark.benchmarkProblem( "Constant True",
 					x -> new MapleConstantData( true, true ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> constant_true_false =
-			TestUtils.benchmarkProblem( "Constant True-False",
+			Benchmark.benchmarkProblem( "Constant True-False",
 					x -> new MapleConstantData( true, false ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> zebra =
-			TestUtils.benchmarkProblem( "Zebra",
+			Benchmark.benchmarkProblem( "Zebra",
 					x -> new MapleZebraData( ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> delay_by_one =
-			TestUtils.benchmarkProblem( "Delay by One",
+			Benchmark.benchmarkProblem( "Delay by One",
 					x -> new MapleDelayByOneData( ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> lycantrope2 =
-			TestUtils.benchmarkProblem( "Lycantrope Day 2",
+			Benchmark.benchmarkProblem( "Lycantrope Day 2",
 					x -> new MapleLycantropeData( 2 ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> lycantrope3 =
-			TestUtils.benchmarkProblem( "Lycantrope Day 3",
+			Benchmark.benchmarkProblem( "Lycantrope Day 3",
 					x -> new MapleLycantropeData( 3 ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> absorb =
-			TestUtils.benchmarkProblem( "Absorb",
+			Benchmark.benchmarkProblem( "Absorb",
 					x -> new MapleAbsorbData( ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> duplicate =
-			TestUtils.benchmarkProblem( "Duplicate",
+			Benchmark.benchmarkProblem( "Duplicate",
 					x -> new MapleDuplicateData( ) );
 
 	public final static BenchmarkProblem<Tuple<Boolean>, Tuple<Boolean>> absorb_and_duplicate =
-			TestUtils.benchmarkProblem( "Absorb and Duplicate",
+			Benchmark.benchmarkProblem( "Absorb and Duplicate",
 					x -> new MapleAbsorbDuplicateData( ) );
 }

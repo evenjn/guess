@@ -24,7 +24,8 @@ import org.github.evenjn.file.FileFool;
 import org.github.evenjn.file.FileFoolWriter;
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
-import org.github.evenjn.guess.benchmark.TestUtils;
+import org.github.evenjn.guess.benchmark.BenchmarkHandicap;
+import org.github.evenjn.guess.benchmark.Benchmark;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.guess.m12.maple.M12MapleFileTrainer;
 import org.github.evenjn.guess.m12.v.M12VFileTrainerBlueprint;
@@ -84,9 +85,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.identity )
+				.problem( Benchmark.identity )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -99,9 +101,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.reverse )
+				.problem( Benchmark.reverse )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -114,9 +117,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.constant_true )
+				.problem( Benchmark.constant_true )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -129,9 +133,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.constant_true_false )
+				.problem( Benchmark.constant_true_false )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -147,9 +152,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.zebra )
+				.problem( Benchmark.zebra )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
@@ -169,9 +175,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.delay_by_one )
+				.problem( Benchmark.delay_by_one )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
@@ -184,9 +191,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.lycantrope2 )
+				.problem( Benchmark.lycantrope2 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
@@ -199,9 +207,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.lycantrope3 )
+				.problem( Benchmark.lycantrope3 )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
@@ -214,9 +223,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.absorb )
+				.problem( Benchmark.absorb )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
@@ -229,9 +239,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.duplicate )
+				.problem( Benchmark.duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
@@ -244,9 +255,10 @@ public class TestM12VMapleTrainer {
 		/** RUN! */
 		BenchmarkTrial
 				.builder( trainer( ), trainer_label )
-				.problem( TestUtils.absorb_and_duplicate )
+				.problem( Benchmark.absorb_and_duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.build( ).run( limit, null );
+				.handicap( new BenchmarkHandicap( true, limit ) )
+				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
 				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
