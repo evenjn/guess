@@ -9,12 +9,12 @@ import java.util.function.Function;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.numeric.NumericLogarithm;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 
@@ -47,8 +47,8 @@ public class M12VCoreBuilder {
 			KnittingCursable<TupleAlignmentGraph> observed_cursable,
 			ProgressSpawner progress_spawner ) {
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
 			int data_size = observed_cursable.count( );
 			if ( logger != null ) {
@@ -56,7 +56,7 @@ public class M12VCoreBuilder {
 			}
 			spawn.target( data_size );
 			
-			for ( TupleAlignmentGraph observed : observed_cursable.pull( hook ) .once( )) {
+			for ( TupleAlignmentGraph observed : observed_cursable.pull( rook ) .once( )) {
 
 				Iterator<TupleAlignmentNode> it = observed.forward( );
 				while ( it.hasNext( ) ) {

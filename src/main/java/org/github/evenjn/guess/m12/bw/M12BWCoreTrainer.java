@@ -27,13 +27,13 @@ import org.github.evenjn.guess.markov.MarkovChecker;
 import org.github.evenjn.guess.markov.MarkovDeserializer;
 import org.github.evenjn.guess.markov.MarkovRandomBuilder;
 import org.github.evenjn.guess.markov.MarkovSerializer;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 
@@ -45,7 +45,7 @@ public class M12BWCoreTrainer {
 
 	private int epochs;
 
-	private Function<Hook, Consumer<String>> putter_core;
+	private Function<Rook, Consumer<String>> putter_core;
 
 	private Cursable<String> reader_core;
 
@@ -60,7 +60,7 @@ public class M12BWCoreTrainer {
 			int period,
 			int epochs,
 			Consumer<String> logger,
-			Function<Hook, Consumer<String>> putter_core,
+			Function<Rook, Consumer<String>> putter_core,
 			Cursable<String> reader_core,
 			BiFunction<Markov, ProgressSpawner, Boolean> quality_control,
 			long seed) {
@@ -82,8 +82,8 @@ public class M12BWCoreTrainer {
 			KnittingCursable<TupleAlignmentGraph> graphs,
 			ProgressSpawner progress_spawner ) {
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"M12CoreTrainer::prepareCore" );
 
 			Markov core = null;
@@ -111,10 +111,10 @@ public class M12BWCoreTrainer {
 				 * Otherwise, de-serialize it from the reader.
 				 */
 
-				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
+				try ( AutoRook rook2 = new BasicAutoRook( ) ) {
 					core = KnittingCursable
 							.wrap( reader_core )
-							.pull( hook2 )
+							.pull( rook2 )
 							.purlOptional( new MarkovDeserializer( ) )
 							.one( );
 

@@ -5,13 +5,13 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.graph.NotAlignableException;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -43,7 +43,7 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 
 	@Override
 	public void setPrinters(
-			Function<Hook, Consumer<String>> logger,
+			Function<Rook, Consumer<String>> logger,
 			Function<Above, String> a_printer,
 			Function<Below, String> b_printer ) {
 		
@@ -55,17 +55,17 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kd =
 				KnittingCursable.wrap( data );
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 
 			TupleAlignmentAlphabet<Above, Below> result =
 					new TupleAlignmentAlphabet<Above, Below>( );
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetSimpleBuilder::build" );
 
 			spawn.info( "Computing dataset size." );
 			spawn.target( kd.count( ) );
 			spawn.info( "Collecting alphabet elements." );
-			for ( Bi<Tuple<Above>, Tuple<Below>> datum : kd.pull( hook )
+			for ( Bi<Tuple<Above>, Tuple<Below>> datum : kd.pull( rook )
 					.once( ) ) {
 
 				spawn.step( 1 );

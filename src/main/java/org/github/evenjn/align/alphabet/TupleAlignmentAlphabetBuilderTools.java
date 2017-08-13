@@ -13,12 +13,12 @@ import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.numeric.PercentPrinter;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Progress;
@@ -53,13 +53,13 @@ public class TupleAlignmentAlphabetBuilderTools {
 			int max_below,
 			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 			int total ) {
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetBuilderTools::computeMinMaxCoverage" )
 					.target( total );
 			int not_aligneable = 0;
 			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
-					.wrap( data ).pull( hook ).once( ) ) {
+					.wrap( data ).pull( rook ).once( ) ) {
 				spawn.step( 1 );
 				try {
 					TupleAlignmentAlphabetBuilderTools.attemptToAlingn(
@@ -121,13 +121,13 @@ public class TupleAlignmentAlphabetBuilderTools {
 			Predicate<Tael<SymbolAbove, SymbolBelow>> filter,
 			int total,
 			int min_max_total ) {
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetBuilderTools::computeCoverage" )
 					.target( total );
 			int not_aligneable = 0;
 			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
-					.wrap( data ).pull( hook ).once( ) ) {
+					.wrap( data ).pull( rook ).once( ) ) {
 				spawn.step( 1 );
 				try {
 					TupleAlignmentAlphabetBuilderTools.attemptToAlingn(

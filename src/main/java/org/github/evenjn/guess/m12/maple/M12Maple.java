@@ -27,7 +27,7 @@ import java.util.function.BiFunction;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.knit.TupleValue;
@@ -35,7 +35,7 @@ import org.github.evenjn.numeric.DenseMatrix;
 import org.github.evenjn.numeric.Matrix;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.NumericUtils.Summation;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Maple;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -84,14 +84,14 @@ public class M12Maple<I, O> implements
 		this.fail_on_unknown_input_symbol = fail_on_unknown_input_symbol;
 //		Map<I, Set<Tuple<O>>> actual_pairs = new HashMap<>();
 		
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 
 			this.core = core;
 			init_cache( core.number_of_states );
 
 			double[] buffer = new double[coalignment_alphabet.size( )];
 
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner, "M12Maple::constructor" );
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner, "M12Maple::constructor" );
 			spawn.target( core.number_of_states * coalignment_alphabet.size( ) );
 			/**
 			 * for each state we want to cache: for each symbol above, the probability

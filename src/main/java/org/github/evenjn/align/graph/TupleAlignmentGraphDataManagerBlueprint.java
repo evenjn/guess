@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.Rook;
 
 public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 	
@@ -33,7 +33,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	private int max_below = 1;
 
-	private Function<Hook, Consumer<String>> putter_coalignment_graphs;
+	private Function<Rook, Consumer<String>> putter_coalignment_graphs;
 
 	private Cursable<String> reader_coalignment_graphs;
 
@@ -60,7 +60,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	public TupleAlignmentGraphDataManagerBlueprint<I, O>
 			serializeTupleAlignmentGraphs(
-					Function<Hook, Consumer<String>> putter_coalignments ) {
+					Function<Rook, Consumer<String>> putter_coalignments ) {
 		this.putter_coalignment_graphs = putter_coalignments;
 		return this;
 	}

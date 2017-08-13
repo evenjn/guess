@@ -7,8 +7,8 @@ import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBelow> implements TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow>{
@@ -53,7 +53,7 @@ public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBe
 	}
 
 	@Override
-	public void setPrinters( Function<Hook, Consumer<String>> logger,
+	public void setPrinters( Function<Rook, Consumer<String>> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
 		wrapped.setPrinters( logger, a_printer, b_printer );

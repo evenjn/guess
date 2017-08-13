@@ -22,8 +22,8 @@ import java.util.function.Function;
 
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Tuple;
 
 public interface TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
@@ -33,7 +33,7 @@ public interface TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 			ProgressSpawner progress_spawner );
 	
 	void setPrinters(
-			Function<Hook, Consumer<String>> logger,
+			Function<Rook, Consumer<String>> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer );
 

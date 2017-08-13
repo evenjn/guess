@@ -25,7 +25,7 @@ import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 	
@@ -56,7 +56,7 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 
 	@Override
 	public void setPrinters(
-			Function<Hook, Consumer<String>> logger,
+			Function<Rook, Consumer<String>> logger,
 			Function<Above, String> a_printer,
 			Function<Below, String> b_printer ) {
 	}

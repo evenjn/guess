@@ -22,10 +22,10 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Maple;
@@ -86,11 +86,11 @@ public class MapleQualityChecker<I, O> {
 			int target) {
 		
 		MapleEvaluation<I, O> evaluation = new MapleEvaluation<>( aligner, a_printer, b_printer );
-		try ( AutoHook hook2 = new BasicAutoHook( ) ) {
-			Progress spawn2 = spawn.spawn( hook2, "check" ).target( target );
+		try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+			Progress spawn2 = spawn.spawn( rook2, "check" ).target( target );
 			
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
-					.wrap( data ).pull( hook2 ).peek( x->spawn2.step(1) ).once( ) ) {
+					.wrap( data ).pull( rook2 ).peek( x->spawn2.step(1) ).once( ) ) {
 
 				Tuple<O> guess = maple.apply( g.front( ) );
 				evaluation.record( logger, g.front( ), g.back( ), guess );

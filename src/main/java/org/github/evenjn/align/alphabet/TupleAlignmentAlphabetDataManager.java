@@ -20,16 +20,16 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.Bik;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Tuple;
 
 /*
@@ -77,7 +77,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			int min_below,
 			int max_below,
 			TupleAlignmentAlphabetBuilder<I, O> builder,
-			Function<Hook, Consumer<String>> writer,
+			Function<Rook, Consumer<String>> writer,
 			Cursable<String> reader,
 			Function<I, String> a_serializer,
 			Function<O, String> b_serializer,
@@ -85,7 +85,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			Function<String, O> b_deserializer,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer,
-			Function<Hook, Consumer<String>> logger) {
+			Function<Rook, Consumer<String>> logger) {
 		this.min_above = min_above;
 		this.max_above = max_above;
 		this.min_below = min_below;
@@ -111,9 +111,9 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 
 	private final int max_below;
 
-	private final Function<Hook, Consumer<String>> writer;
+	private final Function<Rook, Consumer<String>> writer;
 
-	private final Function<Hook, Consumer<String>> logger;
+	private final Function<Rook, Consumer<String>> logger;
 
 	private final Cursable<String> reader;
 
@@ -160,9 +160,9 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 					data
 							.map( x -> ( Bik.nu( x.front( ), x.back( ) ) ) );
 
-			try ( AutoHook hook = new BasicAutoHook( ) ) {
+			try ( AutoRook rook = new BasicAutoRook( ) ) {
 				Progress spawn =
-						SafeProgressSpawner.safeSpawn( hook, progress_spawner, "prepareAlphabet" );
+						SafeProgressSpawner.safeSpawn( rook, progress_spawner, "prepareAlphabet" );
 
 				spawn.info( "Computing dataset size." );
 				int size = data.count( );
@@ -195,13 +195,13 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			 * Otherwise, de-serialize it from the reader.
 			 */
 
-			try ( AutoHook hook = new BasicAutoHook( ) ) {
+			try ( AutoRook rook = new BasicAutoRook( ) ) {
 				/**
 				 * This is interesting, because the output of the serializer is not
 				 * volatile, but how can we communicate that?
 				 */
 				coalignment_alphabet = KnittingCursable
-						.wrap( reader ).pull( hook )
+						.wrap( reader ).pull( rook )
 						.purlOptional( new TupleAlignmentAlphabetDeserializer<>(
 								a_deserializer,
 								b_deserializer ) )

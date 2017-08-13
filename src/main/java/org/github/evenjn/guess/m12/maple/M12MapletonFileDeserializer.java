@@ -26,10 +26,10 @@ import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.guess.markov.MarkovChecker;
 import org.github.evenjn.guess.markov.MarkovDeserializer;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.plaintext.PlainText;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12MapletonFileDeserializer {
@@ -44,7 +44,7 @@ public class M12MapletonFileDeserializer {
 		Markov core;
 		Path m12core_stable_file = training_cache_path.resolve( "./m12_core.stable.txt" );
 		Path alphabet_stable_file = training_cache_path.resolve( "./ta_alphabet.stable.txt" );
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			/**
 			 * This is interesting, because the output of the serializer is not
 			 * volatile, but how can we communicate that?
@@ -52,17 +52,17 @@ public class M12MapletonFileDeserializer {
 			alphabet = KnittingCursable
 					.wrap( h -> PlainText.reader( )
 							.build( ).get( h, FileFool.r().open( alphabet_stable_file ).read( h ) ) )
-					.pull( hook )
+					.pull( rook )
 					.purlOptional( new TupleAlignmentAlphabetDeserializer<>(
 							a_deserializer,
 							b_deserializer ) )
 					.one( );
 		}
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			core = KnittingCursable
 					.wrap( h -> PlainText.reader( )
 							.build( ).get( h, FileFool.r().open( m12core_stable_file ).read( h ) ) )
-					.pull( hook )
+					.pull( rook )
 					.purlOptional( new MarkovDeserializer( ) )
 					.one( );
 

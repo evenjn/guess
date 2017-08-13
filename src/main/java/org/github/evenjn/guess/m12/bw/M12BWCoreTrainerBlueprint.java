@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12BWCoreTrainerBlueprint {
@@ -34,7 +34,7 @@ public class M12BWCoreTrainerBlueprint {
 
 	private int epochs;
 
-	private Function<Hook, Consumer<String>> putter_core;
+	private Function<Rook, Consumer<String>> putter_core;
 
 	private Cursable<String> reader_core;
 
@@ -73,7 +73,7 @@ public class M12BWCoreTrainerBlueprint {
 	}
 
 	public M12BWCoreTrainerBlueprint
-			serializeModel( Function<Hook, Consumer<String>> putter_core ) {
+			serializeModel( Function<Rook, Consumer<String>> putter_core ) {
 		this.putter_core = putter_core;
 		return this;
 	}

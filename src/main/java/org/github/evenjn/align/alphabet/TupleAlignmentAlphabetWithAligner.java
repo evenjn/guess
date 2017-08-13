@@ -22,15 +22,15 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Di;
-import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -41,7 +41,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 
 	private TupleAligner<SymbolAbove, SymbolBelow> aligner;
 
-	private Function<Hook, Consumer<String>> logger;
+	private Function<Rook, Consumer<String>> logger;
 
 	private Function<SymbolAbove, String> a_printer;
 
@@ -59,7 +59,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 	}
 
 	public void setPrinters(
-			Function<Hook, Consumer<String>> logger,
+			Function<Rook, Consumer<String>> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
 		this.logger = logger;
@@ -72,20 +72,20 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> kd =
 				KnittingCursable.wrap( data );
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Consumer<String> open_logger = null;
 			if ( logger != null ) {
-				open_logger = logger.apply( hook );
+				open_logger = logger.apply( rook );
 			}
 			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 					new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetWithAligner::build" );
 
 			spawn.info( "Computing dataset size." );
 			spawn.target( kd.count( ) );
 			spawn.info( "Collecting alphabet elements." );
-			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( hook )
+			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( rook )
 					.once( ) ) {
 
 				spawn.step( 1 );

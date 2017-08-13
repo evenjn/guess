@@ -17,9 +17,9 @@
  */
 package org.github.evenjn.knit;
 
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.Rook;
 
 /**
  * Provides a method to create stub {@link org.github.evenjn.yarn.Progress
@@ -31,12 +31,12 @@ import org.github.evenjn.yarn.ProgressSpawner;
  */
 public class SafeProgressSpawner {
 
-	public static Progress safeSpawn( Hook hook, ProgressSpawner master,
+	public static Progress safeSpawn( Rook rook, ProgressSpawner master,
 			String name ) {
 		if ( master == null ) {
 			return DummyProgress.singleton;
 		}
-		Progress spawn = master.spawn( hook, name );
+		Progress spawn = master.spawn( rook, name );
 		return spawn;
 	}
 
@@ -65,7 +65,7 @@ class DummyProgress implements
 	}
 
 	@Override
-	public Progress spawn( Hook hook, String name ) {
+	public Progress spawn( Rook rook, String name ) {
 		return this;
 	}
 

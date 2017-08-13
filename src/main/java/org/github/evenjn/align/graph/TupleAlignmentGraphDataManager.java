@@ -24,14 +24,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Hook;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.OptionalMap;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -82,7 +82,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			int max_above,
 			int min_below,
 			int max_below,
-			Function<Hook, Consumer<String>> putter_coalignment_graphs,
+			Function<Rook, Consumer<String>> putter_coalignment_graphs,
 			Cursable<String> reader_coalignment_graphs ) {
 		this.min_above = min_above;
 		this.max_above = max_above;
@@ -100,7 +100,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 	private final int max_below;
 
-	private final Function<Hook, Consumer<String>> putter_coalignment_graphs;
+	private final Function<Rook, Consumer<String>> putter_coalignment_graphs;
 
 	private final Cursable<String> reader_coalignment_graphs;
 
@@ -140,9 +140,9 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kc = KnittingCursable.wrap( data );
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Progress spawn =
-					SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+					SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 							"prepareGraphs" );
 			exposed_graphs = prepareGraphs( kc, pair_encoder, spawn );
 		}
@@ -152,8 +152,8 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 	private boolean limits_are_computed = false;
 	
 	private void computeLimits( Progress progress, KnittingCursable<TupleAlignmentGraph> data ) {
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			for ( TupleAlignmentGraph g : data.pull( hook ).once( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			for ( TupleAlignmentGraph g : data.pull( rook ).once( ) ) {
 				int la = g.la( );
 				int lb = g.lb( );
 
@@ -222,8 +222,8 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 				progress.info( "Computing dataset size before computing limits." );
 				int progress_target = 0;
-				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
-					Progress spawn = progress.spawn( hook2, "computing dataset size" );
+				try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+					Progress spawn = progress.spawn( rook2, "computing dataset size" );
 					progress_target = data.peek( x -> spawn.step( 1 ) ).count( );
 				}
 				progress.target( 2 * progress_target );
@@ -243,10 +243,10 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				header.append( record_max_length_back );
 				header.append( "," );
 				header.append( record_max_number_of_edges );
-				try ( AutoHook hook = new BasicAutoHook( ) ) {
+				try ( AutoRook rook = new BasicAutoRook( ) ) {
 					KnittingCursor.on( header.toString( ) ).append(
 							graphs_to_write
-									.pull( hook )
+									.pull( rook )
 									.flatmapIterable(
 											x -> new TupleAlignmentGraphSerializer( x ) ) )
 							.consume( putter_coalignment_graphs );
@@ -282,8 +282,8 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				progress.info(
 						"Computing dataset size before computing limits." );
 				int progress_target = 0;
-				try ( AutoHook hook2 = new BasicAutoHook( ) ) {
-					Progress spawn = progress.spawn( hook2, "computing dataset size" );
+				try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+					Progress spawn = progress.spawn( rook2, "computing dataset size" );
 					progress_target = data.peek( x -> spawn.step( 1 ) ).count( );
 				}
 				progress.target( progress_target );

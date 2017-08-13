@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
@@ -39,7 +39,7 @@ import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.EndOfCursorException;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -105,8 +105,8 @@ public class M12BaumWelch {
 			final int epochs,
 			ProgressSpawner progress_spawner ) {
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
 			int data_size = observed_cursable.count( );
 			if ( logger != null ) {
@@ -121,10 +121,10 @@ public class M12BaumWelch {
 			}
 			spawn.target( epochs * data_size );
 
-			BasicAutoHook[] local = {
-					new BasicAutoHook( )
+			BasicAutoRook[] local = {
+					new BasicAutoRook( )
 			};
-			hook.hook( new AutoCloseable( ) {
+			rook.hook( new AutoCloseable( ) {
 
 				@Override
 				public void close( ) {
@@ -197,7 +197,7 @@ public class M12BaumWelch {
 							throw new IllegalArgumentException( "Something wrong with training data size." );
 						}
 						local[0].close( );
-						local[0] = new BasicAutoHook( );
+						local[0] = new BasicAutoRook( );
 						observed_re = observed_cursable.pull( local[0] );
 						if ( !observed_re.hasNext( ) ) {
 							throw new IllegalArgumentException( "Empty training set" );

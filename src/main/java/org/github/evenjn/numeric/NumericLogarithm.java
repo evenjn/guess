@@ -17,9 +17,9 @@
  */
 package org.github.evenjn.numeric;
 
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.EndOfCursorException;
@@ -84,8 +84,8 @@ public class NumericLogarithm {
 	 */
 	public static double elnsum( Cursable<Double> values ) {
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Cursor<Double> pull = values.pull( hook );
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			Cursor<Double> pull = values.pull( rook );
 			Double max = null;
 			for ( ;; ) {
 				try {
@@ -101,7 +101,7 @@ public class NumericLogarithm {
 			if ( max == null || max < smallLogValue )
 				return smallLogValue;
 
-			pull = values.pull( hook );
+			pull = values.pull( rook );
 			double sum = 0d;
 			for ( ;; ) {
 				try {

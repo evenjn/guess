@@ -20,10 +20,10 @@ package org.github.evenjn.align;
 import java.util.Vector;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.TupleValue;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Tuple;
 
@@ -63,7 +63,7 @@ public class Tael<SymbolAbove, SymbolBelow> {
 			Function<? super SymbolAbove, String> sa_label,
 			Function<? super SymbolBelow, String> sb_label ) {
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			StringBuilder sb = new StringBuilder( );
 			sb.append( "[" );
 			for ( SymbolAbove a : KnittingTuple.wrap(above_as_value).asIterable( ) ) {

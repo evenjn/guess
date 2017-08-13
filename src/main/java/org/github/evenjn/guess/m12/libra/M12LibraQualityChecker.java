@@ -23,14 +23,14 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Progress;
@@ -74,10 +74,10 @@ public class M12LibraQualityChecker<I, O> implements
 		int not_aligneable = 0;
 		Summation summation = NumericUtils.summation( 10000,
 				x -> NumericLogarithm.elnsum( KnittingCursable.wrap( x ) ) );
-		try ( AutoHook hook2 = new BasicAutoHook( ) ) {
-			Progress spawn2 = spawn.spawn( hook2, "check" ).target( target );
+		try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+			Progress spawn2 = spawn.spawn( rook2, "check" ).target( target );
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
-					.wrap( data ).pull( hook2 ).peek( x -> spawn2.step( 1 ) ).once( ) ) {
+					.wrap( data ).pull( rook2 ).peek( x -> spawn2.step( 1 ) ).once( ) ) {
 				try {
 					double p = m12Libra.weigh( g );
 					summation.add( p );

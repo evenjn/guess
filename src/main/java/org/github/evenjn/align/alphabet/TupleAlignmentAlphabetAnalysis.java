@@ -25,14 +25,14 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.graph.NotAlignableException;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.numeric.FrequencyData;
 import org.github.evenjn.numeric.FrequencyDistribution;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Progress;
@@ -274,13 +274,13 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			throw new IllegalStateException( "this can be compued only once" );
 		}
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetAnalysis::computeCompleteAlphabet" );
 			int not_aligneable = 0;
 			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
-					.wrap( data ).pull( hook ).once( ) ) {
+					.wrap( data ).pull( rook ).once( ) ) {
 				total++;
 				spawn.step( 1 );
 				KnittingTuple<SymbolAbove> ka = KnittingTuple.wrap( datum.front( ) );

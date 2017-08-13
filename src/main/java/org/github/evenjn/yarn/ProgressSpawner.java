@@ -19,5 +19,5 @@ package org.github.evenjn.yarn;
 
 public interface ProgressSpawner {
 
-	Progress spawn( Hook hook, String name );
+	Progress spawn( Rook rook, String name );
 }

@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.TupleValue;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
@@ -46,8 +46,8 @@ public class CheatingMapleTrainer<I, O> implements
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
 		HashMap<TupleValue<I>, TupleValue<O>> cheat_sheet = new HashMap<>( );
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			for ( Bi<Tuple<I>, Tuple<O>> td : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			for ( Bi<Tuple<I>, Tuple<O>> td : KnittingCursable.wrap( data ).pull( rook ).once( ) ) {
 				cheat_sheet.put( KnittingTuple.wrap(td.front( )).asTupleValue(), KnittingTuple.wrap(td.back( )).asTupleValue() );
 			}
 		}

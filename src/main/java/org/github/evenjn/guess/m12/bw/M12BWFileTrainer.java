@@ -31,10 +31,10 @@ import org.github.evenjn.align.graph.TupleAlignmentGraphDataManagerBlueprint;
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.m12.M12FileTrainer;
 import org.github.evenjn.guess.m12.M12QualityChecker;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.plaintext.PlainText;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Progress;
@@ -111,9 +111,9 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 		m12ctb.deserializeModel( null );
 		m12ctb.serializeModel( null );
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Progress progress = SafeProgressSpawner
-					.safeSpawn( hook, progress_spawner, "M12FileTrainer::train" );
+					.safeSpawn( rook, progress_spawner, "M12FileTrainer::train" );
 
 			/**
 			 * The whole point of the FileTrainer is to handle serialization and
@@ -237,7 +237,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 				final Consumer<String> training_logger = PlainText
 						.writer( ).setForcedFlush( true )
 						.build( )
-						.get( hook, ff.open( m12core_log_file ).write( hook ) );
+						.get( rook, ff.open( m12core_log_file ).write( rook ) );
 				
 				if (checker != null) {
 					m12ctb.qualityControl( (core, spawn) -> checker.check(

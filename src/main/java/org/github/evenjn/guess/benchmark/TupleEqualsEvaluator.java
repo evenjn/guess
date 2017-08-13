@@ -19,10 +19,10 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Tuple;
@@ -69,8 +69,8 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 	public void evaluate(
 			Function<I, O> guesser,
 			Cursable<Bi<I, O>> data ) {
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			for ( Bi<I, O> k : KnittingCursable.wrap( data ).pull( hook ).once( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			for ( Bi<I, O> k : KnittingCursable.wrap( data ).pull( rook ).once( ) ) {
 				I i = k.front( );
 				O target_output = k.back( );
 				O guessed_output = guesser.apply( i );

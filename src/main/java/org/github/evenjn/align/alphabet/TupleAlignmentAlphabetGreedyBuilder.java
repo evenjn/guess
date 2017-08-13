@@ -23,18 +23,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
-import org.github.evenjn.knit.BasicAutoHook;
+import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.numeric.PercentPrinter;
-import org.github.evenjn.yarn.AutoHook;
+import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
-import org.github.evenjn.yarn.Hook;
 import org.github.evenjn.yarn.EndOfCursorException;
+import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
@@ -57,7 +57,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 
 	private boolean shrink_alphabet = false;
 
-	private Function<Hook, Consumer<String>> logger;
+	private Function<Rook, Consumer<String>> logger;
 
 	public TupleAlignmentAlphabetGreedyBuilder(boolean shrink_alphabet) {
 		this.shrink_alphabet = shrink_alphabet;
@@ -74,7 +74,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 	}
 
 	public void setPrinters(
-			Function<Hook, Consumer<String>> logger,
+			Function<Rook, Consumer<String>> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
 		this.logger = logger;
@@ -104,9 +104,9 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			logger.accept( "" );
 			logger.accept( " Shrinking the alphabet" );
 		}
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::shrinkAlphabet" )
 					.target( initial_alphabet.size( ) );
 
@@ -203,11 +203,11 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			}
 		}
 
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			int total_candidates = analysis.getTotalNumberOfCandidatePairs( );
 			int batch_size = 0;
 
-			Progress spawn = SafeProgressSpawner.safeSpawn( hook, progress_spawner,
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::growAlphabetQuickly" )
 					.target( analysis.getTotalAligneable( ) );
 			int prev = analysis.getTotalAligneable( );
@@ -274,8 +274,8 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			ProgressSpawner progress_spawner ) {
 		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 				new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
-		try ( AutoHook hook = new BasicAutoHook( ) ) {
-			Consumer<String> open_logger = logger.apply( hook );
+		try ( AutoRook rook = new BasicAutoRook( ) ) {
+			Consumer<String> open_logger = logger.apply( rook );
 			TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis =
 					new TupleAlignmentAlphabetAnalysis<>( 
 							min_above, max_above, min_below, max_below );
