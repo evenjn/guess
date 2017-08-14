@@ -27,7 +27,7 @@
   <scm>
     <connection>scm:git:git://github.com/evenjn/guess</connection>
     <developerConnection>scm:git:git@github.com:evenjn/guess.git</developerConnection>
-    <url>http://github.com/evenjn/yarn</url>
+    <url>http://github.com/evenjn/guess</url>
   </scm>
   <issueManagement>
     <system>GitHub</system>
