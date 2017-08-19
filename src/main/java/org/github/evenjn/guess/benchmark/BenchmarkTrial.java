@@ -126,8 +126,10 @@ public class BenchmarkTrial<I, O> {
 
 			sb.append( "\nSample input          : " );
 			sb.append( problem.inputPrinter( ).apply( next.observed ) );
-			sb.append( "\nSample training output: " );
-			sb.append( problem.outputPrinter( ).apply( next.bad_teacher ) );
+			if ( handicap.use_noise ) {
+				sb.append( "\nSample noisy training output: " );
+				sb.append( problem.outputPrinter( ).apply( next.bad_teacher ) );
+			}
 			sb.append( "\nSample gold output    : " );
 			sb.append( problem.outputPrinter( ).apply( next.good_teacher ) );
 			sb.append( "\nPredicted             : " );

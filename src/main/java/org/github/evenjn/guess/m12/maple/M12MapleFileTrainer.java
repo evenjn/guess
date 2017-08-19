@@ -17,12 +17,10 @@
  */
 package org.github.evenjn.guess.m12.maple;
 
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.m12.M12FileTrainer;
-import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoRook;
@@ -36,36 +34,23 @@ public class M12MapleFileTrainer<I, O> {
 
 	private M12FileTrainer<I, O> file_trainer;
 
-	private BiFunction<I, I, Boolean> demux;
-
-	public M12MapleFileTrainer(Supplier<? extends M12FileTrainer<I, O>> blueprint,
-			BiFunction<I, I, Boolean> demux) {
-		this.demux = demux;
+	public M12MapleFileTrainer(
+			Supplier<? extends M12FileTrainer<I, O>> blueprint) {
 		this.file_trainer = blueprint.get( );
 	}
 
-	@Deprecated
 	public M12Maple<I, O> train(
 			ProgressSpawner progress_spawner,
 			FileFool filefool,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
-		return train( progress_spawner, filefool, data, null );
-	}
-
-	public M12Maple<I, O> train(
-			ProgressSpawner progress_spawner,
-			FileFool filefool,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
-			M12QualityChecker<I, O> checker ) {
 		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Progress progress = SafeProgressSpawner
 					.safeSpawn( rook, progress_spawner, "M12MapleFileTrainer::train" );
-			file_trainer.train( progress, filefool, data, checker );
+			file_trainer.train( progress, filefool, data );
 			M12Maple<I, O> maple = M12MapleFileDeserializer.deserialize(
 					progress_spawner,
 					file_trainer.getDeserializerAbove( ),
 					file_trainer.getDeserializerBelow( ),
-					demux,
 					filefool.getRoot( ) );
 			return maple;
 		}

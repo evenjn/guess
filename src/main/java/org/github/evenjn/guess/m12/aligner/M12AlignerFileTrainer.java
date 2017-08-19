@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.m12.M12FileTrainer;
-import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoRook;
@@ -35,27 +34,19 @@ public class M12AlignerFileTrainer<I, O> {
 
 	private M12FileTrainer<I, O> file_trainer;
 
-	public M12AlignerFileTrainer(Supplier<? extends M12FileTrainer<I, O>> blueprint) {
+	public M12AlignerFileTrainer(
+			Supplier<? extends M12FileTrainer<I, O>> blueprint) {
 		this.file_trainer = blueprint.get( );
 	}
 
-	@Deprecated
 	public M12Aligner<I, O> train(
 			ProgressSpawner progress_spawner,
 			FileFool filefool,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
-		return train( progress_spawner, filefool, data, null );
-	}
-
-	public M12Aligner<I, O> train(
-			ProgressSpawner progress_spawner,
-			FileFool filefool,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
-			M12QualityChecker<I, O> checker ) {
 		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Progress progress = SafeProgressSpawner
 					.safeSpawn( rook, progress_spawner, "M12AlignerFileTrainer::train" );
-			file_trainer.train( progress, filefool, data, checker );
+			file_trainer.train( progress, filefool, data );
 			M12Aligner<I, O> aligner = M12AlignerFileDeserializer.deserialize(
 					progress,
 					file_trainer.getDeserializerAbove( ),

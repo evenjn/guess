@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
+import org.github.evenjn.guess.m12.M12QualityChecker;
 
 public class M12VFileTrainerBlueprint<I, O> implements Supplier<M12VFileTrainer<I, O>> {
 
@@ -45,6 +46,8 @@ public class M12VFileTrainerBlueprint<I, O> implements Supplier<M12VFileTrainer<
 	private Function<String, I> a_deserializer;
 
 	private Function<String, O> b_deserializer;
+	
+	private M12QualityChecker<I, O> checker;
 
 	public M12VFileTrainerBlueprint<I, O> setTupleAlignmentAlphabetBuilder(
 					TupleAlignmentAlphabetBuilder<I, O> builder ) {
@@ -89,6 +92,12 @@ public class M12VFileTrainerBlueprint<I, O> implements Supplier<M12VFileTrainer<
 		this.b_deserializer = b_deserializer;
 		return this;
 	}
+	
+	public M12VFileTrainerBlueprint<I, O> setQualityChecker(
+			M12QualityChecker<I, O> checker ) {
+		this.checker = checker;
+		return this;
+	}
 
 	public M12VFileTrainer<I, O> get( ) {
 		return new M12VFileTrainer<>(
@@ -97,6 +106,7 @@ public class M12VFileTrainerBlueprint<I, O> implements Supplier<M12VFileTrainer<
 				min_below,
 				max_below,
 				builder,
+				checker,
 				a_printer,
 				b_printer,
 				a_serializer,

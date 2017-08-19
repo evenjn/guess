@@ -18,7 +18,6 @@
 package org.github.evenjn.guess.m12.maple;
 
 import java.nio.file.Path;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
@@ -39,7 +38,6 @@ public class M12MapleFileDeserializer {
 			ProgressSpawner progress_spawner,
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer,
-			BiFunction<I, I, Boolean> demux,
 			Path training_cache_path ) {
 
 		TupleAlignmentAlphabet<I, O> alphabet;

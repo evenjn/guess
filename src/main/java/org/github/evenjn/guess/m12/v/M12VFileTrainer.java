@@ -51,6 +51,8 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 
 	private Function<O, String> b_printer;
 
+	private M12QualityChecker<I, O> checker;
+
 	public Function<String, I> getDeserializerAbove( ) {
 		return a_deserializer;
 	}
@@ -65,12 +67,14 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 			int min_below,
 			int max_below,
 			TupleAlignmentAlphabetBuilder<I, O> builder,
+			M12QualityChecker<I, O> checker,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer,
 			Function<I, String> a_serializer,
 			Function<O, String> b_serializer,
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer ) {
+		this.checker = checker;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
 		this.a_deserializer = a_deserializer;
@@ -96,8 +100,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 	public void train(
 			ProgressSpawner progress_spawner,
 			FileFool training_cache_path,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			M12QualityChecker<I, O> checker ) {
+			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data ) {
 		FileFool ff = training_cache_path;
 		/**
 		 * Override any custom or previous setting.

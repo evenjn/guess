@@ -13,8 +13,7 @@ public interface M12FileTrainer<I, O> {
 	void train(
 			ProgressSpawner progress_spawner,
 			FileFool training_cache_path,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			M12QualityChecker<I, O> quality_checker);
+			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data );
 
 	public Function<String, I> getDeserializerAbove( );
 

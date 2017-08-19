@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
+import org.github.evenjn.guess.m12.M12QualityChecker;
 
 public class M12BWFileTrainerBlueprint<I, O> implements Supplier<M12BWFileTrainer<I, O>> {
 
@@ -41,6 +42,8 @@ public class M12BWFileTrainerBlueprint<I, O> implements Supplier<M12BWFileTraine
 	private Function<String, I> a_deserializer;
 
 	private Function<String, O> b_deserializer;
+	
+	private M12QualityChecker<I, O> checker;
 
 	private int grace_period;
 
@@ -86,7 +89,13 @@ public class M12BWFileTrainerBlueprint<I, O> implements Supplier<M12BWFileTraine
 		this.b_deserializer = b_deserializer;
 		return this;
 	}
-
+	
+	public M12BWFileTrainerBlueprint<I, O> setQualityChecker(
+			M12QualityChecker<I, O> checker ) {
+		this.checker = checker;
+		return this;
+	}
+	
 	public M12BWFileTrainerBlueprint<I, O> trainingTime( int grace_period, int epochs ) {
 		this.grace_period = grace_period;
 		this.epochs = epochs;
@@ -108,6 +117,7 @@ public class M12BWFileTrainerBlueprint<I, O> implements Supplier<M12BWFileTraine
 				min_below,
 				max_below,
 				builder,
+				checker,
 				a_printer,
 				b_printer,
 				a_serializer,

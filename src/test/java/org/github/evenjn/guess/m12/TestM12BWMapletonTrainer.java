@@ -70,6 +70,7 @@ public class TestM12BWMapletonTrainer {
 				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
 				.setTupleAlignmentAlphabetBuilder(
 						new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
+				.setQualityChecker( null )
 				.setPrinter(
 						x -> x ? "1" : "0",
 						x -> x ? "1" : "0" );
@@ -80,7 +81,7 @@ public class TestM12BWMapletonTrainer {
 		M12BWFileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
 		M12MapletonFileTrainer<Boolean, Boolean> trainer =
 				new M12MapletonFileTrainer<>( blueprint );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>>
@@ -91,7 +92,7 @@ public class TestM12BWMapletonTrainer {
 				.trainingTime( 1, 100 );
 		M12MapletonFileTrainer<Boolean, Boolean> trainer =
 				new M12MapletonFileTrainer<>( blueprint );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d );
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerZebra( ) {
@@ -101,7 +102,7 @@ public class TestM12BWMapletonTrainer {
 				.states( 4 );
 		M12MapletonFileTrainer<Boolean, Boolean> trainer =
 				new M12MapletonFileTrainer<>( blueprint );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d );
 	}
 
 	@Test

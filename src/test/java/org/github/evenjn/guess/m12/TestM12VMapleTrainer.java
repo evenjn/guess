@@ -67,6 +67,7 @@ public class TestM12VMapleTrainer {
 				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
 				.setTupleAlignmentAlphabetBuilder(
 						new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
+				.setQualityChecker( null )
 				.setPrinter(
 						x -> x ? "1" : "0",
 						x -> x ? "1" : "0" );
@@ -76,8 +77,8 @@ public class TestM12VMapleTrainer {
 		removeModelFiles( );
 		M12VFileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
 		M12MapleFileTrainer<Boolean, Boolean> trainer =
-				new M12MapleFileTrainer<>( blueprint, Object::equals );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d, null );
+				new M12MapleFileTrainer<>( blueprint );
+		return ( p, d ) -> trainer.train( p, training_cache_path, d );
 	}
 
 	@Test
