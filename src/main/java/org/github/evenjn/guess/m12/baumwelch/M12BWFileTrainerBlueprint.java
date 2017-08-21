@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.bw;
+package org.github.evenjn.guess.m12.baumwelch;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

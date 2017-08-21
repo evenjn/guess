@@ -78,12 +78,12 @@ public class M12LibraQualityChecker<I, O> implements
 			Progress spawn2 = spawn.spawn( rook2, "check" ).target( target );
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
 					.wrap( data ).pull( rook2 ).peek( x -> spawn2.step( 1 ) ).once( ) ) {
-				try {
-					double p = m12Libra.weigh( g );
+				double p = m12Libra.weigh( g );
+				if ( p <= 0d ) {
 					summation.add( p );
 					total = total + 1;
 				}
-				catch ( NotAlignableException e ) {
+				else {
 					not_aligneable++;
 				}
 			}

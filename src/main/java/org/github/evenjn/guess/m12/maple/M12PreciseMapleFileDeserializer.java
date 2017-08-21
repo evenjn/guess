@@ -32,9 +32,9 @@ import org.github.evenjn.plaintext.PlainText;
 import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.ProgressSpawner;
 
-public class M12MapleFileDeserializer {
+public class M12PreciseMapleFileDeserializer {
 
-	public static <I, O> M12Maple<I, O> deserialize(
+	public static <I, O> M12PreciseMaple<I, O> deserialize(
 			ProgressSpawner progress_spawner,
 			Function<String, I> a_deserializer,
 			Function<String, O> b_deserializer,
@@ -68,6 +68,6 @@ public class M12MapleFileDeserializer {
 
 			MarkovChecker.check( core );
 		}
-		return new M12Maple<>( alphabet, core, false, progress_spawner );
+		return new M12PreciseMaple<>( alphabet, core );
 	}
 }

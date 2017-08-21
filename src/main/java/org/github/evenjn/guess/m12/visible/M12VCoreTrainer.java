@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.bw;
+package org.github.evenjn.guess.m12.visible;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -25,7 +25,6 @@ import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.guess.markov.MarkovChecker;
 import org.github.evenjn.guess.markov.MarkovDeserializer;
-import org.github.evenjn.guess.markov.MarkovRandomBuilder;
 import org.github.evenjn.guess.markov.MarkovSerializer;
 import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
@@ -37,41 +36,29 @@ import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 
-public class M12BWCoreTrainer {
-
-	private int number_of_states;
-
-	private int grace_period;
-
-	private int epochs;
+public class M12VCoreTrainer {
 
 	private Function<Rook, Consumer<String>> putter_core;
 
 	private Cursable<String> reader_core;
 
-	private long seed;
-
 	private BiFunction<Markov, ProgressSpawner, Boolean> quality_control;
 
 	private Consumer<String> logger;
 
-	public M12BWCoreTrainer(
-			int number_of_states,
-			int period,
-			int epochs,
+	private Function<Integer, Object> unveiler;
+
+	public M12VCoreTrainer(
 			Consumer<String> logger,
+			Function<Integer, Object> unveiler,
 			Function<Rook, Consumer<String>> putter_core,
 			Cursable<String> reader_core,
-			BiFunction<Markov, ProgressSpawner, Boolean> quality_control,
-			long seed) {
-		this.number_of_states = number_of_states;
-		this.grace_period = period;
-		this.epochs = epochs;
+			BiFunction<Markov, ProgressSpawner, Boolean> quality_control ) {
 		this.logger = logger;
+		this.unveiler = unveiler;
 		this.putter_core = putter_core;
 		this.reader_core = reader_core;
 		this.quality_control = quality_control;
-		this.seed = seed;
 	}
 
 	public Markov load(
@@ -84,7 +71,7 @@ public class M12BWCoreTrainer {
 
 		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
-					"M12CoreTrainer::prepareCore" );
+					"M12VCoreTrainer::prepareCore" );
 
 			Markov core = null;
 
@@ -93,14 +80,9 @@ public class M12BWCoreTrainer {
 				 * When the trainer was built without a core reader, initialize a new
 				 * random core.
 				 */
-				spawn.info( "Creating random M12 core." );
+				spawn.info( "Creating M12 core using visible data." );
 
-				core = MarkovRandomBuilder
-						.nu( )
-						.states( number_of_states )
-						.symbols( number_of_symbols )
-						.seed( seed )
-						.build( );
+				core = new M12VCoreBuilder().build( logger, unveiler, graphs, progress_spawner );
 
 				MarkovChecker.check( core );
 
@@ -111,6 +93,7 @@ public class M12BWCoreTrainer {
 				 * Otherwise, de-serialize it from the reader.
 				 */
 
+				spawn.info( "Decoding M12 core." );
 				try ( AutoRook rook2 = new BasicAutoRook( ) ) {
 					core = KnittingCursable
 							.wrap( reader_core )
@@ -122,7 +105,7 @@ public class M12BWCoreTrainer {
 				}
 			}
 
-			spawn.info( "Creating baumwelch data structures." );
+			spawn.info( "Quality control." );
 			
 			BiFunction<Markov, ProgressSpawner, Boolean> local_core_inspector =
 					new BiFunction<Markov, ProgressSpawner, Boolean>( ) {
@@ -138,16 +121,8 @@ public class M12BWCoreTrainer {
 						}
 
 					};
-			M12BaumWelch baum_welch = new M12BaumWelch(
-					core,
-					local_core_inspector,
-					record_max_number_of_edges,
-					record_max_length_above,
-					record_max_length_below );
-			
-			spawn.info( "Training." );
-			baum_welch.BaumWelch( logger, graphs, grace_period, epochs, spawn );
-
+					
+			local_core_inspector.apply( core, spawn );
 			if ( putter_core != null ) {
 				KnittingCursor.wrap( new MarkovSerializer( core ) )
 						.consume( putter_core );

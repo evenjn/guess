@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.v;
+package org.github.evenjn.guess.m12.baumwelch;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,7 +41,7 @@ import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
+public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 	
 	private final Function<String, I> a_deserializer;
 
@@ -61,9 +61,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 		return b_deserializer;
 	}
 
-	public M12VFileTrainer(
-			int min_above,
-			int max_above,
+	public M12BWFileTrainer(
 			int min_below,
 			int max_below,
 			TupleAlignmentAlphabetBuilder<I, O> builder,
@@ -73,19 +71,23 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 			Function<I, String> a_serializer,
 			Function<O, String> b_serializer,
 			Function<String, I> a_deserializer,
-			Function<String, O> b_deserializer ) {
+			Function<String, O> b_deserializer,
+			int period,
+			int epochs,
+			long seed,
+			int number_of_states) {
 		this.checker = checker;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
 		this.a_deserializer = a_deserializer;
 		this.b_deserializer = b_deserializer;
-		taadmb
-				.setMinMaxAbove( min_above, max_above )
-				.setMinMaxBelow( min_below, max_below )
+		taadmb.setMinMaxBelow( min_below, max_below )
 				.setInputCoDec( a_serializer, a_deserializer )
 				.setOutputCoDec( b_serializer, b_deserializer )
 				.setAlphabetBuilder( builder );
 		tagdmb.setMinMaxBelow( min_below, max_below );
+		m12ctb.trainingTime( period, epochs );
+		m12ctb.states( number_of_states );
 	}
 
 	private final TupleAlignmentAlphabetDataManagerBlueprint<I, O> taadmb =
@@ -94,8 +96,8 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 	private final TupleAlignmentGraphDataManagerBlueprint<I, O> tagdmb =
 			new TupleAlignmentGraphDataManagerBlueprint<I, O>( );
 
-	private final M12VCoreTrainerBlueprint mvctb =
-			new M12VCoreTrainerBlueprint( );
+	private final M12BWCoreTrainerBlueprint m12ctb =
+			new M12BWCoreTrainerBlueprint( );
 
 	public void train(
 			ProgressSpawner progress_spawner,
@@ -109,12 +111,12 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 		taadmb.serializeTupleAlignmentAlphabet( null );
 		tagdmb.deserializeTupleAlignmentGraphs( null );
 		tagdmb.serializeTupleAlignmentGraphs( null );
-		mvctb.deserializeModel( null );
-		mvctb.serializeModel( null );
+		m12ctb.deserializeModel( null );
+		m12ctb.serializeModel( null );
 
 		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Progress progress = SafeProgressSpawner
-					.safeSpawn( rook, progress_spawner, "M12VFileTrainer::train" );
+					.safeSpawn( rook, progress_spawner, "M12FileTrainer::train" );
 
 			/**
 			 * The whole point of the FileTrainer is to handle serialization and
@@ -174,40 +176,40 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 						.build( ).get( h, ff.open( graphs_working_file ).read( h ) ) );
 			}
 
-			Path mvcore_initial_file =
+			Path m12core_initial_file =
 					ff.getRoot( ).resolve( "./m12_core.initial.txt" );
-			Path mvcore_stable_file =
+			Path m12core_stable_file =
 					ff.getRoot( ).resolve( "./m12_core.stable.txt" );
-			Path mvcore_working_file =
+			Path m12core_working_file =
 					ff.getRoot( ).resolve( "./m12_core.working.txt" );
-			Path mvcore_log_file =
+			Path m12core_log_file =
 					ff.getRoot( ).resolve( "./m12_core.log.txt" );
 
-			if ( ff.exists( mvcore_working_file ) ) {
-				ff.delete( mvcore_working_file );
+			if ( ff.exists( m12core_working_file ) ) {
+				ff.delete( m12core_working_file );
 			}
 
-			boolean skip_mv_training = false;
-			if ( ff.exists( mvcore_stable_file ) ) {
+			boolean skip_m12_training = false;
+			if ( ff.exists( m12core_stable_file ) ) {
 				System.out.println(
-						"Using stable M12 core cached in " + mvcore_stable_file );
+						"Using stable M12 core cached in " + m12core_stable_file );
 				System.out.println( "No M12 training will be carried out." );
-				skip_mv_training = true;
+				skip_m12_training = true;
 			}
 			else {
-				if ( ff.exists( mvcore_initial_file ) ) {
+				if ( ff.exists( m12core_initial_file ) ) {
 					System.out.println(
-							"Using initial M12 core cached in " + mvcore_initial_file );
+							"Using initial M12 core cached in " + m12core_initial_file );
 					System.out.println( "Training will improve upon that core." );
-					Files.copy( mvcore_initial_file, mvcore_working_file );
-					mvctb.deserializeModel( h -> PlainText.reader( )
-							.build( ).get( h, ff.open( mvcore_working_file ).read( h ) ) );
+					Files.copy( m12core_initial_file, m12core_working_file );
+					m12ctb.deserializeModel( h -> PlainText.reader( )
+							.build( ).get( h, ff.open( m12core_working_file ).read( h ) ) );
 				}
 				else {
-					ff.create( ff.mold( mvcore_working_file ) );
+					ff.create( ff.mold( m12core_working_file ) );
 				}
-				mvctb.serializeModel( h -> PlainText.writer( ).build( )
-						.get( h, ff.open( mvcore_working_file ).write( h ) ) );
+				m12ctb.serializeModel( h -> PlainText.writer( ).build( )
+						.get( h, ff.open( m12core_working_file ).write( h ) ) );
 			}
 
 			/*
@@ -230,7 +232,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 				Files.copy( graphs_working_file, graphs_stable_file );
 			}
 
-			if ( !skip_mv_training ) {
+			if ( !skip_m12_training ) {
 
 				/*
 				 * setup quality control
@@ -238,23 +240,22 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 				final Consumer<String> training_logger = PlainText
 						.writer( ).setForcedFlush( true )
 						.build( )
-						.get( rook, ff.open( mvcore_log_file ).write( rook ) );
+						.get( rook, ff.open( m12core_log_file ).write( rook ) );
 				
 				if (checker != null) {
-					mvctb.qualityControl( (core, spawn) -> checker.check(
+					m12ctb.qualityControl( (core, spawn) -> checker.check(
 							training_logger,
 							taadm.getAlphabet( ),
 							core,
 							spawn ) );
 				}
 				
-				mvctb.logger( training_logger );
+				m12ctb.logger( training_logger );
 
 				progress.info( "Training M12 core." );
-				mvctb.unveiler( x->taadm.getAlphabet( ).get( x ).getBelow( ) );
-				M12VCoreTrainer mvct = mvctb.create( );
+				M12BWCoreTrainer m12ct = m12ctb.create( );
 
-				mvct.load(
+				m12ct.load(
 						taadm.getAlphabet( ).size( ),
 						tagdm.getMaxNumberOfEdges( ),
 						tagdm.getMaxLenghtFront( ),
@@ -262,7 +263,7 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 						tagdm.getGraphs( ),
 						progress );
 
-				Files.copy( mvcore_working_file, mvcore_stable_file );
+				Files.copy( m12core_working_file, m12core_stable_file );
 			}
 
 			if ( ff.exists( alphabet_working_file ) ) {
@@ -273,8 +274,8 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 				ff.delete( graphs_working_file );
 			}
 
-			if ( ff.exists( mvcore_working_file ) ) {
-				ff.delete( mvcore_working_file );
+			if ( ff.exists( m12core_working_file ) ) {
+				ff.delete( m12core_working_file );
 			}
 		}
 		catch ( IOException t ) {

@@ -17,38 +17,45 @@
  */
 package org.github.evenjn.guess.m12;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetGreedyBuilder;
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.file.FileFoolWriter;
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.guess.benchmark.BenchmarkTrial;
-import org.github.evenjn.guess.benchmark.BenchmarkHandicap;
 import org.github.evenjn.guess.benchmark.Benchmark;
+import org.github.evenjn.guess.benchmark.BenchmarkHandicap;
+import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
-import org.github.evenjn.guess.m12.maple.M12MapleFileTrainer;
-import org.github.evenjn.guess.m12.v.M12VFileTrainerBlueprint;
+import org.github.evenjn.guess.m12.baumwelch.M12BaumWelchTrainingPlan;
+import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.yarn.Cursable;
+import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;
 
-public class TestM12VMapleTrainer {
+public class TestM12BWClassicMapleTrainer {
 
-	{
-		FileFoolWriter w = FileFool.w( Paths.get( "." ).toAbsolutePath( ).resolve( "target" ) );
-		w.create( w.mold( Paths.get( "training_cache" ) ).asDirectory( ).eraseIfExists( ) );
-		training_cache_path = FileFool.rw(
-				Paths.get( "." ).toAbsolutePath( ).resolve( "target" )
-						.resolve( "training_cache" ) );
-	}
 	
-	private static FileFool training_cache_path;
+	{
+		Path target = Paths.get( "." ).toAbsolutePath( ).resolve( "target" );
+		FileFoolWriter w = FileFool.w( target );
 
-	private static void removeModelFiles( ) {
-		training_cache_path.delete( training_cache_path.getRoot( ) );
+		Path training_cache =
+				w.create( w.mold( Paths.get( "training_cache" ) ).asDirectory( )
+						.eraseIfExists( ) );
+
+		training_cache_path = w.normalizedAbsolute( training_cache );
 	}
 
-	private final static int limit = 20;
+	private static Path training_cache_path;
+
+	
+	/** HANDICAP */
+	private final static BenchmarkHandicap handicap =
+			new BenchmarkHandicap( true, 20 );
 
 	/** EVALUATOR */
 	private final static String evaluator_label = "equals";
@@ -57,30 +64,72 @@ public class TestM12VMapleTrainer {
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
 
 	/** TRAINER */
-	private final static String trainer_label = "m12 V";
+	private final static String trainer_label = "Maple: M12 Baum-Welch classic viterbi";
+	
+	private final static M12BaumWelchTrainingPlan<Boolean, Boolean> getTrainingPlan(
+			Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
 
-	private static final M12VFileTrainerBlueprint<Boolean, Boolean> blueprint( ) {
-		return new M12VFileTrainerBlueprint<Boolean, Boolean>( )
-				.setMinMaxBelow( 0, 2 )
-				.setMinMaxAbove( 1, 1 )
-				.setInputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setOutputCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setTupleAlignmentAlphabetBuilder(
-						new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
-				.setQualityChecker( null )
-				.setPrinter(
-						x -> x ? "1" : "0",
-						x -> x ? "1" : "0" );
+		M12BaumWelchTrainingPlan<Boolean, Boolean> plan = new M12BaumWelchTrainingPlan<>( );
+
+		plan
+		.setSeed( 43 )
+		.setNumberOfStates( 3 )
+		.setTrainingTime( 1,  25 )
+		.setMinMaxBelow( 0, 2 )
+		.setTupleAlignmentAlphabetBuilder(
+				new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
+		.setQualityChecker( null )
+		.setPrinters(
+				x -> x ? "1" : "0",
+				x -> x ? "1" : "0" )
+				.setTrainingData( data )
+				.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
+				.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
+		return plan;
 	}
 
 	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainer( ) {
-		removeModelFiles( );
-		M12VFileTrainerBlueprint<Boolean, Boolean> blueprint = blueprint( );
-		M12MapleFileTrainer<Boolean, Boolean> trainer =
-				new M12MapleFileTrainer<>( blueprint );
-		return ( p, d ) -> trainer.train( p, training_cache_path, d );
+		M12Fool fool = M12Fool.nu( training_cache_path );
+		Path test_crf_path = Paths.get( "test_m12" );
+		fool.delete( test_crf_path );
+		
+		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
+			
+			@Override
+			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
+					ProgressSpawner progress_spawner,
+					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+				M12BaumWelchTrainingPlan<Boolean, Boolean> plan = getTrainingPlan( data );
+				Path created = fool.create( test_crf_path, progress_spawner, plan );
+				M12<Boolean, Boolean> open = fool.open( created, plan );
+				return open.asMapleClassic( );
+			}
+		};
 	}
 
+
+	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerFourState( ) {
+		M12Fool fool = M12Fool.nu( training_cache_path );
+		Path test_crf_path = Paths.get( "test_m12" );
+		fool.delete( test_crf_path );
+		
+		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
+			
+			@Override
+			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
+					ProgressSpawner progress_spawner,
+					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+				M12BaumWelchTrainingPlan<Boolean, Boolean> plan =
+						getTrainingPlan( data )
+								.setNumberOfStates( 4 )
+								.setTrainingTime( 1, 50 );
+				Path created = fool.create( test_crf_path, progress_spawner, plan );
+				M12<Boolean, Boolean> open = fool.open( created, plan );
+				return open.asMapleClassic( );
+			}
+		};
+	}
+	
 	@Test
 	public void testM12Identity( ) {
 		/** RUN! */
@@ -88,7 +137,7 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.identity )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
@@ -104,7 +153,7 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.reverse )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
@@ -120,7 +169,7 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.constant_true )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
@@ -136,7 +185,7 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.constant_true_false )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
@@ -152,14 +201,14 @@ public class TestM12VMapleTrainer {
 	public void testM12Zebra( ) {
 		/** RUN! */
 		BenchmarkTrial
-				.builder( trainer( ), trainer_label )
+				.builder( trainerFourState( ), trainer_label )
 				.problem( Benchmark.zebra )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
-				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
+				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
 		org.junit.Assert
 				.assertTrue( 1.0 >= evaluator.one_minus_relative_distance( ) );
 	}
@@ -175,14 +224,14 @@ public class TestM12VMapleTrainer {
 	public void testM12DelayByOne( ) {
 		/** RUN! */
 		BenchmarkTrial
-				.builder( trainer( ), trainer_label )
+				.builder( trainerFourState( ), trainer_label )
 				.problem( Benchmark.delay_by_one )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
-				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
+				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
 		org.junit.Assert
 				.assertTrue( 1.0 >= evaluator.one_minus_relative_distance( ) );
 	}
@@ -194,11 +243,11 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.lycantrope2 )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
-				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
+				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
 		org.junit.Assert
 				.assertTrue( 1.0 >= evaluator.one_minus_relative_distance( ) );
 	}
@@ -210,11 +259,11 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.lycantrope3 )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
-				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
+				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
 		org.junit.Assert
 				.assertTrue( 1.0 >= evaluator.one_minus_relative_distance( ) );
 	}
@@ -226,11 +275,11 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.absorb )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
-				.assertTrue( 0.01 <= evaluator.one_minus_relative_distance( ) );
+				.assertTrue( 1.0 <= evaluator.one_minus_relative_distance( ) );
 		org.junit.Assert
 				.assertTrue( 1.0 >= evaluator.one_minus_relative_distance( ) );
 	}
@@ -242,7 +291,7 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert
@@ -258,7 +307,7 @@ public class TestM12VMapleTrainer {
 				.builder( trainer( ), trainer_label )
 				.problem( Benchmark.absorb_and_duplicate )
 				.evaluator( evaluator, evaluator_label )
-				.handicap( new BenchmarkHandicap( true, limit ) )
+				.handicap( handicap )
 				.build( ).run( null );
 		/** CHECK */
 		org.junit.Assert

@@ -55,14 +55,14 @@ import org.github.evenjn.yarn.Tuple;
  * @param <I> The type of input symbols.
  * @param <O> The type of output symbols.
  */
-public class M12Maple<I, O> implements
+public class M12ClassicMaple<I, O> implements
 		Maple<I, O> {
 
 	private final Markov core;
 	
 	private final boolean fail_on_unknown_input_symbol;
 
-	public M12Maple(
+	public M12ClassicMaple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			Markov core,
 			boolean fail_on_unknown_input_symbol,
@@ -75,7 +75,7 @@ public class M12Maple<I, O> implements
 	 * {@code descendant_test} is a function that returns true when the second argument
 	 * is a descendant of the first one.
 	 */
-	public M12Maple(
+	public M12ClassicMaple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			Markov core,
 			BiFunction<Tuple<I>, Tuple<I>, Boolean> descendant_test,

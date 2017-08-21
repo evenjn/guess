@@ -30,12 +30,12 @@ import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12MapleQualityChecker<I, O> implements
+public class M12PreciseMapleQualityChecker<I, O> implements
 		M12QualityChecker<I, O> {
 
 	private final MapleQualityChecker<I, O> mqc;
 
-	public M12MapleQualityChecker(
+	public M12PreciseMapleQualityChecker(
 			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data,
 			TupleAligner<I, O> aligner,
@@ -45,19 +45,12 @@ public class M12MapleQualityChecker<I, O> implements
 				a_printer, b_printer );
 	}
 
-	public M12MapleQualityChecker(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
-		mqc = new MapleQualityChecker<>( training_data, test_data );
-	}
-
 	public boolean check(
 			Consumer<String> logger,
 			TupleAlignmentAlphabet<I, O> alphabet,
 			Markov core,
 			ProgressSpawner spawn ) {
-		M12Maple<I, O> maple = new M12Maple<I, O>( alphabet, core, false,
-				null );
+		M12PreciseMaple<I, O> maple = new M12PreciseMaple<I, O>( alphabet, core );
 		return mqc.check( logger, alphabet, maple, spawn );
 	}
 }

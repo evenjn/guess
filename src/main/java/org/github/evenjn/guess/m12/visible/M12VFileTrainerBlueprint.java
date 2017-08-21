@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.v;
+package org.github.evenjn.guess.m12.visible;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

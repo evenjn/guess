@@ -30,16 +30,16 @@ import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12MapleFileTrainer<I, O> {
+public class M12ClassicMapleFileTrainer<I, O> {
 
 	private M12FileTrainer<I, O> file_trainer;
 
-	public M12MapleFileTrainer(
+	public M12ClassicMapleFileTrainer(
 			Supplier<? extends M12FileTrainer<I, O>> blueprint) {
 		this.file_trainer = blueprint.get( );
 	}
 
-	public M12Maple<I, O> train(
+	public M12ClassicMaple<I, O> train(
 			ProgressSpawner progress_spawner,
 			FileFool filefool,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
@@ -47,7 +47,7 @@ public class M12MapleFileTrainer<I, O> {
 			Progress progress = SafeProgressSpawner
 					.safeSpawn( rook, progress_spawner, "M12MapleFileTrainer::train" );
 			file_trainer.train( progress, filefool, data );
-			M12Maple<I, O> maple = M12MapleFileDeserializer.deserialize(
+			M12ClassicMaple<I, O> maple = M12ClassicMapleFileDeserializer.deserialize(
 					progress_spawner,
 					file_trainer.getDeserializerAbove( ),
 					file_trainer.getDeserializerBelow( ),

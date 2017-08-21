@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.v;
+package org.github.evenjn.guess.m12.baumwelch;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -26,54 +26,74 @@ import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.ProgressSpawner;
 
-public class M12VCoreTrainerBlueprint {
+public class M12BWCoreTrainerBlueprint {
+
+	private int number_of_states;
+
+	private int grace_period;
+
+	private int epochs;
 
 	private Function<Rook, Consumer<String>> putter_core;
 
 	private Cursable<String> reader_core;
 
 	private BiFunction<Markov, ProgressSpawner, Boolean> quality_control;
+	
+	private long seed;
 
 	private Consumer<String> logger;
-	
-	private Function<Integer, Object> unveiler;
 
-	public M12VCoreTrainerBlueprint unveiler( Function<Integer, Object> unveiler ) {
-		this.unveiler = unveiler;
+	public M12BWCoreTrainerBlueprint trainingTime( int grace_period, int epochs ) {
+		this.grace_period = grace_period;
+		this.epochs = epochs;
 		return this;
 	}
 
-	public M12VCoreTrainerBlueprint qualityControl(
+	public M12BWCoreTrainerBlueprint seed( long seed ) {
+		this.seed = seed;
+		return this;
+	}
+
+	public M12BWCoreTrainerBlueprint qualityControl(
 			BiFunction<Markov, ProgressSpawner, Boolean> quality_control ) {
 		this.quality_control = quality_control;
 		return this;
 	}
 
-	public M12VCoreTrainerBlueprint
+	public M12BWCoreTrainerBlueprint states( int number_of_states ) {
+		this.number_of_states = number_of_states;
+		return this;
+	}
+
+	public M12BWCoreTrainerBlueprint
 			logger( Consumer<String> logger ) {
 		this.logger = logger;
 		return this;
 	}
 
-	public M12VCoreTrainerBlueprint
+	public M12BWCoreTrainerBlueprint
 			serializeModel( Function<Rook, Consumer<String>> putter_core ) {
 		this.putter_core = putter_core;
 		return this;
 	}
 
-	public M12VCoreTrainerBlueprint
+	public M12BWCoreTrainerBlueprint
 			deserializeModel( Cursable<String> reader_coalignments ) {
 		this.reader_core = reader_coalignments;
 		return this;
 	}
 
-	public M12VCoreTrainer create( ) {
-		return new M12VCoreTrainer(
+	public M12BWCoreTrainer create( ) {
+		return new M12BWCoreTrainer(
+				number_of_states,
+				grace_period,
+				epochs,
 				logger,
-				unveiler,
 				putter_core,
 				reader_core,
-				quality_control );
+				quality_control,
+				seed );
 	}
 
 }

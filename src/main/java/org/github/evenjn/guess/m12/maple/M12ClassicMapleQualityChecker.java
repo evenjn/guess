@@ -30,12 +30,12 @@ import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12MapletonQualityChecker<I, O> implements
+public class M12ClassicMapleQualityChecker<I, O> implements
 		M12QualityChecker<I, O> {
 
 	private final MapleQualityChecker<I, O> mqc;
 
-	public M12MapletonQualityChecker(
+	public M12ClassicMapleQualityChecker(
 			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data,
 			TupleAligner<I, O> aligner,
@@ -50,7 +50,8 @@ public class M12MapletonQualityChecker<I, O> implements
 			TupleAlignmentAlphabet<I, O> alphabet,
 			Markov core,
 			ProgressSpawner spawn ) {
-		M12Mapleton<I, O> maple = new M12Mapleton<I, O>( alphabet, core );
+		M12ClassicMaple<I, O> maple = new M12ClassicMaple<I, O>( alphabet, core, false,
+				null );
 		return mqc.check( logger, alphabet, maple, spawn );
 	}
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.guess.m12.bw;
+package org.github.evenjn.guess.m12.baumwelch;
 
 import static org.github.evenjn.numeric.NumericLogarithm.eexp;
 import static org.github.evenjn.numeric.NumericLogarithm.eln;

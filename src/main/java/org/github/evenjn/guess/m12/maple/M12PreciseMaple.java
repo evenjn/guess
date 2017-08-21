@@ -50,14 +50,14 @@ import org.github.evenjn.yarn.Tuple;
  * @param <I> The type of input symbols.
  * @param <O> The type of output symbols.
  */
-public class M12Mapleton<I, O> implements
+public class M12PreciseMaple<I, O> implements
 		Maple<I, O> {
 
 	private final Markov core;
 	
 	private TupleAlignmentAlphabet<I, O> coalignment_alphabet;
 
-	public M12Mapleton(
+	public M12PreciseMaple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
 			Markov core) {
 		this.coalignment_alphabet = coalignment_alphabet;

@@ -27,12 +27,13 @@ import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
+import org.github.evenjn.guess.Libra;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Tuple;
 
-public class M12Libra<I, O> {
+public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
 
 	private Markov core;
 
@@ -51,7 +52,7 @@ public class M12Libra<I, O> {
 	
 	public double weigh(Bi<
 			Tuple<I>,
-			Tuple<O> > bi ) throws NotAlignableException {
+			Tuple<O> > bi ) {
 		Tuple<O> below = bi.back( );
 		Tuple<I> above = bi.front( );
 		boolean must_update_alpha = false;
@@ -65,14 +66,20 @@ public class M12Libra<I, O> {
 			must_update_alpha = true;
 		}
 		
-		TupleAlignmentGraph observed = TupleAlignmentGraphFactory.graph(
-				(a, b) -> coalignment_alphabet.encode( a,  b ),
-				above,
-				below,
-				coalignment_alphabet.getMinAbove( ),
-				coalignment_alphabet.getMaxAbove( ),
-				coalignment_alphabet.getMinBelow( ),
-				coalignment_alphabet.getMaxBelow( ) );
+		TupleAlignmentGraph observed;
+		try {
+			observed = TupleAlignmentGraphFactory.graph(
+					(a, b) -> coalignment_alphabet.encode( a,  b ),
+					above,
+					below,
+					coalignment_alphabet.getMinAbove( ),
+					coalignment_alphabet.getMaxAbove( ),
+					coalignment_alphabet.getMinBelow( ),
+					coalignment_alphabet.getMaxBelow( ) );
+		}
+		catch ( NotAlignableException e ) {
+			return 0d;
+		}
 		
 
 		Iterator<TupleAlignmentNode> it = observed.forward( );
