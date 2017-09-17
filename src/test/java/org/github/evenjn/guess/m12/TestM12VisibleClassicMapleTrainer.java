@@ -66,10 +66,10 @@ public class TestM12VisibleClassicMapleTrainer {
 	/** TRAINER */
 	private final static String trainer_label = "Maple: M12 visible classic viterbi";
 	
-	private final static M12VisibleTrainingPlan<Boolean, Boolean> getTrainingPlan(
+	private final static M12VisibleTrainingPlan<Boolean, Boolean, Boolean> getTrainingPlan(
 			Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
 
-		M12VisibleTrainingPlan<Boolean, Boolean> plan = new M12VisibleTrainingPlan<>( );
+		M12VisibleTrainingPlan<Boolean, Boolean, Boolean> plan = new M12VisibleTrainingPlan<>( );
 
 		plan 
 		.setMinMaxAbove( 1, 1 )
@@ -82,7 +82,8 @@ public class TestM12VisibleClassicMapleTrainer {
 				x -> x ? "1" : "0" )
 				.setTrainingData( data )
 				.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
+				.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
+				.setProjector( x->x );
 		return plan;
 	}
 
@@ -97,9 +98,9 @@ public class TestM12VisibleClassicMapleTrainer {
 			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
 					ProgressSpawner progress_spawner,
 					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-				M12VisibleTrainingPlan<Boolean, Boolean> plan = getTrainingPlan( data );
+				M12VisibleTrainingPlan<Boolean, Boolean, Boolean> plan = getTrainingPlan( data );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
-				M12<Boolean, Boolean> open = fool.open( created, plan );
+				M12<Boolean, Boolean, Boolean> open = fool.open( created, plan );
 				return open.asMapleClassic( );
 			}
 		};

@@ -34,9 +34,9 @@ import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.EndOfCursorException;
-import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.RookConsumer;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
@@ -57,7 +57,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 
 	private boolean shrink_alphabet = false;
 
-	private Function<Rook, Consumer<String>> logger;
+	private RookConsumer<String> logger;
 
 	public TupleAlignmentAlphabetGreedyBuilder(boolean shrink_alphabet) {
 		this.shrink_alphabet = shrink_alphabet;
@@ -74,7 +74,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 	}
 
 	public void setPrinters(
-			Function<Rook, Consumer<String>> logger,
+			RookConsumer<String> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
 		this.logger = logger;
@@ -275,7 +275,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 				new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
 		try ( AutoRook rook = new BasicAutoRook( ) ) {
-			Consumer<String> open_logger = logger.apply( rook );
+			Consumer<String> open_logger = logger.get( rook );
 			TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis =
 					new TupleAlignmentAlphabetAnalysis<>( 
 							min_above, max_above, min_below, max_below );

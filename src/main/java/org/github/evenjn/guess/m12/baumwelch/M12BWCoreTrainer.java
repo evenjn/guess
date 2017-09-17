@@ -19,7 +19,6 @@ package org.github.evenjn.guess.m12.baumwelch;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.guess.markov.Markov;
@@ -33,9 +32,9 @@ import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.RookConsumer;
 
 public class M12BWCoreTrainer {
 
@@ -45,7 +44,7 @@ public class M12BWCoreTrainer {
 
 	private int epochs;
 
-	private Function<Rook, Consumer<String>> putter_core;
+	private RookConsumer<String> putter_core;
 
 	private Cursable<String> reader_core;
 
@@ -60,7 +59,7 @@ public class M12BWCoreTrainer {
 			int period,
 			int epochs,
 			Consumer<String> logger,
-			Function<Rook, Consumer<String>> putter_core,
+			RookConsumer<String> putter_core,
 			Cursable<String> reader_core,
 			BiFunction<Markov, ProgressSpawner, Boolean> quality_control,
 			long seed) {

@@ -17,14 +17,11 @@
  */
 package org.github.evenjn.align.graph;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Rook;
+import org.github.evenjn.yarn.RookConsumer;
 
 public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
-	
+
 	private int min_above = 1;
 
 	private int max_above = 1;
@@ -33,7 +30,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	private int max_below = 1;
 
-	private Function<Rook, Consumer<String>> putter_coalignment_graphs;
+	private RookConsumer<String> putter_coalignment_graphs;
 
 	private Cursable<String> reader_coalignment_graphs;
 
@@ -60,7 +57,7 @@ public class TupleAlignmentGraphDataManagerBlueprint<I, O> {
 
 	public TupleAlignmentGraphDataManagerBlueprint<I, O>
 			serializeTupleAlignmentGraphs(
-					Function<Rook, Consumer<String>> putter_coalignments ) {
+					RookConsumer<String> putter_coalignments ) {
 		this.putter_coalignment_graphs = putter_coalignments;
 		return this;
 	}

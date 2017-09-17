@@ -18,15 +18,14 @@
 package org.github.evenjn.align.alphabet;
 
 import java.util.Vector;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.RookConsumer;
 import org.github.evenjn.yarn.Tuple;
 	
 public class TupleAlignmentAlphabetPrebuilder<Above, Below>
@@ -56,7 +55,7 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 
 	@Override
 	public void setPrinters(
-			Function<Rook, Consumer<String>> logger,
+			RookConsumer<String> logger,
 			Function<Above, String> a_printer,
 			Function<Below, String> b_printer ) {
 	}

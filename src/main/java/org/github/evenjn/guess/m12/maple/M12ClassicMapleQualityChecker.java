@@ -45,13 +45,20 @@ public class M12ClassicMapleQualityChecker<I, O> implements
 				a_printer, b_printer );
 	}
 
+	public M12ClassicMapleQualityChecker(
+			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
+			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
+		mqc = new MapleQualityChecker<>( training_data, test_data );
+	}
+
 	public boolean check(
 			Consumer<String> logger,
 			TupleAlignmentAlphabet<I, O> alphabet,
 			Markov core,
 			ProgressSpawner spawn ) {
-		M12ClassicMaple<I, O> maple = new M12ClassicMaple<I, O>( alphabet, core, false,
-				null );
+		M12ClassicMaple<I, O> maple =
+				new M12ClassicMaple<I, O>( alphabet, core, false,
+						null );
 		return mqc.check( logger, alphabet, maple, spawn );
 	}
 }

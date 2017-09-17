@@ -27,6 +27,7 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
+import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.numeric.NumericUtils;
@@ -34,7 +35,6 @@ import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.numeric.SixCharFormat;
 import org.github.evenjn.yarn.Bi;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Tuple;
 
 public class MapleEvaluation<I, O> {
@@ -129,9 +129,9 @@ public class MapleEvaluation<I, O> {
 		
 		if ( aligner != null ) {
 
-			Tuple<Di<Integer, Integer>> aligned_gold = aligner.align( kinput, kgold );
+			Tuple<BiValue<Integer, Integer>> aligned_gold = aligner.align( kinput, kgold );
 
-			Tuple<Di<Integer, Integer>> aligned_guess =
+			Tuple<BiValue<Integer, Integer>> aligned_guess =
 					aligner.align( kinput, kguess );
 
 			Tuple<Tael<I, O>> tt_gold = Tael.tael( kinput, kgold, aligned_gold );

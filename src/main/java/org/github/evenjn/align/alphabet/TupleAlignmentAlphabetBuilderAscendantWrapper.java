@@ -1,6 +1,5 @@
 package org.github.evenjn.align.alphabet;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
@@ -8,7 +7,7 @@ import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Rook;
+import org.github.evenjn.yarn.RookConsumer;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBelow> implements TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow>{
@@ -53,7 +52,7 @@ public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBe
 	}
 
 	@Override
-	public void setPrinters( Function<Rook, Consumer<String>> logger,
+	public void setPrinters( RookConsumer<String> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
 		wrapped.setPrinters( logger, a_printer, b_printer );

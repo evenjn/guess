@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.Bik;
+import org.github.evenjn.knit.BiTray;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursor;
@@ -110,7 +110,7 @@ public class NumericUtils {
 				result = input;
 			}
 		}
-		return Bik.nu( result, max );
+		return BiTray.nu( result, max );
 	}
 
 	public static <I> I argmax( Iterable<I> set, Function<I, Double> function ) {
@@ -213,7 +213,7 @@ public class NumericUtils {
 
 			@Override
 			public Iterator<Bi<Integer, Integer>> iterator( ) {
-				final Bik<Integer, Integer> bi = Bik.nu( 0, -1 );
+				final BiTray<Integer, Integer> bi = BiTray.nu( 0, -1 );
 				return asIterator( new Cursor<Bi<Integer, Integer>>( ) {
 
 					@Override

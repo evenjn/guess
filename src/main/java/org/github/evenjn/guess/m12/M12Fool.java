@@ -7,7 +7,11 @@ import org.github.evenjn.guess.m12.baumwelch.M12BWFileTrainer;
 import org.github.evenjn.guess.m12.baumwelch.M12BaumWelchTrainingPlan;
 import org.github.evenjn.guess.m12.visible.M12VFileTrainer;
 import org.github.evenjn.guess.m12.visible.M12VisibleTrainingPlan;
+import org.github.evenjn.knit.BiTray;
+import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.Tuple;
 
 public class M12Fool {
 
@@ -21,7 +25,7 @@ public class M12Fool {
 		return new M12Fool( base );
 	}
 
-	public <I, O> M12<I, O> open( Path path, M12Schema<I, O> schema ) {
+	public <I, P, O> M12<I, P, O> open( Path path, M12Schema<I, P, O> schema ) {
 		if ( !exists( path ) ) {
 			throw new IllegalArgumentException(
 					"Expected a path that identifies an existing directory." );
@@ -37,25 +41,37 @@ public class M12Fool {
 		filefool.delete( path );
 	}
 
-	public <I, O> Path create( Path path, ProgressSpawner progress_spawner,
-			M12TrainingPlan<I, O> plan ) {
-		if ( plan instanceof M12VisibleTrainingPlan<?, ?> ) {
+	public <I, P, O> Path create( Path path, ProgressSpawner progress_spawner,
+			M12TrainingPlan<I, P, O> plan ) {
+		if ( plan instanceof M12VisibleTrainingPlan<?, ?, ?> ) {
 			return createVisible( path, progress_spawner,
-					(M12VisibleTrainingPlan<?, ?>) plan );
+					(M12VisibleTrainingPlan<?, ?, ?>) plan );
 		}
-		if ( plan instanceof M12BaumWelchTrainingPlan<?, ?> ) {
+		if ( plan instanceof M12BaumWelchTrainingPlan<?, ?, ?> ) {
 			return createBaumwelch( path, progress_spawner,
-					(M12BaumWelchTrainingPlan<?, ?>) plan );
+					(M12BaumWelchTrainingPlan<?, ?, ?>) plan );
 		}
 		throw new IllegalArgumentException( );
 	}
 
-	private <I, O> Path createVisible( Path path,
+	public <I, P, O> M12VisibleTrainingPlan<I, P, O> moldVisible( ) {
+		return new M12VisibleTrainingPlan<>( );
+	}
+
+	public <I, P, O> M12BaumWelchTrainingPlan<I, P, O> moldBaumWelch( ) {
+		return new M12BaumWelchTrainingPlan<>( );
+	}
+
+	public <I, P, O> M12Schema<I, P, O> moldSchema( ) {
+		return new M12Schema<>( );
+	}
+
+	private <I, P, O> Path createVisible( Path path,
 			ProgressSpawner progress_spawner,
-			M12VisibleTrainingPlan<I, O> plan ) {
+			M12VisibleTrainingPlan<I, P, O> plan ) {
 		Path destination = filefool.create( filefool.mold( path ).asDirectory( ) );
 		FileFool rw = FileFool.rw( filefool.normalizedAbsolute( destination ) );
-		M12VFileTrainer<I, O> trainer = new M12VFileTrainer<>(
+		M12VFileTrainer<P, O> trainer = new M12VFileTrainer<>(
 				plan.getMinAbove( ),
 				plan.getMaxAbove( ),
 				plan.getMinBelow( ),
@@ -69,16 +85,20 @@ public class M12Fool {
 				plan.getAboveDecoder( ),
 				plan.getBelowDecoder( ) );
 
-		trainer.train( progress_spawner, rw, plan.getTrainingData( ) );
+		KnittingCursable<Bi<Tuple<P>, Tuple<O>>> projected_data =
+				KnittingCursable.wrap( plan.getTrainingData( ) ).map( x -> BiTray
+						.nu( plan.getProjector( ).apply( x.front( ) ), x.back( ) ) );
+		
+		trainer.train( progress_spawner, rw, projected_data );
 		return path;
 	}
 
-	private <I, O> Path createBaumwelch( Path path,
+	private <I, P, O> Path createBaumwelch( Path path,
 			ProgressSpawner progress_spawner,
-			M12BaumWelchTrainingPlan<I, O> plan ) {
+			M12BaumWelchTrainingPlan<I, P, O> plan ) {
 		Path destination = filefool.create( filefool.mold( path ).asDirectory( ) );
 		FileFool rw = FileFool.rw( filefool.normalizedAbsolute( destination ) );
-		M12BWFileTrainer<I, O> trainer = new M12BWFileTrainer<>(
+		M12BWFileTrainer<P, O> trainer = new M12BWFileTrainer<>(
 				plan.getMinBelow( ),
 				plan.getMaxBelow( ),
 				plan.getTupleAlignmentAlphabetBuilder( ),
@@ -93,7 +113,12 @@ public class M12Fool {
 				plan.getEpochs( ),
 				plan.getSeed( ),
 				plan.getNumberOfStates( ) );
-		trainer.train( progress_spawner, rw, plan.getTrainingData( ) );
+
+		KnittingCursable<Bi<Tuple<P>, Tuple<O>>> projected_data =
+				KnittingCursable.wrap( plan.getTrainingData( ) ).map( x -> BiTray
+						.nu( plan.getProjector( ).apply( x.front( ) ), x.back( ) ) );
+		
+		trainer.train( progress_spawner, rw, projected_data );
 		return path;
 	}
 }

@@ -205,14 +205,16 @@ public class M12BaumWelch {
 					}
 					try {
 						TupleAlignmentGraph graph = observed_re.next( );
-						expectation(
-								graph,
-								new_initial,
-								new_transition,
-								new_emission,
-								probability_of_this_graph );
-						summation.add( probability_of_this_graph[0] );
-						total++;
+						if ( graph.la( ) >= 2 ) {
+							expectation(
+									graph,
+									new_initial,
+									new_transition,
+									new_emission,
+									probability_of_this_graph );
+							summation.add( probability_of_this_graph[0] );
+							total++;
+						}
 					}
 					catch ( EndOfCursorException e ) {
 						throw new IllegalArgumentException( "Empty training set" );

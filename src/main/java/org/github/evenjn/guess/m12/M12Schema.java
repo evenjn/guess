@@ -3,25 +3,31 @@ package org.github.evenjn.guess.m12;
 import java.util.function.Function;
 
 import org.github.evenjn.yarn.Kloneable;
+import org.github.evenjn.yarn.Maple;
 
-public class M12Schema<I, O> implements
+public class M12Schema<I, P, O> implements
 		Kloneable,
 		Cloneable {
 
+	private Maple<I, P> projector;
 
-	private Function<I, String> a_serializer;
+	private Function<P, String> a_serializer;
 
 	private Function<O, String> b_serializer;
 
-	private Function<String, I> a_deserializer;
+	private Function<String, P> a_deserializer;
 
 	private Function<String, O> b_deserializer;
+	
+	public Maple<I, P> getProjector() {
+		return projector;
+	}
 
-	public Function<I, String> getAboveEncoder( ) {
+	public Function<P, String> getAboveEncoder( ) {
 		return a_serializer;
 	}
 
-	public Function<String, I> getAboveDecoder( ) {
+	public Function<String, P> getAboveDecoder( ) {
 		return a_deserializer;
 	}
 
@@ -32,8 +38,13 @@ public class M12Schema<I, O> implements
 	public Function<String, O> getBelowDecoder( ) {
 		return b_deserializer;
 	}
+	
+	public M12Schema<I, P, O> setProjector( Maple<I, P> projector ) {
+		this.projector = projector;
+		return this;
+	}
 
-	public M12Schema<I, O> setBelowCoDec(
+	public M12Schema<I, P, O> setBelowCoDec(
 			Function<O, String> encoder,
 			Function<String, O> decoder ) {
 		this.b_serializer = encoder;
@@ -41,9 +52,9 @@ public class M12Schema<I, O> implements
 		return this;
 	}
 
-	public M12Schema<I, O> setAboveCoDec(
-			Function<I, String> encoder,
-			Function<String, I> decoder ) {
+	public M12Schema<I, P, O> setAboveCoDec(
+			Function<P, String> encoder,
+			Function<String, P> decoder ) {
 		this.a_serializer = encoder;
 		this.a_deserializer = decoder;
 		return this;
@@ -64,7 +75,7 @@ public class M12Schema<I, O> implements
 		}
 	}
 
-	protected Object clone( )
+	public Object clone( )
 			throws CloneNotSupportedException {
 		return super.clone( );
 	}

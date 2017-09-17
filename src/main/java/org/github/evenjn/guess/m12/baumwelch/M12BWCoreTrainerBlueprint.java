@@ -19,12 +19,11 @@ package org.github.evenjn.guess.m12.baumwelch;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.RookConsumer;
 
 public class M12BWCoreTrainerBlueprint {
 
@@ -34,7 +33,7 @@ public class M12BWCoreTrainerBlueprint {
 
 	private int epochs;
 
-	private Function<Rook, Consumer<String>> putter_core;
+	private RookConsumer<String> putter_core;
 
 	private Cursable<String> reader_core;
 
@@ -73,7 +72,7 @@ public class M12BWCoreTrainerBlueprint {
 	}
 
 	public M12BWCoreTrainerBlueprint
-			serializeModel( Function<Rook, Consumer<String>> putter_core ) {
+			serializeModel( RookConsumer<String> putter_core ) {
 		this.putter_core = putter_core;
 		return this;
 	}

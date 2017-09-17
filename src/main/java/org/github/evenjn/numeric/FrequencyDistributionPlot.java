@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.Bik;
+import org.github.evenjn.knit.BiTray;
 import org.github.evenjn.yarn.Bi;
 
 public class FrequencyDistributionPlot<K> {
@@ -89,7 +89,7 @@ public class FrequencyDistributionPlot<K> {
 			Comparator<K> comparator ) {
 		ArrayList<Bi<K, Integer>> data = new ArrayList<>( );
 		for ( Entry<K, Integer> d : the_map.entrySet( ) ) {
-			data.add( Bik.nu( d.getKey( ), d.getValue( ) ) );
+			data.add( BiTray.nu( d.getKey( ), d.getValue( ) ) );
 		}
 		Collections.sort( data, new Comparator<Bi<K, Integer>>( ) {
 

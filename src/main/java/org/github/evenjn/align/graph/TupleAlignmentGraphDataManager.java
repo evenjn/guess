@@ -20,8 +20,6 @@ package org.github.evenjn.align.graph;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.github.evenjn.knit.BasicAutoRook;
@@ -31,10 +29,10 @@ import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.OptionalMap;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.RookConsumer;
 import org.github.evenjn.yarn.Tuple;
 
 /**
@@ -82,7 +80,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			int max_above,
 			int min_below,
 			int max_below,
-			Function<Rook, Consumer<String>> putter_coalignment_graphs,
+			RookConsumer<String> putter_coalignment_graphs,
 			Cursable<String> reader_coalignment_graphs ) {
 		this.min_above = min_above;
 		this.max_above = max_above;
@@ -100,7 +98,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 	private final int max_below;
 
-	private final Function<Rook, Consumer<String>> putter_coalignment_graphs;
+	private final RookConsumer<String> putter_coalignment_graphs;
 
 	private final Cursable<String> reader_coalignment_graphs;
 

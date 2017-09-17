@@ -20,7 +20,6 @@ package org.github.evenjn.guess.m12.libra;
 import java.util.function.Consumer;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
-import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BasicAutoRook;

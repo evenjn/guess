@@ -20,8 +20,8 @@ package org.github.evenjn.align;
 import java.util.LinkedList;
 import java.util.function.Function;
 
+import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.Di;
 import org.github.evenjn.yarn.Tuple;
 
 public class AlignmentPrinter<I, O> {
@@ -35,15 +35,15 @@ public class AlignmentPrinter<I, O> {
 	public Iterable<String> printHorizontal(
 			Tuple<I> above,
 			Tuple<O> below,
-			Tuple<Di<Integer, Integer>> alignment) {
+			Tuple<BiValue<Integer, Integer>> alignment) {
 		StringBuilder sb_above = new StringBuilder( );
 		StringBuilder sb_below = new StringBuilder( );
 		KnittingTuple<I> ka = KnittingTuple.wrap( above );
 		KnittingTuple<O> kb = KnittingTuple.wrap( below );
-		KnittingTuple<Di<Integer, Integer>> kl = KnittingTuple.wrap( alignment );
+		KnittingTuple<BiValue<Integer, Integer>> kl = KnittingTuple.wrap( alignment );
 		int a_start = 0;
 		int b_start = 0;
-		for ( Di<Integer, Integer> ad : kl.asIterable( ) ) {
+		for ( BiValue<Integer, Integer> ad : kl.asIterable( ) ) {
 //			System.err.println( "AD: " + ad.a_length + " " + ad.b_length );
 			String separator = "";
 			int la = 0;
@@ -96,15 +96,15 @@ public class AlignmentPrinter<I, O> {
 	public Iterable<String> printVertical(
 			Tuple<I> above,
 			Tuple<O> below,
-			Tuple<Di<Integer, Integer>> alignment) {
+			Tuple<BiValue<Integer, Integer>> alignment) {
 		LinkedList<String> result = new LinkedList<>( );
 		StringBuilder sb = new StringBuilder( );
 		KnittingTuple<I> ka = KnittingTuple.wrap( above );
 		KnittingTuple<O> kb = KnittingTuple.wrap( below );
-		KnittingTuple<Di<Integer, Integer>> kl = KnittingTuple.wrap( alignment );
+		KnittingTuple<BiValue<Integer, Integer>> kl = KnittingTuple.wrap( alignment );
 		int a_start = 0;
 		int b_start = 0;
-		for ( Di<Integer, Integer> ad : kl.asIterable( ) ) {
+		for ( BiValue<Integer, Integer> ad : kl.asIterable( ) ) {
 			String separator = "";
 			int la = 0;
 			for ( int i = 0; i < ad.front( ); i++ ) {

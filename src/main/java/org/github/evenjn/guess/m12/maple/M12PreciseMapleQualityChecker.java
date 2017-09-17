@@ -45,6 +45,12 @@ public class M12PreciseMapleQualityChecker<I, O> implements
 				a_printer, b_printer );
 	}
 
+	public M12PreciseMapleQualityChecker(
+			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
+			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
+		mqc = new MapleQualityChecker<>( training_data, test_data );
+	}
+
 	public boolean check(
 			Consumer<String> logger,
 			TupleAlignmentAlphabet<I, O> alphabet,

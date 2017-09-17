@@ -32,13 +32,13 @@ import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.RookConsumer;
 
 public class M12VCoreTrainer {
 
-	private Function<Rook, Consumer<String>> putter_core;
+	private RookConsumer<String> putter_core;
 
 	private Cursable<String> reader_core;
 
@@ -51,7 +51,7 @@ public class M12VCoreTrainer {
 	public M12VCoreTrainer(
 			Consumer<String> logger,
 			Function<Integer, Object> unveiler,
-			Function<Rook, Consumer<String>> putter_core,
+			RookConsumer<String> putter_core,
 			Cursable<String> reader_core,
 			BiFunction<Markov, ProgressSpawner, Boolean> quality_control ) {
 		this.logger = logger;

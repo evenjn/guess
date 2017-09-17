@@ -23,16 +23,16 @@ import java.util.function.Function;
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.knit.BasicAutoRook;
+import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Di;
-import org.github.evenjn.yarn.Rook;
 import org.github.evenjn.yarn.Progress;
 import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.yarn.RookConsumer;
 import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
@@ -41,7 +41,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 
 	private TupleAligner<SymbolAbove, SymbolBelow> aligner;
 
-	private Function<Rook, Consumer<String>> logger;
+	private RookConsumer<String> logger;
 
 	private Function<SymbolAbove, String> a_printer;
 
@@ -59,7 +59,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 	}
 
 	public void setPrinters(
-			Function<Rook, Consumer<String>> logger,
+			RookConsumer<String> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
 		this.logger = logger;
@@ -75,7 +75,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 		try ( AutoRook rook = new BasicAutoRook( ) ) {
 			Consumer<String> open_logger = null;
 			if ( logger != null ) {
-				open_logger = logger.apply( rook );
+				open_logger = logger.get( rook );
 			}
 			TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 					new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
@@ -90,7 +90,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 
 				spawn.step( 1 );
 
-				Tuple<Di<Integer, Integer>> alignment =
+				Tuple<BiValue<Integer, Integer>> alignment =
 						aligner.align( datum.front( ), datum.back( ) );
 				KnittingTuple<Tael<SymbolAbove, SymbolBelow>> localAlphabet =
 						KnittingTuple.wrap(

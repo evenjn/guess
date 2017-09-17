@@ -17,7 +17,7 @@
  */
 package org.github.evenjn.align;
 
-import org.github.evenjn.yarn.Di;
+import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.yarn.Tuple;
 
 /**
@@ -36,6 +36,6 @@ public interface TupleAligner<A, B> {
 	 * @return a tuple of pairs. each pair contains the length of a subtuple above
 	 *         and the length of the corresponding subtuple below.
 	 */
-	Tuple<Di<Integer, Integer>> align( Tuple<A> a, Tuple<B> b );
+	Tuple<BiValue<Integer, Integer>> align( Tuple<A> a, Tuple<B> b );
 
 }

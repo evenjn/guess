@@ -3,8 +3,8 @@ package org.github.evenjn.guess.m12.visible;
 import org.github.evenjn.guess.m12.M12TrainingPlan;
 import org.github.evenjn.yarn.Kloneable;
 
-public class M12VisibleTrainingPlan<I, O>
-		extends M12TrainingPlan<I, O> {
+public class M12VisibleTrainingPlan<I, P, O>
+		extends M12TrainingPlan<I, P, O> {
 
 	private int min_above;
 
@@ -18,7 +18,7 @@ public class M12VisibleTrainingPlan<I, O>
 		return max_above;
 	}
 
-	public M12VisibleTrainingPlan<I, O>
+	public M12VisibleTrainingPlan<I, P, O>
 			setMinMaxAbove( int min, int max ) {
 		this.min_above = min;
 		this.max_above = max;
@@ -40,7 +40,7 @@ public class M12VisibleTrainingPlan<I, O>
 		}
 	}
 
-	protected Object clone( )
+	public Object clone( )
 			throws CloneNotSupportedException {
 		return super.clone( );
 	}
