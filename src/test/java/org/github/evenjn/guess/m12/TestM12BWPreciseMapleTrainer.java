@@ -38,7 +38,6 @@ import org.junit.Test;
 
 public class TestM12BWPreciseMapleTrainer {
 
-	
 	{
 		Path target = Paths.get( "." ).toAbsolutePath( ).resolve( "target" );
 		FileFoolWriter w = FileFool.w( target );
@@ -52,7 +51,6 @@ public class TestM12BWPreciseMapleTrainer {
 
 	private static Path training_cache_path;
 
-	
 	/** HANDICAP */
 	private final static BenchmarkHandicap handicap =
 			new BenchmarkHandicap( true, 20 );
@@ -64,28 +62,31 @@ public class TestM12BWPreciseMapleTrainer {
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
 
 	/** TRAINER */
-	private final static String trainer_label = "Maple: M12 Baum-Welch classic viterbi";
-	
-	private final static M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> getTrainingPlan(
-			Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+	private final static String trainer_label =
+			"Maple: M12 Baum-Welch classic viterbi";
 
-		M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> plan = new M12BaumWelchTrainingPlan<>( );
+	private final static
+			M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean>
+			getTrainingPlan(
+					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
 
-		plan
-		.setSeed( 43 )
-		.setNumberOfStates( 3 )
-		.setTrainingTime( 1,  25 )
-		.setMinMaxBelow( 0, 2 )
-		.setTupleAlignmentAlphabetBuilder(
-				new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
-		.setQualityChecker( null )
-		.setPrinters(
+		M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
+				new M12BaumWelchTrainingPlan<>( );
+
+		plan.setSeed( 43 );
+		plan.setNumberOfStates( 3 );
+		plan.setTrainingTime( 1, 25 );
+		plan.setMinMaxBelow( 0, 2 );
+		plan.setTupleAlignmentAlphabetBuilder(
+				new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) );
+		plan.setQualityChecker( null );
+		plan.setPrinters(
 				x -> x ? "1" : "0",
-				x -> x ? "1" : "0" )
-				.setTrainingData( data )
-				.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setProjector( x->x );
+				x -> x ? "1" : "0" );
+		plan.setTrainingData( data );
+		plan.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
+		plan.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
+		plan.setProjector( x -> x );
 		return plan;
 	}
 
@@ -93,44 +94,43 @@ public class TestM12BWPreciseMapleTrainer {
 		M12Fool fool = M12Fool.nu( training_cache_path );
 		Path test_crf_path = Paths.get( "test_m12" );
 		fool.delete( test_crf_path );
-		
+
 		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
-			
+
 			@Override
 			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
 					ProgressSpawner progress_spawner,
 					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-				M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> plan = getTrainingPlan( data );
+				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
+						getTrainingPlan( data );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
-				M12<Boolean, Boolean, Boolean> open = fool.open( created, plan );
-				return open.asMaplePrecise( );
+				return fool.open( created, plan ).asMaplePrecise( );
 			}
 		};
 	}
 
-
-	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerFourState( ) {
+	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>>
+			trainerFourState( ) {
 		M12Fool fool = M12Fool.nu( training_cache_path );
 		Path test_crf_path = Paths.get( "test_m12" );
 		fool.delete( test_crf_path );
-		
+
 		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
-			
+
 			@Override
 			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
 					ProgressSpawner progress_spawner,
 					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-				M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> plan =
-						getTrainingPlan( data )
-								.setNumberOfStates( 4 )
-								.setTrainingTime( 1, 40 );
+				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
+						getTrainingPlan( data );
+				plan.setNumberOfStates( 4 );
+				plan.setTrainingTime( 1, 40 );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
-				M12<Boolean, Boolean, Boolean> open = fool.open( created, plan );
-				return open.asMaplePrecise( );
+				return fool.open( created, plan ).asMaplePrecise( );
 			}
 		};
 	}
-	
+
 	@Test
 	public void testM12Identity( ) {
 		/** RUN! */

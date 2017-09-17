@@ -66,26 +66,23 @@ public class TestM12BWClassicMapleTrainer {
 	/** TRAINER */
 	private final static String trainer_label = "Maple: M12 Baum-Welch classic viterbi";
 	
-	private final static M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> getTrainingPlan(
+	private final static M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> getTrainingPlan(
 			Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-
-		M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> plan = new M12BaumWelchTrainingPlan<>( );
-
-		plan
-		.setSeed( 43 )
-		.setNumberOfStates( 3 )
-		.setTrainingTime( 1,  25 )
-		.setMinMaxBelow( 0, 2 )
-		.setTupleAlignmentAlphabetBuilder(
-				new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) )
-		.setQualityChecker( null )
-		.setPrinters(
+		M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan = new M12BaumWelchTrainingPlan<>( );
+		plan.setSeed( 43 );
+		plan.setNumberOfStates( 3 );
+		plan.setTrainingTime( 1, 25 );
+		plan.setMinMaxBelow( 0, 2 );
+		plan.setTupleAlignmentAlphabetBuilder(
+				new TupleAlignmentAlphabetGreedyBuilder<Boolean, Boolean>( true ) );
+		plan.setQualityChecker( null );
+		plan.setPrinters(
 				x -> x ? "1" : "0",
-				x -> x ? "1" : "0" )
-				.setTrainingData( data )
-				.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) )
-				.setProjector( x->x );
+				x -> x ? "1" : "0" );
+		plan.setTrainingData( data );
+		plan.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
+		plan.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
+		plan.setProjector( x -> x );
 		return plan;
 	}
 
@@ -100,10 +97,10 @@ public class TestM12BWClassicMapleTrainer {
 			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
 					ProgressSpawner progress_spawner,
 					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-				M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> plan = getTrainingPlan( data );
+				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
+						getTrainingPlan( data );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
-				M12<Boolean, Boolean, Boolean> open = fool.open( created, plan );
-				return open.asMapleClassic( );
+				return fool.open( created, plan ).asMapleClassic( );
 			}
 		};
 	}
@@ -120,13 +117,12 @@ public class TestM12BWClassicMapleTrainer {
 			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
 					ProgressSpawner progress_spawner,
 					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-				M12BaumWelchTrainingPlan<Boolean, Boolean, Boolean> plan =
-						getTrainingPlan( data )
-								.setNumberOfStates( 4 )
-								.setTrainingTime( 1, 50 );
+				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
+						getTrainingPlan( data );
+				plan.setNumberOfStates( 4 );
+				plan.setTrainingTime( 1, 50 );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
-				M12<Boolean, Boolean, Boolean> open = fool.open( created, plan );
-				return open.asMapleClassic( );
+				return fool.open( created, plan ).asMapleClassic( );
 			}
 		};
 	}

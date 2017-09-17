@@ -38,14 +38,14 @@ public abstract class M12TrainingPlan<I, P, O>
 
 	private M12QualityChecker<P, O> checker;
 
-	private Cursable<Bi<Tuple<I>, Tuple<O>>> training_data;
+	private Cursable<Bi<I, Tuple<O>>> training_data;
 
-	public Cursable<Bi<Tuple<I>, Tuple<O>>> getTrainingData( ) {
+	public Cursable<Bi<I, Tuple<O>>> getTrainingData( ) {
 		return training_data;
 	}
 
 	public M12TrainingPlan<I, P, O>
-			setTrainingData( Cursable<Bi<Tuple<I>, Tuple<O>>> training_data ) {
+			setTrainingData( Cursable<Bi<I, Tuple<O>>> training_data ) {
 		this.training_data = training_data;
 		return this;
 	}

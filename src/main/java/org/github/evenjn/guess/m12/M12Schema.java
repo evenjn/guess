@@ -3,13 +3,13 @@ package org.github.evenjn.guess.m12;
 import java.util.function.Function;
 
 import org.github.evenjn.yarn.Kloneable;
-import org.github.evenjn.yarn.Maple;
+import org.github.evenjn.yarn.Tuple;
 
 public class M12Schema<I, P, O> implements
 		Kloneable,
 		Cloneable {
 
-	private Maple<I, P> projector;
+	private Function<I, Tuple<P>> projector;
 
 	private Function<P, String> a_serializer;
 
@@ -18,8 +18,8 @@ public class M12Schema<I, P, O> implements
 	private Function<String, P> a_deserializer;
 
 	private Function<String, O> b_deserializer;
-	
-	public Maple<I, P> getProjector() {
+
+	public Function<I, Tuple<P>> getProjector( ) {
 		return projector;
 	}
 
@@ -38,8 +38,8 @@ public class M12Schema<I, P, O> implements
 	public Function<String, O> getBelowDecoder( ) {
 		return b_deserializer;
 	}
-	
-	public M12Schema<I, P, O> setProjector( Maple<I, P> projector ) {
+
+	public M12Schema<I, P, O> setProjector( Function<I, Tuple<P>> projector ) {
 		this.projector = projector;
 		return this;
 	}
