@@ -11,51 +11,23 @@ import org.github.evenjn.yarn.Tuple;
 public abstract class M12TrainingPlan<I, P, O>
 		extends M12Schema<I, P, O> {
 
-	private int min_below;
+	protected int min_below;
 
-	private int max_below;
+	protected int max_below;
 
-	public int getMinBelow( ) {
-		return min_below;
-	}
+	protected Function<P, String> a_printer;
 
-	public int getMaxBelow( ) {
-		return max_below;
-	}
+	protected Function<O, String> b_printer;
 
-	public M12TrainingPlan<I, P, O>
-			setMinMaxBelow( int min, int max ) {
-		this.min_below = min;
-		this.max_below = max;
-		return this;
-	}
+	protected TupleAlignmentAlphabetBuilder<P, O> builder;
 
-	private Function<P, String> a_printer;
+	protected M12QualityChecker<P, O> checker;
 
-	private Function<O, String> b_printer;
+	protected Cursable<Bi<I, Tuple<O>>> training_data;
 
-	private TupleAlignmentAlphabetBuilder<P, O> builder;
-
-	private M12QualityChecker<P, O> checker;
-
-	private Cursable<Bi<I, Tuple<O>>> training_data;
-
-	public Cursable<Bi<I, Tuple<O>>> getTrainingData( ) {
-		return training_data;
-	}
-
-	public M12TrainingPlan<I, P, O>
-			setTrainingData( Cursable<Bi<I, Tuple<O>>> training_data ) {
-		this.training_data = training_data;
-		return this;
-	}
-
-	public M12TrainingPlan<I, P, O> setPrinters(
-			Function<P, String> a_printer,
-			Function<O, String> b_printer ) {
-		this.a_printer = a_printer;
-		this.b_printer = b_printer;
-		return this;
+	public Object clone( )
+			throws CloneNotSupportedException {
+		return super.clone( );
 	}
 
 	public Function<P, String> getAbovePrinter( ) {
@@ -66,25 +38,25 @@ public abstract class M12TrainingPlan<I, P, O>
 		return b_printer;
 	}
 
-	public M12TrainingPlan<I, P, O> setTupleAlignmentAlphabetBuilder(
-			TupleAlignmentAlphabetBuilder<P, O> builder ) {
-		this.builder = builder;
-		return this;
+	public int getMaxBelow( ) {
+		return max_below;
+	}
+
+	public int getMinBelow( ) {
+		return min_below;
+	}
+
+	public M12QualityChecker<P, O> getQualityChecker( ) {
+		return checker;
+	}
+
+	public Cursable<Bi<I, Tuple<O>>> getTrainingData( ) {
+		return training_data;
 	}
 
 	public TupleAlignmentAlphabetBuilder<P, O>
 			getTupleAlignmentAlphabetBuilder( ) {
 		return builder;
-	}
-
-	public M12TrainingPlan<I, P, O> setQualityChecker(
-			M12QualityChecker<P, O> checker ) {
-		this.checker = checker;
-		return this;
-	}
-
-	public M12QualityChecker<P, O> getQualityChecker( ) {
-		return checker;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -102,9 +74,37 @@ public abstract class M12TrainingPlan<I, P, O>
 		}
 	}
 
-	public Object clone( )
-			throws CloneNotSupportedException {
-		return super.clone( );
+	public M12TrainingPlan<I, P, O>
+			setMinMaxBelow( int min, int max ) {
+		this.min_below = min;
+		this.max_below = max;
+		return this;
+	}
+
+	public M12TrainingPlan<I, P, O> setPrinters(
+			Function<P, String> a_printer,
+			Function<O, String> b_printer ) {
+		this.a_printer = a_printer;
+		this.b_printer = b_printer;
+		return this;
+	}
+
+	public M12TrainingPlan<I, P, O> setQualityChecker(
+			M12QualityChecker<P, O> checker ) {
+		this.checker = checker;
+		return this;
+	}
+
+	public M12TrainingPlan<I, P, O>
+			setTrainingData( Cursable<Bi<I, Tuple<O>>> training_data ) {
+		this.training_data = training_data;
+		return this;
+	}
+
+	public M12TrainingPlan<I, P, O> setTupleAlignmentAlphabetBuilder(
+			TupleAlignmentAlphabetBuilder<P, O> builder ) {
+		this.builder = builder;
+		return this;
 	}
 
 }

@@ -30,7 +30,7 @@ public interface TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 	TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
 			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
 			ProgressSpawner progress_spawner );
-	
+
 	void setPrinters(
 			RookConsumer<String> logger,
 			Function<SymbolAbove, String> a_printer,

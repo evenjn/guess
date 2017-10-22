@@ -186,6 +186,10 @@ public class M12VFileTrainer<I, O> implements M12FileTrainer<I, O>  {
 			if ( ff.exists( mvcore_working_file ) ) {
 				ff.delete( mvcore_working_file );
 			}
+			if ( ff.exists( mvcore_log_file ) ) {
+				ff.delete( mvcore_log_file );
+			}
+			ff.create( ff.mold( mvcore_log_file ) );
 
 			boolean skip_mv_training = false;
 			if ( ff.exists( mvcore_stable_file ) ) {

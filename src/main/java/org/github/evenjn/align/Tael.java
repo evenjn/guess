@@ -27,6 +27,14 @@ import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.Tuple;
 
+/**
+ * A Tael is a tuple alignment element.
+ * 
+ * @author Marco Trevisan
+ *
+ * @param <SymbolAbove>
+ * @param <SymbolBelow>
+ */
 public class Tael<SymbolAbove, SymbolBelow> {
 
 	public Tael(TupleValue<SymbolAbove> above, TupleValue<SymbolBelow> below) {

@@ -17,9 +17,9 @@
  */
 
 /**
- * Package Align Alphabet is a toolkit to create and manage tuple alignment alphabets.
+ * Package Align Alphabet is a toolkit to create and manage tuple alignment
+ * alphabets.
  * 
  * 
  */
 package org.github.evenjn.align.alphabet;
-

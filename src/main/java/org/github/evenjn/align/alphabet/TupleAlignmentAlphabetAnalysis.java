@@ -106,6 +106,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 				fd_all_pairs.dataSorted( true );
 		return dataSorted.map( x -> x.front( ) );
 	}
+
 	/**
 	 * 
 	 * @return tuples of SymbolsBelow for the given SymbolAbove Sorted By
@@ -125,24 +126,25 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 	 */
 	public KnittingTuple<TupleValue<SymbolBelow>>
 			getSymbolsBelow( TupleValue<SymbolAbove> above, int size ) {
-		if (fd_tuplebelow_by_symbolabove_and_size.size( ) <= size) {
+		if ( fd_tuplebelow_by_symbolabove_and_size.size( ) <= size ) {
 			return KnittingTuple.empty( );
 		}
 
 		FrequencyDistribution<TupleValue<SymbolBelow>> frequencyDistribution =
 				fd_tuplebelow_by_symbolabove_and_size.get( size ).get( above );
 
-		if (frequencyDistribution == null) {
+		if ( frequencyDistribution == null ) {
 			return KnittingTuple.empty( );
 		}
 		KnittingTuple<FrequencyData<TupleValue<SymbolBelow>>> dataSorted =
 				frequencyDistribution.dataSorted( true );
-		
+
 		return dataSorted.map( x -> x.front( ) );
 	}
 
-	public void record( TupleValue<SymbolAbove> above, TupleValue<SymbolBelow> below ) {
-		
+	public void record( TupleValue<SymbolAbove> above,
+			TupleValue<SymbolBelow> below ) {
+
 		fd_all_symbols_above.accept( above );
 
 		FrequencyDistribution<TupleValue<SymbolBelow>> fd_tuplebelow_for_this_symbol =
@@ -153,10 +155,10 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			fd_tuplebelow_by_symbolabove.put( above, fd_tuplebelow_for_this_symbol );
 		}
 		fd_tuplebelow_for_this_symbol.accept( below );
-		
 
 		int size = below.size( );
-		for ( int i = fd_tuplebelow_by_symbolabove_and_size.size( ); i <= size; i++ ) {
+		for ( int i =
+				fd_tuplebelow_by_symbolabove_and_size.size( ); i <= size; i++ ) {
 			fd_tuplebelow_by_symbolabove_and_size.add( new HashMap<>( ) );
 		}
 
@@ -176,16 +178,19 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 	public void print( Consumer<String> logger,
 			Function<SymbolAbove, String> a_printer,
-			Function<SymbolBelow, String> b_printer) {
+			Function<SymbolBelow, String> b_printer ) {
 
 		if ( a_printer != null && b_printer != null ) {
 			logger.accept( "" );
 			logger.accept( " Beginning of TupleAlignmentAlphabetAnalysis report" );
 			logger.accept( decorator_line );
-			logger.accept( " The total number of distinct a/b pairs is: " +  complete_alphabet.size( ) );
+			logger.accept( " The total number of distinct a/b pairs is: "
+					+ complete_alphabet.size( ) );
 			logger.accept( " The total number of tuple pairs is: " + total );
-			logger.accept( " The number of aligneable tuple pairs is: " + total_aligneable );
-			logger.accept( " The number of non aligneable tuple pairs is: " + ( total - total_aligneable ) );
+			logger.accept(
+					" The number of aligneable tuple pairs is: " + total_aligneable );
+			logger.accept( " The number of non aligneable tuple pairs is: "
+					+ ( total - total_aligneable ) );
 			logger.accept( decorator_line );
 			logger.accept( "" );
 			logger.accept( " Distribution of a/b pairs" );
@@ -210,9 +215,9 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 				FrequencyData<TupleValue<SymbolAbove>> local_fd = dataSorted.get( i );
 				logger.accept( "" );
 				logger.accept( " Distribution of symbols below "
-				+ TupleAlignmentAlphabetBuilderTools
-				.tuple_printer( a_printer, local_fd.front( ) )
-				+ "" );
+						+ TupleAlignmentAlphabetBuilderTools
+								.tuple_printer( a_printer, local_fd.front( ) )
+						+ "" );
 
 				logger.accept(
 						fd_tuplebelow_by_symbolabove.get( local_fd.front( ) )
@@ -221,14 +226,15 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 								.setLabels( x -> TupleAlignmentAlphabetBuilderTools
 										.tuple_printer( b_printer, x ) )
 								.print( ) );
-				
+
 				logger.accept( "" );
 				logger.accept( " Distribution of symbols below "
 						+ TupleAlignmentAlphabetBuilderTools
-						.tuple_printer( a_printer, local_fd.front( ) )
+								.tuple_printer( a_printer, local_fd.front( ) )
 						+ " (for a given size of the tuple below)" );
 				logger.accept( decorator_line );
-				for ( int j = 0; j < fd_tuplebelow_by_symbolabove_and_size.size( ); j++ ) {
+				for ( int j = 0; j < fd_tuplebelow_by_symbolabove_and_size
+						.size( ); j++ ) {
 					HashMap<TupleValue<SymbolAbove>, FrequencyDistribution<TupleValue<SymbolBelow>>> hashMap =
 							fd_tuplebelow_by_symbolabove_and_size.get( j );
 					if ( !hashMap.containsKey( local_fd.front( ) ) ) {
@@ -255,10 +261,10 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
 	private int total_aligneable;
 
-	public int getTotalNumberOfCandidatePairs() {
+	public int getTotalNumberOfCandidatePairs( ) {
 		return complete_alphabet.size( );
 	}
-	
+
 	public int getTotalAligneable( ) {
 		return total_aligneable;
 	}
@@ -308,6 +314,5 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			total_aligneable = total - not_aligneable;
 		}
 	}
-	
 
 }

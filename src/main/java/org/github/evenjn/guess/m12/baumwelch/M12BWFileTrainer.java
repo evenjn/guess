@@ -188,6 +188,10 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 			if ( ff.exists( m12core_working_file ) ) {
 				ff.delete( m12core_working_file );
 			}
+			if ( ff.exists( m12core_log_file ) ) {
+				ff.delete( m12core_log_file );
+			}
+			ff.create( ff.mold( m12core_log_file ) );
 
 			boolean skip_m12_training = false;
 			if ( ff.exists( m12core_stable_file ) ) {

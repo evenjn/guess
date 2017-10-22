@@ -143,7 +143,8 @@ public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 		if ( above.size( ) != 1 ) {
 			throw new IllegalArgumentException( );
 		}
-		return encode_map.get( new Tael<>( KnittingTuple.wrap( above ).asTupleValue( ),
-				KnittingTuple.wrap( below ).asTupleValue( ) ) );
+		return encode_map
+				.get( new Tael<>( KnittingTuple.wrap( above ).asTupleValue( ),
+						KnittingTuple.wrap( below ).asTupleValue( ) ) );
 	}
 }
