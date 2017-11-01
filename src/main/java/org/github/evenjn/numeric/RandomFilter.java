@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.github.evenjn.yarn.OptionalPurl;
-import org.github.evenjn.yarn.OptionalPurlFactory;
+import org.github.evenjn.yarn.OptionalPurler;
 
 public class RandomFilter<K> {
 
@@ -107,9 +107,9 @@ public class RandomFilter<K> {
 	}
 	
 
-	public static <K> OptionalPurlFactory<K, K> block( int id,
+	public static <K> OptionalPurler<K, K> block( int id,
 			int outof, long seed ) {
-		return new OptionalPurlFactory<K, K>( ) {
+		return new OptionalPurler<K, K>( ) {
 
 			@Override
 			public OptionalPurl<K, K> get() {
@@ -118,9 +118,9 @@ public class RandomFilter<K> {
 		};
 	}
 
-	public static <K> OptionalPurlFactory<K, K> pass( int id,
+	public static <K> OptionalPurler<K, K> pass( int id,
 			int outof, long seed ) {
-		return new OptionalPurlFactory<K, K>( ) {
+		return new OptionalPurler<K, K>( ) {
 
 			@Override
 			public OptionalPurl<K, K> get() {
@@ -128,9 +128,9 @@ public class RandomFilter<K> {
 			}
 		};
 	}
-	public static <K> OptionalPurlFactory<K, K> blockFraction( int id,
+	public static <K> OptionalPurler<K, K> blockFraction( int id,
 			int outof, long seed ) {
-		return new OptionalPurlFactory<K, K>( ) {
+		return new OptionalPurler<K, K>( ) {
 
 			@Override
 			public OptionalPurl<K, K> get() {
@@ -139,9 +139,9 @@ public class RandomFilter<K> {
 		};
 	}
 
-	public static <K> OptionalPurlFactory<K, K> passFraction( int id,
+	public static <K> OptionalPurler<K, K> passFraction( int id,
 			int outof, long seed ) {
-		return new OptionalPurlFactory<K, K>( ) {
+		return new OptionalPurler<K, K>( ) {
 
 			@Override
 			public OptionalPurl<K, K> get() {
