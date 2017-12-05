@@ -15,14 +15,25 @@
  * limitations under the License.
  * 
  */
-package org.github.evenjn.yarn;
+package org.github.evenjn.lang;
 
-public interface Progress extends
-		ProgressSpawner {
+/**
+ * A provider of {@link Progress}.
+ * 
+ * @since 1.0
+ */
+public interface ProgressSpawner {
 
-	void step( int distance );
-
-	Progress target( int target );
-
-	Progress info( String info );
+	/**
+	 * Returns a new {@link Progress}.
+	 * 
+	 * @param rook
+	 *          A {@link Rook} that will take responsibility to signal the end of
+	 *          the activity.
+	 * @param name
+	 *          The name of the activity.
+	 * @return A brand new {@link Progress}.
+	 * @since 1.0
+	 */
+	Progress spawn( Rook rook, String name );
 }

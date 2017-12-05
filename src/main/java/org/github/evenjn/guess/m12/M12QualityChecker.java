@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.yarn.ProgressSpawner;
+import org.github.evenjn.lang.ProgressSpawner;
 
 public interface M12QualityChecker<I, O> {
 

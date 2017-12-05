@@ -25,19 +25,18 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.graph.NotAlignableException;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.knit.TupleValue;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.FrequencyData;
 import org.github.evenjn.numeric.FrequencyDistribution;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 
@@ -280,7 +279,7 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 			throw new IllegalStateException( "this can be compued only once" );
 		}
 
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetAnalysis::computeCompleteAlphabet" );

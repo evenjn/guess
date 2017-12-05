@@ -22,16 +22,14 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Maple;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
 
 public class MapleQualityChecker<I, O> {
 
@@ -78,7 +76,7 @@ public class MapleQualityChecker<I, O> {
 	
 	
 	private int do_check(
-		  Maple<I, O> maple,
+		  Function<Tuple<I>, Tuple<O>> maple,
 			Consumer<String> logger,
 			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
 			int previous,
@@ -86,7 +84,7 @@ public class MapleQualityChecker<I, O> {
 			int target) {
 		
 		MapleEvaluation<I, O> evaluation = new MapleEvaluation<>( aligner, a_printer, b_printer );
-		try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+		try ( BasicRook rook2 = new BasicRook( ) ) {
 			Progress spawn2 = spawn.spawn( rook2, "check" ).target( target );
 			
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
@@ -117,7 +115,7 @@ public class MapleQualityChecker<I, O> {
 	public boolean check(
 			Consumer<String> logger,
 			TupleAlignmentAlphabet<I, O> alphabet,
-			Maple<I, O> maple,
+			Function<Tuple<I>, Tuple<O>> maple,
 			ProgressSpawner spawn   ) {
 		
 		logger.accept( decorator_line );

@@ -30,8 +30,8 @@ import org.github.evenjn.guess.benchmark.generator.MapleReverseData;
 import org.github.evenjn.guess.benchmark.generator.MapleZebraData;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Tuple;
 
 public class Benchmark {
 

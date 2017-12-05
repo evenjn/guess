@@ -2,8 +2,8 @@ package org.github.evenjn.guess.m12;
 
 import java.util.function.Function;
 
-import org.github.evenjn.yarn.Kloneable;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Kloneable;
+import org.github.evenjn.lang.Tuple;
 
 public class M12Schema<I, P, O> implements
 		Kloneable,

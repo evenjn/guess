@@ -33,10 +33,10 @@ import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.Cubix;
 import org.github.evenjn.numeric.DenseCubix;
 import org.github.evenjn.numeric.NumericLogarithm;
-import org.github.evenjn.yarn.Tuple;
 
 public class M12Aligner<I, O> implements
 		TupleAligner<I, O> {

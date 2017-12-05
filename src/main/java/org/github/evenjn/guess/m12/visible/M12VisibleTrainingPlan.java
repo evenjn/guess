@@ -1,7 +1,7 @@
 package org.github.evenjn.guess.m12.visible;
 
 import org.github.evenjn.guess.m12.M12TrainingPlan;
-import org.github.evenjn.yarn.Kloneable;
+import org.github.evenjn.lang.Kloneable;
 
 public class M12VisibleTrainingPlan<I, P, O>
 		extends M12TrainingPlan<I, P, O> {

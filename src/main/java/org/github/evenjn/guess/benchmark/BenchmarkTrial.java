@@ -20,12 +20,11 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.yarn.AutoRook;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Progress;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.EndOfCursorException;
-import org.github.evenjn.yarn.Progress;
 
 public class BenchmarkTrial<I, O> {
 
@@ -92,7 +91,7 @@ public class BenchmarkTrial<I, O> {
 		System.out.println( "Trainer: " + trainer_label );
 		System.out.println( "Evaluator: " + evaluator_label );
 		int local_limit =  handicap.size_of_traning_data;
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			
 			KnittingCursable<BenchmarkDatum<I, O>> training_data =
 					KnittingCursable.wrap( problem.data( ) ).head( 0, local_limit );

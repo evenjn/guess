@@ -26,11 +26,10 @@ import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.guess.markov.MarkovChecker;
 import org.github.evenjn.guess.markov.MarkovDeserializer;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.plaintext.PlainText;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12LibraFileDeserializer {
 
@@ -43,7 +42,7 @@ public class M12LibraFileDeserializer {
 		Markov core;
 		Path m12core_stable_file = training_cache_path.resolve( "./m12_core.stable.txt" );
 		Path alphabet_stable_file = training_cache_path.resolve( "./ta_alphabet.stable.txt" );
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			/**
 			 * This is interesting, because the output of the serializer is not
 			 * volatile, but how can we communicate that?
@@ -57,7 +56,7 @@ public class M12LibraFileDeserializer {
 							b_deserializer ) )
 					.one( );
 		}
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			core = KnittingCursable
 					.wrap( h -> PlainText.reader( )
 							.build( ).get( h, FileFool.r().open( m12core_stable_file ).read( h ) ) )

@@ -26,19 +26,18 @@ import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.guess.markov.MarkovChecker;
 import org.github.evenjn.guess.markov.MarkovDeserializer;
 import org.github.evenjn.guess.markov.MarkovSerializer;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoRook;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Ring;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.RookConsumer;
 
 public class M12VCoreTrainer {
 
-	private RookConsumer<String> putter_core;
+	private Ring<Consumer<String>> putter_core;
 
 	private Cursable<String> reader_core;
 
@@ -51,7 +50,7 @@ public class M12VCoreTrainer {
 	public M12VCoreTrainer(
 			Consumer<String> logger,
 			Function<Integer, Object> unveiler,
-			RookConsumer<String> putter_core,
+			Ring<Consumer<String>> putter_core,
 			Cursable<String> reader_core,
 			BiFunction<Markov, ProgressSpawner, Boolean> quality_control ) {
 		this.logger = logger;
@@ -69,7 +68,7 @@ public class M12VCoreTrainer {
 			KnittingCursable<TupleAlignmentGraph> graphs,
 			ProgressSpawner progress_spawner ) {
 
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"M12VCoreTrainer::prepareCore" );
 
@@ -94,7 +93,7 @@ public class M12VCoreTrainer {
 				 */
 
 				spawn.info( "Decoding M12 core." );
-				try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+				try ( BasicRook rook2 = new BasicRook( ) ) {
 					core = KnittingCursable
 							.wrap( reader_core )
 							.pull( rook2 )

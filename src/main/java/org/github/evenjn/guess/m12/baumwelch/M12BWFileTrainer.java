@@ -31,15 +31,14 @@ import org.github.evenjn.align.graph.TupleAlignmentGraphDataManagerBlueprint;
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.guess.m12.M12FileTrainer;
 import org.github.evenjn.guess.m12.M12QualityChecker;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.SafeProgressSpawner;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.plaintext.PlainText;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
 
 public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 	
@@ -114,7 +113,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 		m12ctb.deserializeModel( null );
 		m12ctb.serializeModel( null );
 
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			Progress progress = SafeProgressSpawner
 					.safeSpawn( rook, progress_spawner, "M12FileTrainer::train" );
 
@@ -147,10 +146,10 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 				ff.create( ff.mold( alphabet_log_file ) );
 				taadmb
 						.setPrinter( h -> PlainText.writer( ).setForcedFlush( true ).build( )
-								.get( h, ff.open( alphabet_log_file ).write( h ) ), a_printer,
+								.apply( h, ff.open( alphabet_log_file ).write( h ) ), a_printer,
 								b_printer )
 						.serializeTupleAlignmentAlphabet( h -> PlainText.writer( ).build( )
-								.get( h, ff.open( alphabet_working_file ).write( h ) ) );
+								.apply( h, ff.open( alphabet_working_file ).write( h ) ) );
 				taadmb.deserializeTupleAlignmentAlphabet( h -> PlainText.reader( )
 						.build( ).get( h, ff.open( alphabet_working_file ).read( h ) ) );
 			}
@@ -171,7 +170,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 			else {
 				ff.create( ff.mold( graphs_working_file ) );
 				tagdmb.serializeTupleAlignmentGraphs( h -> PlainText.writer( ).build( )
-						.get( h, ff.open( graphs_working_file ).write( h ) ) );
+						.apply( h, ff.open( graphs_working_file ).write( h ) ) );
 				tagdmb.deserializeTupleAlignmentGraphs( h -> PlainText.reader( )
 						.build( ).get( h, ff.open( graphs_working_file ).read( h ) ) );
 			}
@@ -213,7 +212,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 					ff.create( ff.mold( m12core_working_file ) );
 				}
 				m12ctb.serializeModel( h -> PlainText.writer( ).build( )
-						.get( h, ff.open( m12core_working_file ).write( h ) ) );
+						.apply( h, ff.open( m12core_working_file ).write( h ) ) );
 			}
 
 			/*
@@ -244,7 +243,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 				final Consumer<String> training_logger = PlainText
 						.writer( ).setForcedFlush( true )
 						.build( )
-						.get( rook, ff.open( m12core_log_file ).write( rook ) );
+						.apply( rook, ff.open( m12core_log_file ).write( rook ) );
 				
 				if (checker != null) {
 					m12ctb.qualityControl( (core, spawn) -> checker.check(

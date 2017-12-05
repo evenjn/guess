@@ -22,18 +22,17 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Ring;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.RookConsumer;
-import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 		implements
@@ -41,7 +40,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 
 	private TupleAligner<SymbolAbove, SymbolBelow> aligner;
 
-	private RookConsumer<String> logger;
+	private Ring<Consumer<String>> logger;
 
 	private Function<SymbolAbove, String> a_printer;
 
@@ -59,7 +58,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 	}
 
 	public void setPrinters(
-			RookConsumer<String> logger,
+			Ring<Consumer<String>> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer ) {
 		this.logger = logger;
@@ -72,7 +71,7 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> kd =
 				KnittingCursable.wrap( data );
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			Consumer<String> open_logger = null;
 			if ( logger != null ) {
 				open_logger = logger.get( rook );

@@ -20,7 +20,7 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.knit.BiTray;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
 
 public class BenchmarkDatum<I, O> {
 

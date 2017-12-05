@@ -22,9 +22,9 @@ import java.util.Vector;
 
 import org.github.evenjn.guess.benchmark.BenchmarkDatum;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.EndOfCursorException;
-import org.github.evenjn.yarn.Tuple;
 
 /**
  * This implements a stream of data where the input tuple is transformed into

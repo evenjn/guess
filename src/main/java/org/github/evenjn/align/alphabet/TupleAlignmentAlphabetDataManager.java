@@ -17,19 +17,19 @@
  */
 package org.github.evenjn.align.alphabet;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.BiTray;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Ring;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.RookConsumer;
-import org.github.evenjn.yarn.Tuple;
 
 /*
  * This object acts as a preprocessor for systems that work on alingment graphs.
@@ -76,7 +76,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			int min_below,
 			int max_below,
 			TupleAlignmentAlphabetBuilder<I, O> builder,
-			RookConsumer<String> writer,
+			Ring<Consumer<String>> writer,
 			Cursable<String> reader,
 			Function<I, String> a_serializer,
 			Function<O, String> b_serializer,
@@ -84,7 +84,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			Function<String, O> b_deserializer,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer,
-			RookConsumer<String> logger) {
+			Ring<Consumer<String>> logger) {
 		this.min_above = min_above;
 		this.max_above = max_above;
 		this.min_below = min_below;
@@ -110,9 +110,9 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 
 	private final int max_below;
 
-	private final RookConsumer<String> writer;
+	private final Ring<Consumer<String>> writer;
 
-	private final RookConsumer<String> logger;
+	private final Ring<Consumer<String>> logger;
 
 	private final Cursable<String> reader;
 
@@ -159,7 +159,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 					data
 							.map( x -> ( BiTray.nu( x.front( ), x.back( ) ) ) );
 
-			try ( AutoRook rook = new BasicAutoRook( ) ) {
+			try ( BasicRook rook = new BasicRook() ) {
 				Progress spawn =
 						SafeProgressSpawner.safeSpawn( rook, progress_spawner, "prepareAlphabet" );
 
@@ -194,7 +194,7 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			 * Otherwise, de-serialize it from the reader.
 			 */
 
-			try ( AutoRook rook = new BasicAutoRook( ) ) {
+			try ( BasicRook rook = new BasicRook() ) {
 				/**
 				 * This is interesting, because the output of the serializer is not
 				 * volatile, but how can we communicate that?

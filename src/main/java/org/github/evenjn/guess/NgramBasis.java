@@ -13,7 +13,7 @@ import java.util.Vector;
 import java.util.function.Function;
 
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Tuple;
 
 public class NgramBasis<T> implements
 		Function<Tuple<T>, Tuple<NGram<T>>> {

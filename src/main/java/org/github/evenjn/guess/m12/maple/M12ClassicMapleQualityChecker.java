@@ -25,10 +25,10 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.benchmark.MapleQualityChecker;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
 
 public class M12ClassicMapleQualityChecker<I, O> implements
 		M12QualityChecker<I, O> {

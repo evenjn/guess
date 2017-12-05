@@ -21,10 +21,10 @@ import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.numeric.FrequencyDistribution;
-import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
  * A blind guesser ignores all features but the target, and predicts always

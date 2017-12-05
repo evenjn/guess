@@ -26,7 +26,7 @@ import java.util.function.BiFunction;
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.TupleValue;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Tuple;
 
 public class TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> {
 

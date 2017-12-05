@@ -17,9 +17,9 @@
  */
 package org.github.evenjn.guess;
 
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
  * A Teacher is a system that produces a discriminative model.

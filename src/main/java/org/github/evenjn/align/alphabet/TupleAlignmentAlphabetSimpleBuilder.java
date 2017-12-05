@@ -1,19 +1,19 @@
 package org.github.evenjn.align.alphabet;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.graph.NotAlignableException;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Ring;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.RookConsumer;
-import org.github.evenjn.yarn.Tuple;
 
 public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 		implements
@@ -42,7 +42,7 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 
 	@Override
 	public void setPrinters(
-			RookConsumer<String> logger,
+			Ring<Consumer<String>> logger,
 			Function<Above, String> a_printer,
 			Function<Below, String> b_printer ) {
 		
@@ -54,7 +54,7 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kd =
 				KnittingCursable.wrap( data );
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 
 			TupleAlignmentAlphabet<Above, Below> result =
 					new TupleAlignmentAlphabet<Above, Below>( );

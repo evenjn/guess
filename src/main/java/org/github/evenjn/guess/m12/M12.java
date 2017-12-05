@@ -15,8 +15,8 @@ import org.github.evenjn.guess.m12.maple.M12PreciseMaple;
 import org.github.evenjn.guess.m12.maple.M12PreciseMapleFileDeserializer;
 import org.github.evenjn.knit.BiTray;
 import org.github.evenjn.knit.BiValue;
-import org.github.evenjn.yarn.Bi;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Tuple;
 
 public class M12<I, P, O> {
 

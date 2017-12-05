@@ -29,13 +29,13 @@ import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.Bi;
-import org.github.evenjn.yarn.Tuple;
 
 public class MapleEvaluation<I, O> {
 

@@ -9,9 +9,9 @@ import org.github.evenjn.guess.m12.visible.M12VFileTrainer;
 import org.github.evenjn.guess.m12.visible.M12VisibleTrainingPlan;
 import org.github.evenjn.knit.BiTray;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.yarn.Bi;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 
 public class M12Fool {
 

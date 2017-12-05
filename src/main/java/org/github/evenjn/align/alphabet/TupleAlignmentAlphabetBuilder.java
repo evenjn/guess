@@ -17,13 +17,14 @@
  */
 package org.github.evenjn.align.alphabet;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Ring;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.RookConsumer;
-import org.github.evenjn.yarn.Tuple;
 
 public interface TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
@@ -32,7 +33,7 @@ public interface TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 			ProgressSpawner progress_spawner );
 
 	void setPrinters(
-			RookConsumer<String> logger,
+			Ring<Consumer<String>> logger,
 			Function<SymbolAbove, String> a_printer,
 			Function<SymbolBelow, String> b_printer );
 

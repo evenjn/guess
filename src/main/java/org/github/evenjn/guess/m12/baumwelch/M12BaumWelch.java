@@ -31,18 +31,17 @@ import java.util.function.Consumer;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.AutoRook;
 import org.github.evenjn.yarn.EndOfCursorException;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12BaumWelch {
 
@@ -105,7 +104,7 @@ public class M12BaumWelch {
 			final int epochs,
 			ProgressSpawner progress_spawner ) {
 
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
 			int data_size = observed_cursable.count( );
@@ -121,8 +120,8 @@ public class M12BaumWelch {
 			}
 			spawn.target( epochs * data_size );
 
-			BasicAutoRook[] local = {
-					new BasicAutoRook( )
+			BasicRook[] local = {
+					new BasicRook( )
 			};
 			rook.hook( new AutoCloseable( ) {
 
@@ -197,7 +196,7 @@ public class M12BaumWelch {
 							throw new IllegalArgumentException( "Something wrong with training data size." );
 						}
 						local[0].close( );
-						local[0] = new BasicAutoRook( );
+						local[0] = new BasicRook( );
 						observed_re = observed_cursable.pull( local[0] );
 						if ( !observed_re.hasNext( ) ) {
 							throw new IllegalArgumentException( "Empty training set" );

@@ -17,10 +17,11 @@
  */
 package org.github.evenjn.align.alphabet;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.lang.Ring;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.RookConsumer;
 
 public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
@@ -44,13 +45,13 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
 	private Function<String, O> b_deserializer;
 
-	private RookConsumer<String> putter_coalignment_alphabet;
+	private Ring<Consumer<String>> putter_coalignment_alphabet;
 
 	private Cursable<String> reader_coalignment_alphabet;
 
 	private TupleAlignmentAlphabetBuilder<I, O> builder;
 
-	private RookConsumer<String> logger;
+	private Ring<Consumer<String>> logger;
 
 	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			setMinMaxBelow( int min, int max ) {
@@ -67,7 +68,7 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 	}
 
 	public TupleAlignmentAlphabetDataManagerBlueprint<I, O> setPrinter(
-			RookConsumer<String> logger,
+			Ring<Consumer<String>> logger,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer ) {
 		this.logger = logger;
@@ -101,7 +102,7 @@ public class TupleAlignmentAlphabetDataManagerBlueprint<I, O> {
 
 	public TupleAlignmentAlphabetDataManagerBlueprint<I, O>
 			serializeTupleAlignmentAlphabet(
-					RookConsumer<String> putter_alphabet ) {
+					Ring<Consumer<String>> putter_alphabet ) {
 		this.putter_coalignment_alphabet = putter_alphabet;
 		return this;
 	}

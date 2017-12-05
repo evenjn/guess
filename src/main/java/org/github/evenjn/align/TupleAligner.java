@@ -18,7 +18,7 @@
 package org.github.evenjn.align;
 
 import org.github.evenjn.knit.BiValue;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Tuple;
 
 /**
  * Given two sequences Alpha and Beta, returns a sequence of alignment data.

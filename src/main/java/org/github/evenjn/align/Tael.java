@@ -20,12 +20,11 @@ package org.github.evenjn.align;
 import java.util.Vector;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.TupleValue;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Tuple;
 
 /**
  * A Tael is a tuple alignment element.
@@ -71,7 +70,7 @@ public class Tael<SymbolAbove, SymbolBelow> {
 			Function<? super SymbolAbove, String> sa_label,
 			Function<? super SymbolBelow, String> sb_label ) {
 
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			StringBuilder sb = new StringBuilder( );
 			sb.append( "[" );
 			for ( SymbolAbove a : KnittingTuple.wrap(above_as_value).asIterable( ) ) {

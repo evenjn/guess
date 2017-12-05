@@ -9,14 +9,13 @@ import java.util.function.Function;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.numeric.NumericLogarithm;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
 
 public class M12VCoreBuilder {
 
@@ -47,7 +46,7 @@ public class M12VCoreBuilder {
 			KnittingCursable<TupleAlignmentGraph> observed_cursable,
 			ProgressSpawner progress_spawner ) {
 
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"M12BaumWelch::BaumWelch" );
 			int data_size = observed_cursable.count( );

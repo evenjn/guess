@@ -22,19 +22,18 @@ import java.util.function.Consumer;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
 
 public class M12LibraQualityChecker<I, O> implements
 		M12QualityChecker<I, O> {
@@ -73,7 +72,7 @@ public class M12LibraQualityChecker<I, O> implements
 		int not_aligneable = 0;
 		Summation summation = NumericUtils.summation( 10000,
 				x -> NumericLogarithm.elnsum( KnittingCursable.wrap( x ) ) );
-		try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+		try ( BasicRook rook2 = new BasicRook( ) ) {
 			Progress spawn2 = spawn.spawn( rook2, "check" ).target( target );
 			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
 					.wrap( data ).pull( rook2 ).peek( x -> spawn2.step( 1 ) ).once( ) ) {

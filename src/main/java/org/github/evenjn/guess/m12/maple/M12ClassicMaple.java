@@ -24,42 +24,42 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.knit.TupleValue;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.DenseMatrix;
 import org.github.evenjn.numeric.Matrix;
 import org.github.evenjn.numeric.NumericLogarithm;
 import org.github.evenjn.numeric.NumericUtils.Summation;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Maple;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
-
 
 /**
  * Uses a one-to-many hidden markov model to implement a transducer.
  * 
  * Upon encountering a never-seen-before input symbol, the system ignores the
- * input symbol information when choosing the most likely state.
- * By assigning emission probability "one" to unknown symbols, the system
- * chooses the most likely state based on transition probabilities only. 
+ * input symbol information when choosing the most likely state. By assigning
+ * emission probability "one" to unknown symbols, the system chooses the most
+ * likely state based on transition probabilities only.
  * 
  * @author Marco Trevisan
  *
- * @param <I> The type of input symbols.
- * @param <O> The type of output symbols.
+ * @param <I>
+ *          The type of input symbols.
+ * @param <O>
+ *          The type of output symbols.
  */
 public class M12ClassicMaple<I, O> implements
-		Maple<I, O> {
+		Function<Tuple<I>, Tuple<O>> {
 
 	private final Markov core;
-	
+
 	private final boolean fail_on_unknown_input_symbol;
 
 	public M12ClassicMaple(
@@ -67,13 +67,14 @@ public class M12ClassicMaple<I, O> implements
 			Markov core,
 			boolean fail_on_unknown_input_symbol,
 			ProgressSpawner progress_spawner) {
-		this(coalignment_alphabet, core, null, fail_on_unknown_input_symbol, progress_spawner);
+		this( coalignment_alphabet, core, null, fail_on_unknown_input_symbol,
+				progress_spawner );
 	}
-	
+
 	/**
 	 * 
-	 * {@code descendant_test} is a function that returns true when the second argument
-	 * is a descendant of the first one.
+	 * {@code descendant_test} is a function that returns true when the second
+	 * argument is a descendant of the first one.
 	 */
 	public M12ClassicMaple(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
@@ -82,16 +83,17 @@ public class M12ClassicMaple<I, O> implements
 			boolean fail_on_unknown_input_symbol,
 			ProgressSpawner progress_spawner) {
 		this.fail_on_unknown_input_symbol = fail_on_unknown_input_symbol;
-//		Map<I, Set<Tuple<O>>> actual_pairs = new HashMap<>();
-		
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		// Map<I, Set<Tuple<O>>> actual_pairs = new HashMap<>();
+
+		try ( BasicRook rook = new BasicRook() ) {
 
 			this.core = core;
 			init_cache( core.number_of_states );
 
 			double[] buffer = new double[coalignment_alphabet.size( )];
 
-			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner, "M12Maple::constructor" );
+			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
+					"M12Maple::constructor" );
 			spawn.target( core.number_of_states * coalignment_alphabet.size( ) );
 			/**
 			 * for each state we want to cache: for each symbol above, the probability
@@ -105,7 +107,8 @@ public class M12ClassicMaple<I, O> implements
 					int len = 0;
 					double max = 0;
 					Tuple<O> best = null;
-					for ( TupleValue<O> sb : coalignment_alphabet.correspondingBelow( sa ) ) {
+					for ( TupleValue<O> sb : coalignment_alphabet
+							.correspondingBelow( sa ) ) {
 						int encode = coalignment_alphabet.encode( sa, sb );
 						double prob = core.emission_table[s][encode];
 						if ( best == null || prob > max ) {
@@ -118,33 +121,36 @@ public class M12ClassicMaple<I, O> implements
 						}
 					}
 					if ( best == null ) {
-						if (descendant_test == null) {
+						if ( descendant_test == null ) {
 							throw new IllegalStateException( "A symbol above in the alphabet"
 									+ " does not have any corresponding symbols below,"
-									+ " and no descendant test function is set." );	
+									+ " and no descendant test function is set." );
 						}
 						/**
 						 * This symbol above is not a leaf in the tree of symbols.
 						 */
 						HashMap<Tuple<O>, Summation> sum_map = new HashMap<>( );
-						for ( TupleValue<I> sa_descendant : coalignment_alphabet.above( ).asIterable( ) ) {
-							if (! descendant_test.apply( sa, sa_descendant )) {
+						for ( TupleValue<I> sa_descendant : coalignment_alphabet.above( )
+								.asIterable( ) ) {
+							if ( !descendant_test.apply( sa, sa_descendant ) ) {
 								continue;
 							}
 
-							for ( TupleValue<O> sb : coalignment_alphabet.correspondingBelow( sa_descendant ) ) {
+							for ( TupleValue<O> sb : coalignment_alphabet
+									.correspondingBelow( sa_descendant ) ) {
 								int encode = coalignment_alphabet.encode( sa_descendant, sb );
 								double prob = core.emission_table[s][encode];
-								
+
 								Summation summation = sum_map.get( sb );
-								if (summation == null) {
-									summation = new Summation( coalignment_alphabet.size( ), NumericLogarithm::elnsumIterable );
+								if ( summation == null ) {
+									summation = new Summation( coalignment_alphabet.size( ),
+											NumericLogarithm::elnsumIterable );
 								}
 								summation.add( prob );
 							}
 						}
-						
-						for (Tuple<O> key : sum_map.keySet( )) {
+
+						for ( Tuple<O> key : sum_map.keySet( ) ) {
 							double prob = sum_map.get( key ).getSum( );
 							if ( best == null || prob > max ) {
 								max = prob;
@@ -163,12 +169,12 @@ public class M12ClassicMaple<I, O> implements
 						}
 					}
 
-//					Set<Tuple<O>> fd = actual_pairs.get( sa );
-//					if (fd == null) {
-//						fd = new HashSet<>( );
-//						actual_pairs.put( sa, fd );
-//					}
-//					fd.add( best );
+					// Set<Tuple<O>> fd = actual_pairs.get( sa );
+					// if (fd == null) {
+					// fd = new HashSet<>( );
+					// actual_pairs.put( sa, fd );
+					// }
+					// fd.add( best );
 					cache_prediction[s].put( sa.get( 0 ), best );
 					cache_partial_prob[s].put( sa.get( 0 ),
 							NumericLogarithm.elnsum( max, buffer, len ) );
@@ -178,12 +184,13 @@ public class M12ClassicMaple<I, O> implements
 
 		}
 
-//		for ( I sa : coalignment_alphabet.above( ) ) { 
-//			System.out.println( Unicode.aboutCodepoint( Integer.parseInt( sa.toString( ) ) ));
-//			for (Tuple<O> sb : actual_pairs.get( sa )) {
-//				System.out.println(   " >-> " + sb.toString( ) );
-//			}
-//		}
+		// for ( I sa : coalignment_alphabet.above( ) ) {
+		// System.out.println( Unicode.aboutCodepoint( Integer.parseInt(
+		// sa.toString( ) ) ));
+		// for (Tuple<O> sb : actual_pairs.get( sa )) {
+		// System.out.println( " >-> " + sb.toString( ) );
+		// }
+		// }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -240,7 +247,8 @@ public class M12ClassicMaple<I, O> implements
 						.asIterable( ) ) {
 					result.add( sb );
 				}
-			} else {
+			}
+			else {
 				System.err.println(
 						"M12Maple unknown symbol: " + observed.get( i ).toString( ) );
 			}
@@ -308,7 +316,8 @@ public class M12ClassicMaple<I, O> implements
 							cost, probability.apply( t, best_source ),
 							core.transition_table[best_source][s] );
 
-				} else {
+				}
+				else {
 					cost = elnproduct( cost, core.initial_table[s] );
 				}
 				probability.set( t + 1, s, cost );

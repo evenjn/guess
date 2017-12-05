@@ -21,10 +21,10 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.lang.Rook;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.EndOfCursorException;
-import org.github.evenjn.yarn.Rook;
 
 public class TupleAlignmentAlphabetSerializer<SymbolAbove, SymbolBelow>
 		implements Cursable<String> {

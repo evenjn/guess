@@ -17,9 +17,9 @@
  */
 package org.github.evenjn.knit;
 
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Rook;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Rook;
 
 /**
  * Provides a method to create stub {@link org.github.evenjn.yarn.Progress

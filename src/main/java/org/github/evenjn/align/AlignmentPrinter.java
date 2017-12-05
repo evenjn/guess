@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Tuple;
 
 public class AlignmentPrinter<I, O> {
 

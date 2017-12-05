@@ -20,20 +20,20 @@ package org.github.evenjn.align.graph;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-import org.github.evenjn.knit.BasicAutoRook;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
-import org.github.evenjn.yarn.AutoRook;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.BasicRook;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Progress;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Ring;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.OptionalMap;
-import org.github.evenjn.yarn.Progress;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.RookConsumer;
-import org.github.evenjn.yarn.Tuple;
 
 /**
  * This object acts as a preprocessor for systems that work on alingment graphs.
@@ -80,7 +80,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			int max_above,
 			int min_below,
 			int max_below,
-			RookConsumer<String> putter_coalignment_graphs,
+			Ring<Consumer<String>> putter_coalignment_graphs,
 			Cursable<String> reader_coalignment_graphs ) {
 		this.min_above = min_above;
 		this.max_above = max_above;
@@ -98,7 +98,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 	private final int max_below;
 
-	private final RookConsumer<String> putter_coalignment_graphs;
+	private final Ring<Consumer<String>> putter_coalignment_graphs;
 
 	private final Cursable<String> reader_coalignment_graphs;
 
@@ -138,7 +138,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 			ProgressSpawner progress_spawner ) {
 		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kc = KnittingCursable.wrap( data );
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			Progress spawn =
 					SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 							"prepareGraphs" );
@@ -150,7 +150,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 	private boolean limits_are_computed = false;
 	
 	private void computeLimits( Progress progress, KnittingCursable<TupleAlignmentGraph> data ) {
-		try ( AutoRook rook = new BasicAutoRook( ) ) {
+		try ( BasicRook rook = new BasicRook() ) {
 			for ( TupleAlignmentGraph g : data.pull( rook ).once( ) ) {
 				int la = g.la( );
 				int lb = g.lb( );
@@ -220,7 +220,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 				progress.info( "Computing dataset size before computing limits." );
 				int progress_target = 0;
-				try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+				try ( BasicRook rook2 = new BasicRook( ) ) {
 					Progress spawn = progress.spawn( rook2, "computing dataset size" );
 					progress_target = data.peek( x -> spawn.step( 1 ) ).count( );
 				}
@@ -241,7 +241,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				header.append( record_max_length_back );
 				header.append( "," );
 				header.append( record_max_number_of_edges );
-				try ( AutoRook rook = new BasicAutoRook( ) ) {
+				try ( BasicRook rook = new BasicRook() ) {
 					KnittingCursor.on( header.toString( ) ).append(
 							graphs_to_write
 									.pull( rook )
@@ -280,7 +280,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				progress.info(
 						"Computing dataset size before computing limits." );
 				int progress_target = 0;
-				try ( AutoRook rook2 = new BasicAutoRook( ) ) {
+				try ( BasicRook rook2 = new BasicRook( ) ) {
 					Progress spawn = progress.spawn( rook2, "computing dataset size" );
 					progress_target = data.peek( x -> spawn.step( 1 ) ).count( );
 				}

@@ -29,9 +29,9 @@ import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.Libra;
 import org.github.evenjn.guess.markov.Markov;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.NumericLogarithm;
-import org.github.evenjn.yarn.Bi;
-import org.github.evenjn.yarn.Tuple;
 
 public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
 

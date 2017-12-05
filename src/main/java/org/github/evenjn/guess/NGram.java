@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Tuple;
 
 public class NGram<T> implements Tuple<T> {
 

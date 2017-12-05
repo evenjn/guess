@@ -19,9 +19,9 @@ package org.github.evenjn.guess;
 
 import java.util.function.Function;
 
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
 
 /**
  * A Trainer is a system that produces a discriminant function.

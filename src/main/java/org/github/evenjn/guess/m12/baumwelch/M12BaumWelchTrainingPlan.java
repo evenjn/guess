@@ -6,10 +6,10 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.m12.M12Schema;
 import org.github.evenjn.guess.m12.M12TrainingPlan;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Kloneable;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Kloneable;
-import org.github.evenjn.yarn.Tuple;
 
 public class M12BaumWelchTrainingPlan<I, P, O>
 		extends M12TrainingPlan<I, P, O> {

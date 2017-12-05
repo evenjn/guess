@@ -3,10 +3,10 @@ package org.github.evenjn.guess.m12;
 import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.Kloneable;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.Kloneable;
-import org.github.evenjn.yarn.Tuple;
 
 public abstract class M12TrainingPlan<I, P, O>
 		extends M12Schema<I, P, O> {

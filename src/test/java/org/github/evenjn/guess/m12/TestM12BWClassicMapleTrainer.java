@@ -30,10 +30,10 @@ import org.github.evenjn.guess.benchmark.BenchmarkHandicap;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.guess.m12.baumwelch.M12BaumWelchTrainingPlan;
-import org.github.evenjn.yarn.Bi;
+import org.github.evenjn.lang.Bi;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.Tuple;
 import org.junit.Test;
 
 public class TestM12BWClassicMapleTrainer {

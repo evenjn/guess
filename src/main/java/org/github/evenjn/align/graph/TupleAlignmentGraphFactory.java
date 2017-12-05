@@ -20,7 +20,7 @@ package org.github.evenjn.align.graph;
 import java.util.function.BiFunction;
 
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.yarn.Tuple;
+import org.github.evenjn.lang.Tuple;
 
 /*
  * These are notes about how Markov models use the tuple alignment graph

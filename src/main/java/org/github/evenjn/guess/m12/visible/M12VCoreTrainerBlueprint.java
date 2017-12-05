@@ -22,13 +22,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.markov.Markov;
+import org.github.evenjn.lang.ProgressSpawner;
+import org.github.evenjn.lang.Ring;
 import org.github.evenjn.yarn.Cursable;
-import org.github.evenjn.yarn.ProgressSpawner;
-import org.github.evenjn.yarn.RookConsumer;
 
 public class M12VCoreTrainerBlueprint {
 
-	private RookConsumer<String> putter_core;
+	private Ring<Consumer<String>> putter_core;
 
 	private Cursable<String> reader_core;
 
@@ -56,7 +56,7 @@ public class M12VCoreTrainerBlueprint {
 	}
 
 	public M12VCoreTrainerBlueprint
-			serializeModel( RookConsumer<String> putter_core ) {
+			serializeModel( Ring<Consumer<String>> putter_core ) {
 		this.putter_core = putter_core;
 		return this;
 	}
