@@ -18,11 +18,9 @@ public class M12VisibleTrainingPlan<I, P, O>
 		return max_above;
 	}
 
-	public M12VisibleTrainingPlan<I, P, O>
-			setMinMaxAbove( int min, int max ) {
+	public void setMinMaxAbove( int min, int max ) {
 		this.min_above = min;
 		this.max_above = max;
-		return this;
 	}
 
 	@SuppressWarnings("unchecked")

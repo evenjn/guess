@@ -28,7 +28,6 @@ import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
@@ -85,12 +84,14 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 		}
 	}
 
-	private Set<Tael<SymbolAbove, SymbolBelow>>
+	private <K> Set<Tael<SymbolAbove, SymbolBelow>>
 			shrinkAlphabet(
 					ProgressSpawner progress_spawner,
 					Consumer<String> logger,
 					TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis,
-					Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+					Cursable<K> data,
+					Function<K, Tuple<SymbolAbove>> get_above,
+					Function<K, Tuple<SymbolBelow>> get_below,
 					Set<Tael<SymbolAbove, SymbolBelow>> initial_alphabet ) {
 
 		HashSet<Tael<SymbolAbove, SymbolBelow>> alphabet =
@@ -103,16 +104,15 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			logger.accept( "" );
 			logger.accept( " Shrinking the alphabet" );
 		}
-		try ( BasicRook rook = new BasicRook() ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetBuilder::shrinkAlphabet" )
 					.target( initial_alphabet.size( ) );
 
-			
-			for ( Tael<SymbolAbove, SymbolBelow> candidate :
-				analysis.getPairs( ).reverse( ).asIterable( ) ) {
-				if (! alphabet.contains( candidate ) ) {
+			for ( Tael<SymbolAbove, SymbolBelow> candidate : analysis.getPairs( )
+					.reverse( ).asIterable( ) ) {
+				if ( !alphabet.contains( candidate ) ) {
 					continue;
 				}
 				alphabet.remove( candidate );
@@ -121,7 +121,8 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 						null,
 						min_above, max_above,
 						min_below, max_below,
-						data, alphabet::contains,
+						data, get_above, get_below,
+						alphabet::contains,
 						analysis.getTotal( ), analysis.getTotalAligneable( ) );
 				spawn.step( 1 );
 
@@ -132,31 +133,31 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					 * removing this pair is harmless
 					 */
 					remove_this = true;
-					
+
 				}
-					if ( a_printer != null && b_printer != null ) {
-						int total_candidates = analysis.getTotalNumberOfCandidatePairs( );
-						StringBuilder sb = new StringBuilder( );
-						if (remove_this)
+				if ( a_printer != null && b_printer != null ) {
+					int total_candidates = analysis.getTotalNumberOfCandidatePairs( );
+					StringBuilder sb = new StringBuilder( );
+					if ( remove_this )
 						sb.append( "Removed element: " );
-						else
-							sb.append( "Will not remove element: " );
-						sb.append( TupleAlignmentAlphabetBuilderTools
-								.tuple_printer( a_printer, candidate.getAbove( ) ) );
-						sb.append( " >-> " );
-						sb.append( TupleAlignmentAlphabetBuilderTools
-								.tuple_printer( b_printer, candidate.getBelow( ) ) );
-						sb.append( "   Data coverage: " );
-						sb.append( PercentPrinter.printRatioAsPercent( 4,
-								analysis.getTotal( ) - not_aligneable, analysis.getTotal( ) ) );
-						sb.append( " Using " );
-						sb.append( alphabet.size( ) );
-						sb.append( " a/b pairs (" );
-						sb.append( PercentPrinter.printRatioAsPercent( 4,
-								alphabet.size( ), total_candidates ) );
-						sb.append( ")." );
-						logger.accept( sb.toString( ) );
-					}
+					else
+						sb.append( "Will not remove element: " );
+					sb.append( TupleAlignmentAlphabetBuilderTools
+							.tuple_printer( a_printer, candidate.getAbove( ) ) );
+					sb.append( " >-> " );
+					sb.append( TupleAlignmentAlphabetBuilderTools
+							.tuple_printer( b_printer, candidate.getBelow( ) ) );
+					sb.append( "   Data coverage: " );
+					sb.append( PercentPrinter.printRatioAsPercent( 4,
+							analysis.getTotal( ) - not_aligneable, analysis.getTotal( ) ) );
+					sb.append( " Using " );
+					sb.append( alphabet.size( ) );
+					sb.append( " a/b pairs (" );
+					sb.append( PercentPrinter.printRatioAsPercent( 4,
+							alphabet.size( ), total_candidates ) );
+					sb.append( ")." );
+					logger.accept( sb.toString( ) );
+				}
 				if ( remove_this ) {
 					continue;
 				}
@@ -168,12 +169,14 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 
 	private double threshold = 0.01;
 
-	private Set<Tael<SymbolAbove, SymbolBelow>>
+	private <K> Set<Tael<SymbolAbove, SymbolBelow>>
 			growAlphabetQuickly(
 					ProgressSpawner progress_spawner,
 					Consumer<String> open_logger,
 					TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis,
-					Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data ) {
+					Cursable<K> data,
+					Function<K, Tuple<SymbolAbove>> get_above,
+					Function<K, Tuple<SymbolBelow>> get_below ) {
 		HashSet<Tael<SymbolAbove, SymbolBelow>> alphabet =
 				new HashSet<>( );
 
@@ -202,7 +205,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			}
 		}
 
-		try ( BasicRook rook = new BasicRook() ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 			int total_candidates = analysis.getTotalNumberOfCandidatePairs( );
 			int batch_size = 0;
 
@@ -226,7 +229,8 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 							null,
 							min_above, max_above,
 							min_below, max_below,
-							data, alphabet::contains,
+							data, get_above, get_below,
+							alphabet::contains,
 							analysis.getTotal( ), analysis.getTotalAligneable( ) );
 					batch_size = 0;
 				}
@@ -257,7 +261,7 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					sb.append( PercentPrinter.printRatioAsPercent( 4,
 							alphabet.size( ), total_candidates ) );
 					sb.append( ")." );
-					open_logger.accept(  sb.toString( ) );
+					open_logger.accept( sb.toString( ) );
 				}
 				if ( ( 1.0 * not_aligneable )
 						/ ( 1.0 * analysis.getTotalAligneable( ) ) < threshold ) {
@@ -268,23 +272,28 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 		return alphabet;
 	}
 
-	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
-			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+	public <K> TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
+			Cursable<K> data,
+			Function<K, Tuple<SymbolAbove>> get_above,
+			Function<K, Tuple<SymbolBelow>> get_below,
 			ProgressSpawner progress_spawner ) {
 		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
 				new TupleAlignmentAlphabet<SymbolAbove, SymbolBelow>( );
-		try ( BasicRook rook = new BasicRook() ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 			Consumer<String> open_logger = logger.get( rook );
 			TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis =
-					new TupleAlignmentAlphabetAnalysis<>( 
+					new TupleAlignmentAlphabetAnalysis<>(
 							min_above, max_above, min_below, max_below );
-			analysis.computeCompleteAlphabet( progress_spawner, data );
+			analysis.computeCompleteAlphabet( progress_spawner, data, get_above,
+					get_below );
 			analysis.print( open_logger, a_printer, b_printer );
 
 			Set<Tael<SymbolAbove, SymbolBelow>> alphabet =
-					growAlphabetQuickly( progress_spawner, open_logger, analysis, data );
+					growAlphabetQuickly( progress_spawner, open_logger, analysis, data,
+							get_above, get_below );
 			if ( shrink_alphabet ) {
-				alphabet = shrinkAlphabet( progress_spawner, open_logger, analysis, data, alphabet );
+				alphabet = shrinkAlphabet( progress_spawner, open_logger, analysis,
+						data, get_above, get_below, alphabet );
 			}
 			for ( Tael<SymbolAbove, SymbolBelow> x : alphabet ) {
 				result.add( x );
@@ -296,7 +305,8 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 	public Cursor<Tael<SymbolAbove, SymbolBelow>> greedy(
 			TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> analysis ) {
 		int total_symbols = analysis.getTotalNumberOfCandidatePairs( );
-		KnittingTuple<TupleValue<SymbolAbove>> symbols = analysis.getSymbolsAbove( );
+		KnittingTuple<TupleValue<SymbolAbove>> symbols =
+				analysis.getSymbolsAbove( );
 		return new Cursor<Tael<SymbolAbove, SymbolBelow>>( ) {
 
 			int symbol = 0;
@@ -304,18 +314,18 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 			int size = min_below;
 
 			int rank = 0;
-			
+
 			int retrieved = 0;
-			
+
 			@Override
 			public Tael<SymbolAbove, SymbolBelow> next( )
 					throws EndOfCursorException {
-				if (retrieved >= total_symbols) {
-					throw EndOfCursorException.neo();
+				if ( retrieved >= total_symbols ) {
+					throw EndOfCursorException.neo( );
 				}
 				Tael<SymbolAbove, SymbolBelow> result = null;
 				for ( ; result == null; ) {
-					
+
 					if ( size > max_below ) {
 						rank++;
 						size = min_below;
@@ -325,11 +335,13 @@ public class TupleAlignmentAlphabetGreedyBuilder<SymbolAbove, SymbolBelow>
 					KnittingTuple<TupleValue<SymbolBelow>> symbolsBelow =
 							analysis.getSymbolsBelow( symbolAbove, size );
 					if ( symbolsBelow.size( ) > rank ) {
-						if (symbolAbove.size( ) != 1) {
+						if ( symbolAbove.size( ) != 1 ) {
 							throw new IllegalStateException( );
 						}
-						result = new Tael<>( KnittingTuple.wrap( symbolAbove ).asTupleValue( ),
-								KnittingTuple.wrap( symbolsBelow.get( rank ) ).asTupleValue( ) );
+						result =
+								new Tael<>( KnittingTuple.wrap( symbolAbove ).asTupleValue( ),
+										KnittingTuple.wrap( symbolsBelow.get( rank ) )
+												.asTupleValue( ) );
 					}
 					if ( symbol + 1 == symbols.size( ) ) {
 						symbol = 0;

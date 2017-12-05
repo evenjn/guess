@@ -20,9 +20,9 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
@@ -37,15 +37,16 @@ public class BlindMapleTrainer<I, O> implements
 	}
 
 	@Override
-	public Function<Tuple<I>, Tuple<O>> train(
+	public <K> Function<Tuple<I>, Tuple<O>> train(
 			ProgressSpawner progress_spawner,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
+			TrainingData<K, Tuple<I>,  Tuple<O>> data ) {
+
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
-		KnittingCursable.wrap( data )
-		.flatmapCursable( d -> KnittingTuple.wrap( d.back( ) ).asKnittingCursable( ) )
-		.consume( h -> fd );
+		KnittingCursable.wrap( data.getData( ) )
+				.flatmapCursable( d -> KnittingTuple.wrap( data.getOutput().apply( d ) )
+						.asKnittingCursable( ) )
+				.consume( h -> fd );
 		O mostFrequent = fd.getMostFrequent( );
-						
 
 		return x -> new Tuple<O>( ) {
 

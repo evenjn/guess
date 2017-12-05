@@ -27,49 +27,52 @@ import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
-import org.github.evenjn.guess.Libra;
+import org.github.evenjn.guess.DiscriminativeModel;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.NumericLogarithm;
 
-public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
+public class M12Libra<I, O> implements
+		DiscriminativeModel<Tuple<I>, Tuple<O>> {
 
 	private Markov core;
 
 	private TupleAlignmentAlphabet<I, O> coalignment_alphabet;
+
 	private int max_length_above = 0;
+
 	private int max_length_below = 0;
+
 	private int total_number_of_edges;
 
 	public M12Libra(
 			TupleAlignmentAlphabet<I, O> coalignment_alphabet,
-			Markov hmm ) {
+			Markov hmm) {
 		core = hmm;
 		this.coalignment_alphabet = coalignment_alphabet;
 		buffer_states = new double[hmm.number_of_states];
 	}
-	
-	public double weigh(Bi<
-			Tuple<I>,
-			Tuple<O> > bi ) {
-		Tuple<O> below = bi.back( );
-		Tuple<I> above = bi.front( );
+
+	public double weigh(
+			Tuple<I> input,
+			Tuple<O> output ) {
+		Tuple<O> below = output;
+		Tuple<I> above = input;
 		boolean must_update_alpha = false;
 		boolean must_update_eb = false;
-		if (above.size( ) > max_length_above) { 
+		if ( above.size( ) > max_length_above ) {
 			max_length_above = above.size( );
 			must_update_alpha = true;
 		}
-		if (below.size( ) > max_length_below) { 
+		if ( below.size( ) > max_length_below ) {
 			max_length_below = below.size( );
 			must_update_alpha = true;
 		}
-		
+
 		TupleAlignmentGraph observed;
 		try {
 			observed = TupleAlignmentGraphFactory.graph(
-					(a, b) -> coalignment_alphabet.encode( a,  b ),
+					( a, b ) -> coalignment_alphabet.encode( a, b ),
 					above,
 					below,
 					coalignment_alphabet.getMinAbove( ),
@@ -80,12 +83,11 @@ public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
 		catch ( NotAlignableException e ) {
 			return 0d;
 		}
-		
 
 		Iterator<TupleAlignmentNode> it = observed.forward( );
 		while ( it.hasNext( ) ) {
 			TupleAlignmentNode cell = it.next( );
-			if ( cell.number_of_incoming_edges > total_number_of_edges) {
+			if ( cell.number_of_incoming_edges > total_number_of_edges ) {
 				total_number_of_edges = cell.number_of_incoming_edges;
 				must_update_eb = true;
 			}
@@ -96,12 +98,10 @@ public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
 		}
 
 		if ( must_update_alpha ) {
-			alpha = new double
-					[max_length_above + 1]
-					[max_length_below + 1]
-					[core.number_of_states];
+			alpha = new double[max_length_above + 1][max_length_below
+					+ 1][core.number_of_states];
 		}
-		
+
 		forward( observed );
 		double max = NumericLogarithm.smallLogValue;
 		for ( int s = 0; s < core.number_of_states; s++ ) {
@@ -140,7 +140,8 @@ public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
 		while ( it.hasNext( ) ) {
 			TupleAlignmentNode cell = it.next( );
 			final int edges = cell.number_of_incoming_edges;
-			for ( int destination_s = 0; destination_s < core.number_of_states; destination_s++ ) {
+			for ( int destination_s =
+					0; destination_s < core.number_of_states; destination_s++ ) {
 				double edge_buffer_max = NumericLogarithm.smallLogValue;
 				for ( int edge = 0; edge < edges; edge++ ) {
 					final int x = cell.incoming_edges[edge][0];
@@ -152,7 +153,8 @@ public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
 					}
 					else {
 						double max = NumericLogarithm.smallLogValue;
-						for ( int source_s = 0; source_s < core.number_of_states; source_s++ ) {
+						for ( int source_s =
+								0; source_s < core.number_of_states; source_s++ ) {
 							final double v = elnproduct(
 									alpha[x][y][source_s],
 									core.transition_table[source_s][destination_s] );
@@ -163,7 +165,8 @@ public class M12Libra<I, O> implements Libra<Bi<Tuple<I>, Tuple<O>>> {
 						}
 						cost = elnsum( max, buffer_states, core.number_of_states );
 					}
-					cost = elnproduct( cost, core.emission_table[destination_s][encoded] );
+					cost =
+							elnproduct( cost, core.emission_table[destination_s][encoded] );
 					buffer_total_edges[edge] = cost;
 					if ( edge_buffer_max < cost ) {
 						edge_buffer_max = cost;

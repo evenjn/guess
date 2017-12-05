@@ -25,12 +25,12 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetGreedyBuilder;
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.file.FileFoolWriter;
 import org.github.evenjn.guess.Trainer;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.benchmark.Benchmark;
 import org.github.evenjn.guess.benchmark.BenchmarkHandicap;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.guess.m12.visible.M12VisibleTrainingPlan;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
@@ -66,9 +66,9 @@ public class TestM12VisibleClassicMapleTrainer {
 	/** TRAINER */
 	private final static String trainer_label = "Maple: M12 visible classic viterbi";
 
-	private final static M12VisibleTrainingPlan<Tuple<Boolean>, Boolean, Boolean>
+	private final static <K> M12VisibleTrainingPlan<Tuple<Boolean>, Boolean, Boolean>
 			getTrainingPlan(
-					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> training_data  ) {
 
 		M12VisibleTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
 				new M12VisibleTrainingPlan<>( );
@@ -81,7 +81,7 @@ public class TestM12VisibleClassicMapleTrainer {
 		plan.setPrinters(
 				x -> x ? "1" : "0",
 				x -> x ? "1" : "0" );
-		plan.setTrainingData( data );
+		plan.setTrainingData2( training_data );
 		plan.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
 		plan.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
 		plan.setProjector( x -> x );
@@ -96,10 +96,11 @@ public class TestM12VisibleClassicMapleTrainer {
 		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
 			
 			@Override
-			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
-					ProgressSpawner progress_spawner,
-					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-				M12VisibleTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan = getTrainingPlan( data );
+			public <K> Function<Tuple<Boolean>, Tuple<Boolean>> train(
+					ProgressSpawner progress_spawner, 
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> training_data  ) {
+				M12VisibleTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
+						getTrainingPlan( training_data );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
 				return fool.open( created, plan ).asMapleClassic( );
 			}

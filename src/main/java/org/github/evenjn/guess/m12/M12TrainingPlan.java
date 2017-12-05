@@ -3,10 +3,9 @@ package org.github.evenjn.guess.m12;
 import java.util.function.Function;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetBuilder;
-import org.github.evenjn.lang.Bi;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.lang.Kloneable;
 import org.github.evenjn.lang.Tuple;
-import org.github.evenjn.yarn.Cursable;
 
 public abstract class M12TrainingPlan<I, P, O>
 		extends M12Schema<I, P, O> {
@@ -23,7 +22,7 @@ public abstract class M12TrainingPlan<I, P, O>
 
 	protected M12QualityChecker<P, O> checker;
 
-	protected Cursable<Bi<I, Tuple<O>>> training_data;
+	private TrainingData<?, Tuple<P>, Tuple<O>> training_data;
 
 	public Object clone( )
 			throws CloneNotSupportedException {
@@ -50,9 +49,10 @@ public abstract class M12TrainingPlan<I, P, O>
 		return checker;
 	}
 
-	public Cursable<Bi<I, Tuple<O>>> getTrainingData( ) {
+	public TrainingData<?, Tuple<P>, Tuple<O>> getTrainingData2( ) {
 		return training_data;
 	}
+
 
 	public TupleAlignmentAlphabetBuilder<P, O>
 			getTupleAlignmentAlphabetBuilder( ) {
@@ -74,37 +74,30 @@ public abstract class M12TrainingPlan<I, P, O>
 		}
 	}
 
-	public M12TrainingPlan<I, P, O>
-			setMinMaxBelow( int min, int max ) {
+	public void setMinMaxBelow( int min, int max ) {
 		this.min_below = min;
 		this.max_below = max;
-		return this;
 	}
 
-	public M12TrainingPlan<I, P, O> setPrinters(
+	public void setPrinters(
 			Function<P, String> a_printer,
 			Function<O, String> b_printer ) {
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
-		return this;
 	}
 
-	public M12TrainingPlan<I, P, O> setQualityChecker(
+	public void setQualityChecker(
 			M12QualityChecker<P, O> checker ) {
 		this.checker = checker;
-		return this;
 	}
 
-	public M12TrainingPlan<I, P, O>
-			setTrainingData( Cursable<Bi<I, Tuple<O>>> training_data ) {
+	public void setTrainingData2( TrainingData<?, Tuple<P>, Tuple<O>> training_data ) {
 		this.training_data = training_data;
-		return this;
 	}
 
-	public M12TrainingPlan<I, P, O> setTupleAlignmentAlphabetBuilder(
+	public void setTupleAlignmentAlphabetBuilder(
 			TupleAlignmentAlphabetBuilder<P, O> builder ) {
 		this.builder = builder;
-		return this;
 	}
 
 }

@@ -3,7 +3,6 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
 import org.github.evenjn.lang.Tuple;
@@ -14,8 +13,10 @@ public class TupleAlignmentAlphabetPlaceholder<Above, Below>
 		TupleAlignmentAlphabetBuilder<Above, Below> {
 
 	@Override
-	public TupleAlignmentAlphabet<Above, Below> build(
-			Cursable<Bi<Tuple<Above>, Tuple<Below>>> data,
+	public <K> TupleAlignmentAlphabet<Above, Below> build(
+			Cursable<K> data,
+			Function<K, Tuple<Above>> get_above,
+			Function<K, Tuple<Below>> get_below,
 			ProgressSpawner progress_spawner ) {
 		throw new IllegalStateException( "Operation not supported." );
 	}

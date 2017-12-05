@@ -7,11 +7,7 @@ import org.github.evenjn.guess.m12.baumwelch.M12BWFileTrainer;
 import org.github.evenjn.guess.m12.baumwelch.M12BaumWelchTrainingPlan;
 import org.github.evenjn.guess.m12.visible.M12VFileTrainer;
 import org.github.evenjn.guess.m12.visible.M12VisibleTrainingPlan;
-import org.github.evenjn.knit.BiTray;
-import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
-import org.github.evenjn.lang.Tuple;
 
 public class M12Fool {
 
@@ -85,11 +81,11 @@ public class M12Fool {
 				plan.getAboveDecoder( ),
 				plan.getBelowDecoder( ) );
 
-		KnittingCursable<Bi<Tuple<P>, Tuple<O>>> projected_data =
-				KnittingCursable.wrap( plan.getTrainingData( ) ).map( x -> BiTray
-						.nu( plan.getProjector( ).apply( x.front( ) ), x.back( ) ) );
-		
-		trainer.train( progress_spawner, rw, projected_data );
+		trainer.train(
+				progress_spawner,
+				rw,
+				plan.getTrainingData2( )
+				);
 		return path;
 	}
 
@@ -114,11 +110,11 @@ public class M12Fool {
 				plan.getSeed( ),
 				plan.getNumberOfStates( ) );
 
-		KnittingCursable<Bi<Tuple<P>, Tuple<O>>> projected_data =
-				KnittingCursable.wrap( plan.getTrainingData( ) ).map( x -> BiTray
-						.nu( plan.getProjector( ).apply( x.front( ) ), x.back( ) ) );
-		
-		trainer.train( progress_spawner, rw, projected_data );
+		trainer.train(
+				progress_spawner,
+				rw,
+				plan.getTrainingData2( )
+				);
 		return path;
 	}
 }

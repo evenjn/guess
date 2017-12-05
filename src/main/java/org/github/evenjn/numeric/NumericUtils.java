@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 import org.github.evenjn.knit.BiTray;
 import org.github.evenjn.knit.KnittingCursor;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.EndOfCursorException;
 
@@ -95,7 +94,7 @@ public class NumericUtils {
 	}
 
 
-	public static <I> Bi<I, Double> argmax( Function<I, Double> function, Cursor<I> set ) {
+	public static <I> BiTray<I, Double> argmax( Function<I, Double> function, Cursor<I> set ) {
 		double max = 0d;
 		I result = null;
 		for ( I input : KnittingCursor.wrap( set ).once( ) ) {
@@ -208,16 +207,16 @@ public class NumericUtils {
 	 * 
 	 * 
 	 */
-	public static Iterable<Bi<Integer, Integer>> birange( final int max ) {
-		return new Iterable<Bi<Integer, Integer>>( ) {
+	public static Iterable<BiTray<Integer, Integer>> birange( final int max ) {
+		return new Iterable<BiTray<Integer, Integer>>( ) {
 
 			@Override
-			public Iterator<Bi<Integer, Integer>> iterator( ) {
+			public Iterator<BiTray<Integer, Integer>> iterator( ) {
 				final BiTray<Integer, Integer> bi = BiTray.nu( 0, -1 );
-				return asIterator( new Cursor<Bi<Integer, Integer>>( ) {
+				return asIterator( new Cursor<BiTray<Integer, Integer>>( ) {
 
 					@Override
-					public Bi<Integer, Integer> next( )
+					public BiTray<Integer, Integer> next( )
 							throws EndOfCursorException {
 						int first = bi.front( );
 						int second = bi.back( );

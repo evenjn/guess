@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.function.BiFunction;
 
+import org.github.evenjn.align.AlignmentElement;
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
 import org.github.evenjn.align.graph.NotAlignableException;
@@ -31,12 +32,23 @@ import org.github.evenjn.align.graph.TupleAlignmentGraph;
 import org.github.evenjn.align.graph.TupleAlignmentGraphFactory;
 import org.github.evenjn.align.graph.TupleAlignmentNode;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.knit.BiValue;
+import org.github.evenjn.knit.BiValueTray;
 import org.github.evenjn.knit.KnittingTuple;
+import org.github.evenjn.lang.Equivalencer;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.Cubix;
 import org.github.evenjn.numeric.DenseCubix;
 import org.github.evenjn.numeric.NumericLogarithm;
+
+class AlignmentElementImpl<I, O> extends BiValueTray<I, O> implements AlignmentElement<I, O> {
+
+	protected AlignmentElementImpl(I front, O back,
+			Equivalencer<I, Object> front_equivalencer,
+			Equivalencer<O, Object> back_equivalencer) {
+		super( front, back, front_equivalencer, back_equivalencer );
+	}
+	
+}
 
 public class M12Aligner<I, O> implements
 		TupleAligner<I, O> {
@@ -61,7 +73,7 @@ public class M12Aligner<I, O> implements
 		int state;
 	}
 
-	public KnittingTuple<BiValue<Integer, Integer>> align(
+	public KnittingTuple<AlignmentElement<Integer, Integer>> align(
 			Tuple<I> above,
 			Tuple<O> below ) {
 
@@ -83,7 +95,7 @@ public class M12Aligner<I, O> implements
 			final Integer front = length_above;
 			final Integer back = length_below;
 			return KnittingTuple
-					.on( BiValue.nu(
+					.on( new AlignmentElementImpl<>(
 							front,
 							back,
 							KnittingTuple.getNullEquivalencer( ),
@@ -243,13 +255,13 @@ public class M12Aligner<I, O> implements
 		 */
 		int state = best_final_state;
 
-		Vector<BiValue<Integer, Integer>> result = new Vector<>( );
+		Vector<AlignmentElement<Integer, Integer>> result = new Vector<>( );
 		while ( length_above != 0 || length_below != 0 ) {
 			Source source =
 					all_pointers.get( state ).apply( length_above, length_below );
 			final Integer front = length_above - source.x;
 			final Integer back = length_below - source.y;
-			result.add( BiValue.nu(
+			result.add( new AlignmentElementImpl<>(
 					front,
 					back,
 					KnittingTuple.getNullEquivalencer( ),

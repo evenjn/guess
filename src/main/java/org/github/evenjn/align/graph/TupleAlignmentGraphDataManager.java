@@ -21,13 +21,13 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingCursor;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
@@ -81,7 +81,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 			int min_below,
 			int max_below,
 			Ring<Consumer<String>> putter_coalignment_graphs,
-			Cursable<String> reader_coalignment_graphs ) {
+			Cursable<String> reader_coalignment_graphs) {
 		this.min_above = min_above;
 		this.max_above = max_above;
 		this.min_below = min_below;
@@ -112,7 +112,8 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 	}
 
 	/**
-	 * @return the length of the longest tuple "at the front" observed in the data.
+	 * @return the length of the longest tuple "at the front" observed in the
+	 *         data.
 	 */
 	public int getMaxLenghtFront( ) {
 		return record_max_length_front;
@@ -133,24 +134,28 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 		return record_max_number_of_edges;
 	}
 
-	public TupleAlignmentGraphDataManager<Above, Below> load(
-			Cursable<Bi<Tuple<Above>, Tuple<Below>>> data,
+	public <K> TupleAlignmentGraphDataManager<Above, Below> load(
+			Cursable<K> data,
+			Function<K, Tuple<Above>> get_above,
+			Function<K, Tuple<Below>> get_below,
 			BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kc = KnittingCursable.wrap( data );
-		try ( BasicRook rook = new BasicRook() ) {
+		KnittingCursable<K> kc = KnittingCursable.wrap( data );
+		try ( BasicRook rook = new BasicRook( ) ) {
 			Progress spawn =
 					SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 							"prepareGraphs" );
-			exposed_graphs = prepareGraphs( kc, pair_encoder, spawn );
+			exposed_graphs =
+					prepareGraphs( kc, get_above, get_below, pair_encoder, spawn );
 		}
 		return this;
 	}
 
 	private boolean limits_are_computed = false;
-	
-	private void computeLimits( Progress progress, KnittingCursable<TupleAlignmentGraph> data ) {
-		try ( BasicRook rook = new BasicRook() ) {
+
+	private void computeLimits( Progress progress,
+			KnittingCursable<TupleAlignmentGraph> data ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 			for ( TupleAlignmentGraph g : data.pull( rook ).once( ) ) {
 				int la = g.la( );
 				int lb = g.lb( );
@@ -179,35 +184,36 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 		limits_are_computed = true;
 	}
 
-	
-	private
+	private <K>
 			KnittingCursable<TupleAlignmentGraph>
 			prepareGraphs(
-					KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> data,
+					KnittingCursable<K> data,
+					Function<K, Tuple<Above>> get_above,
+					Function<K, Tuple<Below>> get_below,
 					BiFunction<Tuple<Above>, Tuple<Below>, Integer> pair_encoder,
 					Progress progress ) {
-		OptionalMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph> optmap =
-				new OptionalMap<Bi<Tuple<Above>, Tuple<Below>>, TupleAlignmentGraph>( ) {
+		OptionalMap<K, TupleAlignmentGraph> optmap =
+				new OptionalMap<K, TupleAlignmentGraph>( ) {
 
 					@Override
 					public Optional<TupleAlignmentGraph> get(
-							Bi<Tuple<Above>, Tuple<Below>> x )  {
+							K x ) {
 						try {
-							return Optional.of(TupleAlignmentGraphFactory.graph(
+							return Optional.of( TupleAlignmentGraphFactory.graph(
 									pair_encoder,
-									x.front( ),
-									x.back( ),
+									get_above.apply( x ),
+									get_below.apply( x ),
 									min_above,
 									max_above,
 									min_below,
-									max_below ));
+									max_below ) );
 						}
 						catch ( NotAlignableException e ) {
 							return Optional.empty( );
 						}
 					}
 				};
-				
+
 		if ( null != putter_coalignment_graphs
 				|| null == reader_coalignment_graphs ) {
 			/*
@@ -225,11 +231,11 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 					progress_target = data.peek( x -> spawn.step( 1 ) ).count( );
 				}
 				progress.target( 2 * progress_target );
-				
+
 				progress.info( "Computing limits." );
 				computeLimits( progress,
 						data.peek( x -> progress.step( 1 ) ).flatmapOptional( optmap ) );
-				
+
 				progress.info( "Caching graphs." );
 				KnittingCursable<TupleAlignmentGraph> graphs_to_write = data
 						.peek( x -> progress.step( 1 ) )
@@ -241,7 +247,7 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 				header.append( record_max_length_back );
 				header.append( "," );
 				header.append( record_max_number_of_edges );
-				try ( BasicRook rook = new BasicRook() ) {
+				try ( BasicRook rook = new BasicRook( ) ) {
 					KnittingCursor.on( header.toString( ) ).append(
 							graphs_to_write
 									.pull( rook )
@@ -255,16 +261,15 @@ public class TupleAlignmentGraphDataManager<Above, Below> {
 
 		if ( null != reader_coalignment_graphs ) {
 
+			Pattern splitter = Pattern.compile( "," );
 
-				Pattern splitter = Pattern.compile( "," );
-
-				String[] split = splitter.split(
-						KnittingCursable.wrap( reader_coalignment_graphs ).head( 0, 1 )
-								.one( ) );
-				record_max_length_front = Integer.parseInt( split[0] );
-				record_max_length_back = Integer.parseInt( split[1] );
-				record_max_number_of_edges = Integer.parseInt( split[2] );
-				limits_are_computed = true;
+			String[] split = splitter.split(
+					KnittingCursable.wrap( reader_coalignment_graphs ).head( 0, 1 )
+							.one( ) );
+			record_max_length_front = Integer.parseInt( split[0] );
+			record_max_length_back = Integer.parseInt( split[1] );
+			record_max_number_of_edges = Integer.parseInt( split[2] );
+			limits_are_computed = true;
 			/*
 			 * de-serialize them from the reader.
 			 */

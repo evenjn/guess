@@ -5,15 +5,17 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
 
-public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBelow> implements TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow>{
+public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBelow>
+		implements
+		TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> {
 
 	private TupleAlignmentAlphabetBuilder<SymbolAbove, SymbolBelow> wrapped;
+
 	private Function<Tuple<SymbolAbove>, Iterable<Tuple<SymbolAbove>>> ascendants_provider;
 
 	private TupleAlignmentAlphabetBuilderAscendantWrapper(
@@ -31,21 +33,27 @@ public class TupleAlignmentAlphabetBuilderAscendantWrapper<SymbolAbove, SymbolBe
 				builder, demux );
 
 	}
-	
+
 	@Override
-	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
-			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+	public <K> TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
+			Cursable<K> data,
+			Function<K, Tuple<SymbolAbove>> get_above,
+			Function<K, Tuple<SymbolBelow>> get_below,
 			ProgressSpawner progress_spawner ) {
-		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build = wrapped.build( data, progress_spawner );
-		
-		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result = new TupleAlignmentAlphabet<>( );
-		for (int z = 0; z < build.size( ); z++) {
+		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build =
+				wrapped.build( data, get_above, get_below, progress_spawner );
+
+		TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> result =
+				new TupleAlignmentAlphabet<>( );
+		for ( int z = 0; z < build.size( ); z++ ) {
 			Tael<SymbolAbove, SymbolBelow> pp =
 					build.get( z );
-			Iterable<Tuple<SymbolAbove>> ascendants = ascendants_provider.apply( pp.getAbove( ) );
-			for (Tuple<SymbolAbove> ascendant : ascendants) {
+			Iterable<Tuple<SymbolAbove>> ascendants =
+					ascendants_provider.apply( pp.getAbove( ) );
+			for ( Tuple<SymbolAbove> ascendant : ascendants ) {
 				Tael<SymbolAbove, SymbolBelow> nu =
-						new Tael<>( KnittingTuple.wrap( ascendant ).asTupleValue( ), pp.getBelow( ) );
+						new Tael<>( KnittingTuple.wrap( ascendant ).asTupleValue( ),
+								pp.getBelow( ) );
 				result.add( nu );
 			}
 		}

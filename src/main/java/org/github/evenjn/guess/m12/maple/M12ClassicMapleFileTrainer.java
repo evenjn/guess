@@ -20,14 +20,13 @@ package org.github.evenjn.guess.m12.maple;
 import java.util.function.Supplier;
 
 import org.github.evenjn.file.FileFool;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.m12.M12FileTrainer;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
-import org.github.evenjn.yarn.Cursable;
 
 public class M12ClassicMapleFileTrainer<I, O> {
 
@@ -38,14 +37,14 @@ public class M12ClassicMapleFileTrainer<I, O> {
 		this.file_trainer = blueprint.get( );
 	}
 
-	public M12ClassicMaple<I, O> train(
+	public <K> M12ClassicMaple<I, O> train(
 			ProgressSpawner progress_spawner,
 			FileFool filefool,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
-		try ( BasicRook rook = new BasicRook() ) {
+			TrainingData<K, Tuple<I>, Tuple<O>> training_data ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 			Progress progress = SafeProgressSpawner
 					.safeSpawn( rook, progress_spawner, "M12MapleFileTrainer::train" );
-			file_trainer.train( progress, filefool, data );
+			file_trainer.train( progress, filefool, training_data );
 			M12ClassicMaple<I, O> maple = M12ClassicMapleFileDeserializer.deserialize(
 					progress_spawner,
 					file_trainer.getDeserializerAbove( ),

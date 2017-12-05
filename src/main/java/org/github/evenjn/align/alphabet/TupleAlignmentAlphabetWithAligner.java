@@ -20,14 +20,13 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.AlignmentElement;
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
@@ -66,10 +65,12 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 		this.b_printer = b_printer;
 	}
 
-	public TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
-			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+	public <K> TupleAlignmentAlphabet<SymbolAbove, SymbolBelow> build(
+			Cursable<K> data,
+			Function<K, Tuple<SymbolAbove>> get_above,
+			Function<K, Tuple<SymbolBelow>> get_below,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> kd =
+		KnittingCursable<K> kd =
 				KnittingCursable.wrap( data );
 		try ( BasicRook rook = new BasicRook() ) {
 			Consumer<String> open_logger = null;
@@ -84,17 +85,17 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 			spawn.info( "Computing dataset size." );
 			spawn.target( kd.count( ) );
 			spawn.info( "Collecting alphabet elements." );
-			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : kd.pull( rook )
+			for ( K datum : kd.pull( rook )
 					.once( ) ) {
 
 				spawn.step( 1 );
 
-				Tuple<BiValue<Integer, Integer>> alignment =
-						aligner.align( datum.front( ), datum.back( ) );
+				Tuple<AlignmentElement<Integer, Integer>> alignment =
+						aligner.align( get_above.apply( datum ), get_below.apply( datum ));
 				KnittingTuple<Tael<SymbolAbove, SymbolBelow>> localAlphabet =
 						KnittingTuple.wrap(
 								Tael.tael(
-										datum.front( ), datum.back( ), alignment ) );
+										get_above.apply( datum ), get_below.apply( datum ), alignment ) );
 				for ( Tael<SymbolAbove, SymbolBelow> pp : localAlphabet
 						.asIterable( ) ) {
 					result.add( pp );
@@ -103,10 +104,10 @@ public class TupleAlignmentAlphabetWithAligner<SymbolAbove, SymbolBelow>
 
 					open_logger.accept( "Possible degenerate alignment: " +
 							TupleAlignmentAlphabetBuilderTools.tuple_printer( b_printer,
-									datum.back( ) )
+									get_below.apply( datum ) )
 							+ " "
 							+ TupleAlignmentAlphabetBuilderTools.tuple_printer( a_printer,
-									datum.front( ) ) );
+									get_above.apply( datum ) ) );
 				}
 			}
 			return result;

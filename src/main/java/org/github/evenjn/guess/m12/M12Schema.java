@@ -59,24 +59,21 @@ public class M12Schema<I, P, O> implements
 		}
 	}
 
-	public M12Schema<I, P, O> setAboveCoDec(
+	public void setAboveCoDec(
 			Function<P, String> encoder,
 			Function<String, P> decoder ) {
 		this.a_serializer = encoder;
 		this.a_deserializer = decoder;
-		return this;
 	}
 
-	public M12Schema<I, P, O> setBelowCoDec(
+	public void setBelowCoDec(
 			Function<O, String> encoder,
 			Function<String, O> decoder ) {
 		this.b_serializer = encoder;
 		this.b_deserializer = decoder;
-		return this;
 	}
 
-	public M12Schema<I, P, O> setProjector( Function<I, Tuple<P>> projector ) {
+	public void setProjector( Function<I, Tuple<P>> projector ) {
 		this.projector = projector;
-		return this;
 	}
 }

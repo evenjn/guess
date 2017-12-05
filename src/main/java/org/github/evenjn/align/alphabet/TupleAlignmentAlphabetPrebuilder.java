@@ -23,7 +23,6 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
 import org.github.evenjn.lang.Tuple;
@@ -36,13 +35,15 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 	TupleAlignmentAlphabet<Above, Below> result =
 			new TupleAlignmentAlphabet<Above, Below>( );
 	
-	public TupleAlignmentAlphabetPrebuilder(
-			Iterable<Bi<Tuple<Above>, Tuple<Below>>> data ) {
-		for (Bi<Tuple<Above>, Tuple<Below>> d : data) {
+	public <K> TupleAlignmentAlphabetPrebuilder(
+			Iterable<K> data,
+			Function<K, Tuple<Above>> get_above,
+			Function<K, Tuple<Below>> get_below ) {
+		for (K d : data ) {
 			Tael<Above, Below> pair
-			= new Tael<>( KnittingTuple.wrap( KnittingTuple.wrap( d.front( ) )
+			= new Tael<>( KnittingTuple.wrap( KnittingTuple.wrap( get_above.apply( d ))
 					.asKnittingCursor( ).collect( new Vector<>( ) ) ).asTupleValue( ),
-					KnittingTuple.wrap( KnittingTuple.wrap( d.back( ) )
+					KnittingTuple.wrap( KnittingTuple.wrap( get_below.apply( d ) )
 							.asKnittingCursor( ).collect( new Vector<>( ) ) ).asTupleValue( ));
 			result.add( pair );
 		}
@@ -62,8 +63,10 @@ public class TupleAlignmentAlphabetPrebuilder<Above, Below>
 	}
 
 	@Override
-	public TupleAlignmentAlphabet<Above, Below> build(
-			Cursable<Bi<Tuple<Above>, Tuple<Below>>> data,
+	public <K> TupleAlignmentAlphabet<Above, Below> build(
+			Cursable<K> data,
+			Function<K, Tuple<Above>> get_above,
+			Function<K, Tuple<Below>> get_below,
 			ProgressSpawner progress_spawner ) {
 			return result;
 	}

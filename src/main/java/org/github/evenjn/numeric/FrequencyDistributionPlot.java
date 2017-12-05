@@ -25,7 +25,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.github.evenjn.knit.BiTray;
-import org.github.evenjn.lang.Bi;
 
 public class FrequencyDistributionPlot<K> {
 
@@ -84,17 +83,17 @@ public class FrequencyDistributionPlot<K> {
 		return this;
 	}
 
-	private Iterable<Bi<K, Integer>> data(
+	private Iterable<BiTray<K, Integer>> data(
 			Map<K, Integer> the_map,
 			Comparator<K> comparator ) {
-		ArrayList<Bi<K, Integer>> data = new ArrayList<>( );
+		ArrayList<BiTray<K, Integer>> data = new ArrayList<>( );
 		for ( Entry<K, Integer> d : the_map.entrySet( ) ) {
 			data.add( BiTray.nu( d.getKey( ), d.getValue( ) ) );
 		}
-		Collections.sort( data, new Comparator<Bi<K, Integer>>( ) {
+		Collections.sort( data, new Comparator<BiTray<K, Integer>>( ) {
 
 			@Override
-			public int compare( Bi<K, Integer> o1, Bi<K, Integer> o2 ) {
+			public int compare( BiTray<K, Integer> o1, BiTray<K, Integer> o2 ) {
 				if ( comparator != null ) {
 					return comparator.compare( o1.front( ), o2.front( ) );
 				}
@@ -109,7 +108,7 @@ public class FrequencyDistributionPlot<K> {
 		double denominator = total;
 		StringBuilder sb = new StringBuilder( );
 		int printed = 0;
-		for ( Bi<K, Integer> d : data( the_map, comparator ) ) {
+		for ( BiTray<K, Integer> d : data( the_map, comparator ) ) {
 			if ( topN > 0 && printed > topN ) {
 				break;
 			}

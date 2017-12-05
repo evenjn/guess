@@ -22,25 +22,24 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.Cursable;
 
 public class MapleQualityChecker<I, O> {
 
 	private int previous_training = -1;
 	private int previous_test = -1;
 
-	private Cursable<Bi<Tuple<I>, Tuple<O>>> training_data;
+	private TrainingData<?, Tuple<I>, Tuple<O>> training_data;
 	
 	private int training_data_size = 0;
 
-	private Cursable<Bi<Tuple<I>, Tuple<O>>> test_data;
+	private TrainingData<?, Tuple<I>, Tuple<O>> test_data;
 
 	private int test_data_size = 0;
 	private TupleAligner<I, O> aligner;
@@ -48,20 +47,20 @@ public class MapleQualityChecker<I, O> {
 	private Function<O, String> b_printer;
 
 	public MapleQualityChecker(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data ) {
+			TrainingData<?, Tuple<I>, Tuple<O>> training_data,
+			TrainingData<?, Tuple<I>, Tuple<O>> test_data ) {
 		this.training_data = training_data;
 		this.aligner = null;
 		this.a_printer = null;
 		this.b_printer = null;
-		this.training_data_size = KnittingCursable.wrap( training_data ).count( );
+		this.training_data_size = KnittingCursable.wrap( training_data.getData( ) ).count( );
 		this.test_data = test_data;
-		this.test_data_size = KnittingCursable.wrap( test_data ).count( );
+		this.test_data_size = KnittingCursable.wrap( test_data.getData( ) ).count( );
 	}
 
 	public MapleQualityChecker(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data,
+			TrainingData<?, Tuple<I>, Tuple<O>> training_data,
+			TrainingData<?, Tuple<I>, Tuple<O>> test_data,
 			TupleAligner<I, O> aligner,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer) {
@@ -69,16 +68,16 @@ public class MapleQualityChecker<I, O> {
 		this.aligner = aligner;
 		this.a_printer = a_printer;
 		this.b_printer = b_printer;
-		this.training_data_size = KnittingCursable.wrap( training_data ).count( );
+		this.training_data_size = KnittingCursable.wrap( training_data.getData( ) ).count( );
 		this.test_data = test_data;
-		this.test_data_size = KnittingCursable.wrap( test_data ).count( );
+		this.test_data_size = KnittingCursable.wrap( test_data.getData( ) ).count( );
 	}
 	
 	
-	private int do_check(
+	private <K> int do_check(
 		  Function<Tuple<I>, Tuple<O>> maple,
 			Consumer<String> logger,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
+			TrainingData<K, Tuple<I>, Tuple<O>> data,
 			int previous,
 			ProgressSpawner spawn,
 			int target) {
@@ -87,11 +86,11 @@ public class MapleQualityChecker<I, O> {
 		try ( BasicRook rook2 = new BasicRook( ) ) {
 			Progress spawn2 = spawn.spawn( rook2, "check" ).target( target );
 			
-			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
-					.wrap( data ).pull( rook2 ).peek( x->spawn2.step(1) ).once( ) ) {
+			for ( K g : KnittingCursable
+					.wrap( data.getData( ) ).pull( rook2 ).peek( x->spawn2.step(1) ).once( ) ) {
 
-				Tuple<O> guess = maple.apply( g.front( ) );
-				evaluation.record( logger, g.front( ), g.back( ), guess );
+				Tuple<O> guess = maple.apply( data.getInput( ).apply( g ) );
+				evaluation.record( logger, data.getInput( ).apply( g ), data.getOutput( ).apply( g ), guess );
 				
 			}
 

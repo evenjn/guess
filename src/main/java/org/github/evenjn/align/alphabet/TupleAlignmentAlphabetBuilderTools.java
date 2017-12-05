@@ -17,7 +17,6 @@ import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
@@ -41,7 +40,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 		return sb.toString( );
 	}
 
-	public static <SymbolAbove, SymbolBelow> int computeMinMaxAligneable(
+	public static <K, SymbolAbove, SymbolBelow> int computeMinMaxAligneable(
 			ProgressSpawner progress_spawner,
 			Consumer<String> logger,
 			Function<SymbolAbove, String> a_printer,
@@ -50,14 +49,16 @@ public class TupleAlignmentAlphabetBuilderTools {
 			int max_above,
 			int min_below,
 			int max_below,
-			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+			Cursable<K> data,
+			Function<K, Tuple<SymbolAbove>> get_above,
+			Function<K, Tuple<SymbolBelow>> get_below,
 			int total ) {
 		try ( BasicRook rook = new BasicRook() ) {
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetBuilderTools::computeMinMaxCoverage" )
 					.target( total );
 			int not_aligneable = 0;
-			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
+			for ( K datum : KnittingCursable
 					.wrap( data ).pull( rook ).once( ) ) {
 				spawn.step( 1 );
 				try {
@@ -66,8 +67,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 							max_above,
 							min_below,
 							max_below,
-							datum.front( ),
-							datum.back( ),
+							get_above.apply( datum ),
+							get_below.apply( datum ),
 							x -> true );
 				}
 				catch ( NotAlignableException e ) {
@@ -76,12 +77,12 @@ public class TupleAlignmentAlphabetBuilderTools {
 						sb.append( "Not aligneable using min = " ).append( min_below )
 								.append( " max = " )
 								.append( max_below ).append( ":" );
-						for ( SymbolAbove a : KnittingTuple.wrap( datum.front( ) )
+						for ( SymbolAbove a : KnittingTuple.wrap( get_above.apply( datum ) )
 								.asIterable( ) ) {
 							sb.append( " " ).append( a_printer.apply( a ) );
 						}
 						sb.append( " ----" );
-						for ( SymbolBelow b : KnittingTuple.wrap( datum.back( ) )
+						for ( SymbolBelow b : KnittingTuple.wrap( get_below.apply( datum ) )
 								.asIterable( ) ) {
 							sb.append( " " ).append( b_printer.apply( b ) );
 						}
@@ -109,14 +110,16 @@ public class TupleAlignmentAlphabetBuilderTools {
 		}
 	}
 
-	public static <SymbolAbove, SymbolBelow> int computeCoverage(
+	public static <K, SymbolAbove, SymbolBelow> int computeCoverage(
 			ProgressSpawner progress_spawner,
 			Consumer<String> logger,
 			int min_above,
 			int max_above,
 			int min_below,
 			int max_below,
-			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data,
+			Cursable<K> data,
+			Function<K, Tuple<SymbolAbove>> get_above,
+			Function<K, Tuple<SymbolBelow>> get_below,
 			Predicate<Tael<SymbolAbove, SymbolBelow>> filter,
 			int total,
 			int min_max_total ) {
@@ -125,7 +128,7 @@ public class TupleAlignmentAlphabetBuilderTools {
 					"TupleAlignmentAlphabetBuilderTools::computeCoverage" )
 					.target( total );
 			int not_aligneable = 0;
-			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
+			for ( K datum : KnittingCursable
 					.wrap( data ).pull( rook ).once( ) ) {
 				spawn.step( 1 );
 				try {
@@ -134,8 +137,8 @@ public class TupleAlignmentAlphabetBuilderTools {
 							max_above,
 							min_below,
 							max_below,
-							datum.front( ),
-							datum.back( ),
+							get_above.apply(datum),
+							get_below.apply(datum),
 							filter );
 				}
 				catch ( NotAlignableException e ) {

@@ -20,11 +20,9 @@ package org.github.evenjn.align.alphabet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.BiTray;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
@@ -137,16 +135,19 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 		return alphabet;
 	}
 
-	public TupleAlignmentAlphabetDataManager<I, O> load(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
+	public <K> TupleAlignmentAlphabetDataManager<I, O> load(
+			Cursable<K> data,
+			Function<K, Tuple<I>> get_above,
+			Function<K, Tuple<O>> get_below,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Bi<Tuple<I>, Tuple<O>>> kc = KnittingCursable.wrap( data );
-		alphabet = prepareAlphabet( kc, progress_spawner );
+		alphabet = prepareAlphabet( data, get_above,get_below, progress_spawner );
 		return this;
 	}
 
-	private TupleAlignmentAlphabet<I, O> prepareAlphabet(
-			KnittingCursable<Bi<Tuple<I>, Tuple<O>>> data,
+	private <K> TupleAlignmentAlphabet<I, O> prepareAlphabet(
+			Cursable<K> data,
+			Function<K, Tuple<I>> get_above,
+			Function<K, Tuple<O>> get_below,
 			ProgressSpawner progress_spawner ) {
 
 		TupleAlignmentAlphabet<I, O> coalignment_alphabet = null;
@@ -155,22 +156,19 @@ public class TupleAlignmentAlphabetDataManager<I, O> {
 			/*
 			 * re-compute the coalignment alphabet.
 			 */
-			KnittingCursable<Bi<Tuple<I>, Tuple<O>>> map =
-					data
-							.map( x -> ( BiTray.nu( x.front( ), x.back( ) ) ) );
 
 			try ( BasicRook rook = new BasicRook() ) {
 				Progress spawn =
 						SafeProgressSpawner.safeSpawn( rook, progress_spawner, "prepareAlphabet" );
 
 				spawn.info( "Computing dataset size." );
-				int size = data.count( );
+				int size = KnittingCursable.wrap(data).count( );
 				spawn.target( null != writer ? 2 * size : size );
 				spawn.info( "Working out alphabet" );
 
 				builder.setPrinters( logger, a_printer, b_printer );
 				builder.setMinMax( min_above, max_above, min_below, max_below );
-				coalignment_alphabet = builder.build( map, spawn );
+				coalignment_alphabet = builder.build( data, get_above, get_below, spawn );
 
 				/*
 				 * serialize the coalignment alphabet, and pour it into the putter.

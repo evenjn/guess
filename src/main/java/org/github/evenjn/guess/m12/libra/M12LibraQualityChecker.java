@@ -20,11 +20,11 @@ package org.github.evenjn.guess.m12.libra;
 import java.util.function.Consumer;
 
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
@@ -33,7 +33,6 @@ import org.github.evenjn.numeric.NumericUtils;
 import org.github.evenjn.numeric.NumericUtils.Summation;
 import org.github.evenjn.numeric.PercentPrinter;
 import org.github.evenjn.numeric.SixCharFormat;
-import org.github.evenjn.yarn.Cursable;
 
 public class M12LibraQualityChecker<I, O> implements
 		M12QualityChecker<I, O> {
@@ -44,27 +43,27 @@ public class M12LibraQualityChecker<I, O> implements
 
 	private int epoch = 0;
 
-	private Cursable<Bi<Tuple<I>, Tuple<O>>> training_data;
+	private TrainingData<?, Tuple<I>, Tuple<O>> training_data;
 
 	private int training_data_size = 0;
 
-	private Cursable<Bi<Tuple<I>, Tuple<O>>> test_data;
+	private TrainingData<?, Tuple<I>, Tuple<O>> test_data;
 
 	private int test_data_size = 0;
 
 	public M12LibraQualityChecker(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
+			TrainingData<?, Tuple<I>, Tuple<O>> training_data,
+			TrainingData<?, Tuple<I>, Tuple<O>> test_data) {
 		this.training_data = training_data;
-		this.training_data_size = KnittingCursable.wrap( training_data ).count( );
+		this.training_data_size = KnittingCursable.wrap( training_data.getData( ) ).count( );
 		this.test_data = test_data;
-		this.test_data_size = KnittingCursable.wrap( test_data ).count( );
+		this.test_data_size = KnittingCursable.wrap( test_data.getData( ) ).count( );
 	}
 
-	private double do_check(
+	private <K> double do_check(
 			M12Libra<I, O> m12Libra,
 			Consumer<String> logger,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data,
+			TrainingData<K, Tuple<I>, Tuple<O>> data,
 			Double previous,
 			ProgressSpawner spawn,
 			int target ) {
@@ -74,9 +73,9 @@ public class M12LibraQualityChecker<I, O> implements
 				x -> NumericLogarithm.elnsum( KnittingCursable.wrap( x ) ) );
 		try ( BasicRook rook2 = new BasicRook( ) ) {
 			Progress spawn2 = spawn.spawn( rook2, "check" ).target( target );
-			for ( Bi<Tuple<I>, Tuple<O>> g : KnittingCursable
-					.wrap( data ).pull( rook2 ).peek( x -> spawn2.step( 1 ) ).once( ) ) {
-				double p = m12Libra.weigh( g );
+			for ( K g : KnittingCursable
+					.wrap( data.getData( ) ).pull( rook2 ).peek( x -> spawn2.step( 1 ) ).once( ) ) {
+				double p = m12Libra.weigh(data.getInput( ).apply( g ), data.getOutput( ).apply( g ) );
 				if ( p <= 0d ) {
 					summation.add( p );
 					total = total + 1;

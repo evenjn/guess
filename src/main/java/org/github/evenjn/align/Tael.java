@@ -20,7 +20,6 @@ package org.github.evenjn.align;
 import java.util.Vector;
 import java.util.function.Function;
 
-import org.github.evenjn.knit.BiValue;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.lang.BasicRook;
@@ -97,13 +96,13 @@ public class Tael<SymbolAbove, SymbolBelow> {
 			tael(
 					Tuple<SymbolAbove> above,
 					Tuple<SymbolBelow> below,
-					Tuple<BiValue<Integer, Integer>> alignment ) {
+					Tuple<AlignmentElement<Integer, Integer>> alignment ) {
 		Vector<Tael<SymbolAbove, SymbolBelow>> result =
 				new Vector<>( );
 		int a_so_far = 0;
 		int b_so_far = 0;
 		for ( int i = 0; i < alignment.size( ); i++ ) {
-			BiValue<Integer, Integer> di = alignment.get( i );
+			AlignmentElement<Integer, Integer> di = alignment.get( i );
 
 			Vector<SymbolAbove> suba = KnittingTuple.wrap( above )
 					.head( a_so_far, di.front( ) ).asKnittingCursor( ).collect( new Vector<>( ) );

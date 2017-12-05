@@ -20,9 +20,11 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.lang.BasicRook;
 import org.github.evenjn.lang.Progress;
+import org.github.evenjn.yarn.Cursable;
 import org.github.evenjn.yarn.Cursor;
 import org.github.evenjn.yarn.EndOfCursorException;
 
@@ -75,8 +77,8 @@ public class BenchmarkTrial<I, O> {
 		public BenchmarkTrial<?, ?> build( ) {
 			return built;
 		}
-		
-		public Builder<I, O> handicap(BenchmarkHandicap handicap) {
+
+		public Builder<I, O> handicap( BenchmarkHandicap handicap ) {
 			built.handicap = handicap;
 			return this;
 		}
@@ -90,25 +92,46 @@ public class BenchmarkTrial<I, O> {
 		System.out.println( "Problem: " + problem.label( ) );
 		System.out.println( "Trainer: " + trainer_label );
 		System.out.println( "Evaluator: " + evaluator_label );
-		int local_limit =  handicap.size_of_traning_data;
-		try ( BasicRook rook = new BasicRook() ) {
-			
+		int local_limit = handicap.size_of_traning_data;
+		try ( BasicRook rook = new BasicRook( ) ) {
+
 			KnittingCursable<BenchmarkDatum<I, O>> training_data =
 					KnittingCursable.wrap( problem.data( ) ).head( 0, local_limit );
-			
+
 			Function<I, O> guesser = null;
 
 			guesser = trainer.train(
 					progress,
-					training_data.map( x -> handicap.use_noise
-							? x.asBadTeacherWouldTell( ) : x.asGoodTeacherWouldTell( ) ) );
+
+					new TrainingData<BenchmarkDatum<I, O>, I, O>( ) {
+
+						@Override
+						public Cursable<BenchmarkDatum<I, O>> getData( ) {
+							return training_data;
+						}
+
+						@Override
+						public Function<BenchmarkDatum<I, O>, I> getInput( ) {
+							return x -> x.getInput( );
+						}
+
+						@Override
+						public Function<BenchmarkDatum<I, O>, O> getOutput( ) {
+							return ( x -> handicap.use_noise
+									? x.getBadTeacherGold( ) : x.getGoodTeacherGold( ) );
+						}
+
+					} );
 			evaluator.reset( );
-			evaluator.evaluate( guesser, training_data.map( x->x.asGoodTeacherWouldTell( ) ) );
+			evaluator.evaluate(
+					guesser,
+					training_data,
+					x -> x.getInput( ),
+					x -> x.getGoodTeacherGold( ) );
 			System.out.println( evaluator.printEvaluation( ) );
 
 			StringBuilder sb = new StringBuilder( );
-			
-			
+
 			BenchmarkDatum<I, O> next = null;
 			O predicted = null;
 			Cursor<BenchmarkDatum<I, O>> search = training_data.pull( rook );
@@ -121,7 +144,6 @@ public class BenchmarkTrial<I, O> {
 			}
 			catch ( EndOfCursorException e ) {
 			}
-			
 
 			sb.append( "\nSample input          : " );
 			sb.append( problem.inputPrinter( ).apply( next.observed ) );

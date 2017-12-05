@@ -3,8 +3,9 @@ package org.github.evenjn.guess.m12;
 import java.nio.file.Path;
 import java.util.function.Function;
 
+import org.github.evenjn.align.AlignmentElement;
 import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.guess.Libra;
+import org.github.evenjn.guess.DiscriminativeModel;
 import org.github.evenjn.guess.m12.aligner.M12Aligner;
 import org.github.evenjn.guess.m12.aligner.M12AlignerFileDeserializer;
 import org.github.evenjn.guess.m12.libra.M12Libra;
@@ -13,9 +14,6 @@ import org.github.evenjn.guess.m12.maple.M12ClassicMaple;
 import org.github.evenjn.guess.m12.maple.M12ClassicMapleFileDeserializer;
 import org.github.evenjn.guess.m12.maple.M12PreciseMaple;
 import org.github.evenjn.guess.m12.maple.M12PreciseMapleFileDeserializer;
-import org.github.evenjn.knit.BiTray;
-import org.github.evenjn.knit.BiValue;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Tuple;
 
 public class M12<I, P, O> {
@@ -29,18 +27,17 @@ public class M12<I, P, O> {
 		this.path = path;
 	}
 
-	public Libra<Bi<I, Tuple<O>>> asLibra( ) {
+	public DiscriminativeModel<I, Tuple<O>> asLibra( ) {
 		M12Libra<P, O> local = M12LibraFileDeserializer.deserialize(
 				null,
 				schema.getAboveDecoder( ),
 				schema.getBelowDecoder( ),
 				path );
-		return new Libra<Bi<I, Tuple<O>>>( ) {
+		return new DiscriminativeModel<I, Tuple<O>>( ) {
 
 			@Override
-			public double weigh( Bi<I, Tuple<O>> t ) {
-				return local.weigh(
-						BiTray.nu( schema.getProjector( ).apply( t.front( ) ), t.back( ) ) );
+			public double weigh( I input, Tuple<O> output ) {
+				return local.weigh( schema.getProjector( ).apply( input ), output );
 			}
 		};
 	}
@@ -84,7 +81,7 @@ public class M12<I, P, O> {
 		return new TupleAligner<P, O>( ) {
 
 			@Override
-			public Tuple<BiValue<Integer, Integer>> align( Tuple<P> a, Tuple<O> b ) {
+			public Tuple<AlignmentElement<Integer, Integer>> align( Tuple<P> a, Tuple<O> b ) {
 				return local.align( a, b );
 			}
 		};

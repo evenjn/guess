@@ -20,14 +20,13 @@ package org.github.evenjn.guess.m12.aligner;
 import java.util.function.Supplier;
 
 import org.github.evenjn.file.FileFool;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.m12.M12FileTrainer;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
-import org.github.evenjn.yarn.Cursable;
 
 public class M12AlignerFileTrainer<I, O> {
 
@@ -38,14 +37,14 @@ public class M12AlignerFileTrainer<I, O> {
 		this.file_trainer = blueprint.get( );
 	}
 
-	public M12Aligner<I, O> train(
+	public <K> M12Aligner<I, O> train(
 			ProgressSpawner progress_spawner,
 			FileFool filefool,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> data ) {
+			TrainingData<K, Tuple<I>, Tuple<O>> training_data ) {
 		try ( BasicRook rook = new BasicRook() ) {
 			Progress progress = SafeProgressSpawner
 					.safeSpawn( rook, progress_spawner, "M12AlignerFileTrainer::train" );
-			file_trainer.train( progress, filefool, data );
+			file_trainer.train( progress, filefool, training_data );
 			M12Aligner<I, O> aligner = M12AlignerFileDeserializer.deserialize(
 					progress,
 					file_trainer.getDeserializerAbove( ),

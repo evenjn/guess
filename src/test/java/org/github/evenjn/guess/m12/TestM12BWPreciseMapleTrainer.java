@@ -25,12 +25,12 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetGreedyBuilder;
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.file.FileFoolWriter;
 import org.github.evenjn.guess.Trainer;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.benchmark.Benchmark;
 import org.github.evenjn.guess.benchmark.BenchmarkHandicap;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.guess.m12.baumwelch.M12BaumWelchTrainingPlan;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
@@ -65,10 +65,11 @@ public class TestM12BWPreciseMapleTrainer {
 	private final static String trainer_label =
 			"Maple: M12 Baum-Welch classic viterbi";
 
-	private final static
+	private final static <K>
 			M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean>
 			getTrainingPlan(
-					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> training_data 
+					) {
 
 		M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
 				new M12BaumWelchTrainingPlan<>( );
@@ -83,7 +84,7 @@ public class TestM12BWPreciseMapleTrainer {
 		plan.setPrinters(
 				x -> x ? "1" : "0",
 				x -> x ? "1" : "0" );
-		plan.setTrainingData( data );
+		plan.setTrainingData2( training_data );
 		plan.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
 		plan.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
 		plan.setProjector( x -> x );
@@ -98,11 +99,11 @@ public class TestM12BWPreciseMapleTrainer {
 		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
 
 			@Override
-			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
-					ProgressSpawner progress_spawner,
-					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+			public <K> Function<Tuple<Boolean>, Tuple<Boolean>> train(
+					ProgressSpawner progress_spawner, 
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> training_data  ) {
 				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
-						getTrainingPlan( data );
+						getTrainingPlan( training_data );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
 				return fool.open( created, plan ).asMaplePrecise( );
 			}
@@ -118,11 +119,11 @@ public class TestM12BWPreciseMapleTrainer {
 		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
 
 			@Override
-			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
-					ProgressSpawner progress_spawner,
-					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+			public <K> Function<Tuple<Boolean>, Tuple<Boolean>> train(
+					ProgressSpawner progress_spawner, 
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> training_data  ) {
 				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
-						getTrainingPlan( data );
+						getTrainingPlan( training_data );
 				plan.setNumberOfStates( 4 );
 				plan.setTrainingTime( 1, 40 );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );

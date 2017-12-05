@@ -20,25 +20,24 @@ package org.github.evenjn.guess.benchmark;
 import java.util.function.Function;
 
 import org.github.evenjn.guess.Trainer;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.knit.KnittingCursable;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.numeric.FrequencyDistribution;
-import org.github.evenjn.yarn.Cursable;
 
 /**
- * A blind guesser ignores all features but the target, and predicts always
- * the most frequent target value.
+ * A blind guesser ignores all features but the target, and predicts always the
+ * most frequent target value.
  */
 public class BlindGuesserTrainer<I, O> implements
 		Trainer<I, O> {
 
 	@Override
-	public Function<I, O> train(
-			ProgressSpawner progress_spawner,
-			Cursable<Bi<I, O>> data ) {
+	public <K> Function<I, O> train( ProgressSpawner progress_spawner,
+			TrainingData<K, I, O> data ) {
 		FrequencyDistribution<O> fd = new FrequencyDistribution<>( );
-		KnittingCursable.wrap( data ).map( d -> d.back( ) ).peek( fd ).roll( );
+		
+		KnittingCursable.wrap( data.getData( ) ).map( data.getOutput( ) ).peek( fd ).roll( );
 		return x -> fd.getMostFrequent( );
 	}
 

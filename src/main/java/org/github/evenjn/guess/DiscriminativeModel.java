@@ -17,19 +17,15 @@
  */
 package org.github.evenjn.guess;
 
-import org.github.evenjn.lang.Bi;
-import org.github.evenjn.lang.ProgressSpawner;
-import org.github.evenjn.yarn.Cursable;
+public interface DiscriminativeModel<I, O> {
 
-/**
- * A Teacher is a system that produces a discriminative model.
- * 
- * Produces a function that returns the probability of Output conditional to
- * Input.
- */
-public interface Teacher<I, O> {
-
-	Libra<Bi<I, O>> teach(
-			ProgressSpawner progress_spawner,
-			Cursable<Bi<I, O>> data );
+	/**
+	 * 
+	 * @param I
+	 *          an object
+	 * @param O
+	 *          an object
+	 * @return the natural logarithm of the probability of the input argument.
+	 */
+	double weigh( I input, O output);
 }

@@ -25,11 +25,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.github.evenjn.align.AlignmentElement;
 import org.github.evenjn.align.Tael;
 import org.github.evenjn.align.TupleAligner;
-import org.github.evenjn.knit.BiValue;
+import org.github.evenjn.knit.DiffPair;
 import org.github.evenjn.knit.KnittingTuple;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.numeric.FrequencyDistribution;
 import org.github.evenjn.numeric.NumericUtils;
@@ -97,7 +97,6 @@ public class MapleEvaluation<I, O> {
 		KnittingTuple<O> kgold = KnittingTuple.wrap( gold );
 		KnittingTuple<I> kinput = KnittingTuple.wrap( input );
 
-
 		int distance = kgold.distance( kguess );
 		total_distance += distance;
 		int size_in = kinput.size( );
@@ -126,12 +125,13 @@ public class MapleEvaluation<I, O> {
 				/ ( 1.0 * size_gu ) );
 		longest_accuracy_summation.add( ( 1.0 * distance )
 				/ ( 1.0 * ( ( size_go > size_gu ) ? size_go : size_gu ) ) );
-		
+
 		if ( aligner != null ) {
 
-			Tuple<BiValue<Integer, Integer>> aligned_gold = aligner.align( kinput, kgold );
+			Tuple<AlignmentElement<Integer, Integer>> aligned_gold =
+					aligner.align( kinput, kgold );
 
-			Tuple<BiValue<Integer, Integer>> aligned_guess =
+			Tuple<AlignmentElement<Integer, Integer>> aligned_guess =
 					aligner.align( kinput, kguess );
 
 			Tuple<Tael<I, O>> tt_gold = Tael.tael( kinput, kgold, aligned_gold );
@@ -141,11 +141,12 @@ public class MapleEvaluation<I, O> {
 			 * X/ks I/i T/t A/a X/ks I/i
 			 */
 
-			for ( Bi<Tael<I, O>, Tael<I, O>> diff : KnittingTuple.wrap( tt_gold )
+			for ( DiffPair<Tael<I, O>, Tael<I, O>> diff :
+				KnittingTuple.wrap( tt_gold )
 					.diff( tt_guess ) ) {
 				Tael<I, O> front = diff.front( );
 				Tael<I, O> back = diff.back( );
-
+	
 				if ( front == null ) {
 					// this element contains information about what was incorrectly
 					// guessed.
@@ -240,25 +241,25 @@ public class MapleEvaluation<I, O> {
 
 		out.accept( "Average distance/input per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( input_accuracy_summation.getSum( ) / total_io_pairs  )
+						.apply( input_accuracy_summation.getSum( ) / total_io_pairs )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_input_elements ) );
 
 		out.accept( "Average distance/gold per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( gold_accuracy_summation.getSum( ) / total_io_pairs  )
+						.apply( gold_accuracy_summation.getSum( ) / total_io_pairs )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_gold_elements ) );
 
 		out.accept( "Average distance/guessed per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( guessed_accuracy_summation.getSum( ) / total_io_pairs  )
+						.apply( guessed_accuracy_summation.getSum( ) / total_io_pairs )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_guessed_elements ) );
 
 		out.accept( "Average distance/longest per pair: "
 				+ SixCharFormat.nu( false )
-						.apply( longest_accuracy_summation.getSum( ) / total_io_pairs  )
+						.apply( longest_accuracy_summation.getSum( ) / total_io_pairs )
 				+ " " + PercentPrinter.printRatioAsPercent( 4, total_distance,
 						total_longest_elements ) );
 

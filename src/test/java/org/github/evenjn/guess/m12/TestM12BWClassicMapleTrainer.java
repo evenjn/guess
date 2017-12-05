@@ -25,12 +25,12 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetGreedyBuilder;
 import org.github.evenjn.file.FileFool;
 import org.github.evenjn.file.FileFoolWriter;
 import org.github.evenjn.guess.Trainer;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.benchmark.Benchmark;
 import org.github.evenjn.guess.benchmark.BenchmarkHandicap;
 import org.github.evenjn.guess.benchmark.BenchmarkTrial;
 import org.github.evenjn.guess.benchmark.TupleEqualsEvaluator;
 import org.github.evenjn.guess.m12.baumwelch.M12BaumWelchTrainingPlan;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
@@ -38,7 +38,6 @@ import org.junit.Test;
 
 public class TestM12BWClassicMapleTrainer {
 
-	
 	{
 		Path target = Paths.get( "." ).toAbsolutePath( ).resolve( "target" );
 		FileFoolWriter w = FileFool.w( target );
@@ -52,7 +51,6 @@ public class TestM12BWClassicMapleTrainer {
 
 	private static Path training_cache_path;
 
-	
 	/** HANDICAP */
 	private final static BenchmarkHandicap handicap =
 			new BenchmarkHandicap( true, 20 );
@@ -64,11 +62,15 @@ public class TestM12BWClassicMapleTrainer {
 			new TupleEqualsEvaluator<Boolean, Tuple<Boolean>, Tuple<Boolean>>( );
 
 	/** TRAINER */
-	private final static String trainer_label = "Maple: M12 Baum-Welch classic viterbi";
-	
-	private final static M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> getTrainingPlan(
-			Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
-		M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan = new M12BaumWelchTrainingPlan<>( );
+	private final static String trainer_label =
+			"Maple: M12 Baum-Welch classic viterbi";
+
+	private final static <K>
+			M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean>
+			getTrainingPlan(
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> training_data  ) {
+		M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
+				new M12BaumWelchTrainingPlan<>( );
 		plan.setSeed( 43 );
 		plan.setNumberOfStates( 3 );
 		plan.setTrainingTime( 1, 25 );
@@ -79,7 +81,7 @@ public class TestM12BWClassicMapleTrainer {
 		plan.setPrinters(
 				x -> x ? "1" : "0",
 				x -> x ? "1" : "0" );
-		plan.setTrainingData( data );
+		plan.setTrainingData2( training_data );
 		plan.setAboveCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
 		plan.setBelowCoDec( x -> x ? "1" : "0", x -> x.startsWith( "1" ) );
 		plan.setProjector( x -> x );
@@ -90,13 +92,13 @@ public class TestM12BWClassicMapleTrainer {
 		M12Fool fool = M12Fool.nu( training_cache_path );
 		Path test_crf_path = Paths.get( "test_m12" );
 		fool.delete( test_crf_path );
-		
+
 		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
-			
+
 			@Override
-			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
+			public <K> Function<Tuple<Boolean>, Tuple<Boolean>> train(
 					ProgressSpawner progress_spawner,
-					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> data ) {
 				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
 						getTrainingPlan( data );
 				Path created = fool.create( test_crf_path, progress_spawner, plan );
@@ -105,18 +107,18 @@ public class TestM12BWClassicMapleTrainer {
 		};
 	}
 
-
-	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>> trainerFourState( ) {
+	private final static Trainer<Tuple<Boolean>, Tuple<Boolean>>
+			trainerFourState( ) {
 		M12Fool fool = M12Fool.nu( training_cache_path );
 		Path test_crf_path = Paths.get( "test_m12" );
 		fool.delete( test_crf_path );
-		
+
 		return new Trainer<Tuple<Boolean>, Tuple<Boolean>>( ) {
-			
+
 			@Override
-			public Function<Tuple<Boolean>, Tuple<Boolean>> train(
+			public <K> Function<Tuple<Boolean>, Tuple<Boolean>> train(
 					ProgressSpawner progress_spawner,
-					Cursable<Bi<Tuple<Boolean>, Tuple<Boolean>>> data ) {
+					TrainingData<K, Tuple<Boolean>, Tuple<Boolean>> data ) {
 				M12BaumWelchTrainingPlan<Tuple<Boolean>, Boolean, Boolean> plan =
 						getTrainingPlan( data );
 				plan.setNumberOfStates( 4 );
@@ -126,7 +128,7 @@ public class TestM12BWClassicMapleTrainer {
 			}
 		};
 	}
-	
+
 	@Test
 	public void testM12Identity( ) {
 		/** RUN! */

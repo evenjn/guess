@@ -22,7 +22,6 @@ import java.util.function.Function;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.yarn.Cursable;
 
@@ -41,37 +40,49 @@ public class TupleEqualsEvaluator<T, I, O extends Tuple<? extends T>> implements
 			Builder<K, T, I, O>
 			builder(
 					Function<I, O> guesser,
-					Cursable<Bi<I, O>> data ) {
-		return new Builder<>( guesser, data );
+					Cursable<K> data,
+					Function<K, I> get_input,
+					Function<K, O> get_output ) {
+		return new Builder<>( guesser, data, get_input, get_output );
 	}
 
 	public static class Builder<K, T, I, O extends Tuple<? extends T>> {
 
 		private Function<I, O> guesser;
 
-		private Cursable<Bi<I, O>> data;
+		private Cursable<K> data;
+
+		private Function<K, I> get_input;
+
+		private Function<K, O> get_output;
 
 		public Builder(Function<I, O> guesser,
-				Cursable<Bi<I, O>> data) {
+						Cursable<K> data,
+						Function<K, I> get_input,
+						Function<K, O> get_output) {
 			this.guesser = guesser;
 			this.data = data;
+			this.get_input = get_input;
+			this.get_output = get_output;
 		}
 
 		public TupleEqualsEvaluator<T, I, O> doEvaluate( ) {
 			TupleEqualsEvaluator<T, I, O> result =
 					new TupleEqualsEvaluator<T, I, O>( );
-			result.evaluate( guesser, data );
+			result.evaluate( guesser, data, get_input, get_output );
 			return result;
 		}
 	}
 
-	public void evaluate(
+	public <K> void evaluate(
 			Function<I, O> guesser,
-			Cursable<Bi<I, O>> data ) {
+			Cursable<K> data,
+			Function<K, I> get_input,
+			Function<K, O> get_output ) {
 		try ( BasicRook rook = new BasicRook() ) {
-			for ( Bi<I, O> k : KnittingCursable.wrap( data ).pull( rook ).once( ) ) {
-				I i = k.front( );
-				O target_output = k.back( );
+			for ( K k : KnittingCursable.wrap( data ).pull( rook ).once( ) ) {
+				I i = get_input.apply( k );
+				O target_output = get_output.apply( k );
 				O guessed_output = guesser.apply( i );
 				record(i, target_output, guessed_output);
 			}

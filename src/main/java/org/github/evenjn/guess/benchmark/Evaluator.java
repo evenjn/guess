@@ -19,14 +19,15 @@ package org.github.evenjn.guess.benchmark;
 
 import java.util.function.Function;
 
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.yarn.Cursable;
 
 public interface Evaluator<I, O> {
 
-	void evaluate(
-			Function<I, O> function,
-			Cursable<Bi<I, O>> data );
+	<K> void evaluate(
+			Function<I, O> guesser,
+			Cursable<K> data,
+			Function<K, I> get_input,
+			Function<K, O> get_output );
 
 	String printEvaluation( );
 

@@ -22,13 +22,12 @@ import java.util.function.Function;
 
 import org.github.evenjn.align.TupleAligner;
 import org.github.evenjn.align.alphabet.TupleAlignmentAlphabet;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.benchmark.MapleQualityChecker;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.guess.markov.Markov;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
-import org.github.evenjn.yarn.Cursable;
 
 public class M12ClassicMapleQualityChecker<I, O> implements
 		M12QualityChecker<I, O> {
@@ -36,8 +35,8 @@ public class M12ClassicMapleQualityChecker<I, O> implements
 	private final MapleQualityChecker<I, O> mqc;
 
 	public M12ClassicMapleQualityChecker(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data,
+			TrainingData<?, Tuple<I>, Tuple<O>> training_data,
+			TrainingData<?, Tuple<I>, Tuple<O>> test_data,
 			TupleAligner<I, O> aligner,
 			Function<I, String> a_printer,
 			Function<O, String> b_printer) {
@@ -46,8 +45,8 @@ public class M12ClassicMapleQualityChecker<I, O> implements
 	}
 
 	public M12ClassicMapleQualityChecker(
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> test_data) {
+			TrainingData<?, Tuple<I>, Tuple<O>> training_data,
+			TrainingData<?, Tuple<I>, Tuple<O>> test_data) {
 		mqc = new MapleQualityChecker<>( training_data, test_data );
 	}
 

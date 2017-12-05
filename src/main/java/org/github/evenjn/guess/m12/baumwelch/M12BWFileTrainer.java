@@ -29,19 +29,19 @@ import org.github.evenjn.align.alphabet.TupleAlignmentAlphabetDataManagerBluepri
 import org.github.evenjn.align.graph.TupleAlignmentGraphDataManager;
 import org.github.evenjn.align.graph.TupleAlignmentGraphDataManagerBlueprint;
 import org.github.evenjn.file.FileFool;
+import org.github.evenjn.guess.TrainingData;
 import org.github.evenjn.guess.m12.M12FileTrainer;
 import org.github.evenjn.guess.m12.M12QualityChecker;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
 import org.github.evenjn.plaintext.PlainText;
-import org.github.evenjn.yarn.Cursable;
 
-public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
-	
+public class M12BWFileTrainer<I, O> implements
+		M12FileTrainer<I, O> {
+
 	private final Function<String, I> a_deserializer;
 
 	private final Function<String, O> b_deserializer;
@@ -98,10 +98,11 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 	private final M12BWCoreTrainerBlueprint m12ctb =
 			new M12BWCoreTrainerBlueprint( );
 
-	public void train(
+	@Override
+	public <K> void train(
 			ProgressSpawner progress_spawner,
 			FileFool training_cache_path,
-			Cursable<Bi<Tuple<I>, Tuple<O>>> training_data ) {
+			TrainingData<K, Tuple<I>, Tuple<O>> training_data ) {
 		FileFool ff = training_cache_path;
 		/**
 		 * Override any custom or previous setting.
@@ -113,7 +114,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 		m12ctb.deserializeModel( null );
 		m12ctb.serializeModel( null );
 
-		try ( BasicRook rook = new BasicRook() ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 			Progress progress = SafeProgressSpawner
 					.safeSpawn( rook, progress_spawner, "M12FileTrainer::train" );
 
@@ -145,8 +146,10 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 				ff.create( ff.mold( alphabet_working_file ) );
 				ff.create( ff.mold( alphabet_log_file ) );
 				taadmb
-						.setPrinter( h -> PlainText.writer( ).setForcedFlush( true ).build( )
-								.apply( h, ff.open( alphabet_log_file ).write( h ) ), a_printer,
+						.setPrinter(
+								h -> PlainText.writer( ).setForcedFlush( true ).build( )
+										.apply( h, ff.open( alphabet_log_file ).write( h ) ),
+								a_printer,
 								b_printer )
 						.serializeTupleAlignmentAlphabet( h -> PlainText.writer( ).build( )
 								.apply( h, ff.open( alphabet_working_file ).write( h ) ) );
@@ -221,7 +224,7 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 
 			progress.info( "Loading tuple alignment alphabet." );
 			TupleAlignmentAlphabetDataManager<I, O> taadm = taadmb.create( );
-			taadm.load( training_data, progress );
+			taadm.load( training_data.getData( ), training_data.getInput( ), training_data.getOutput( ), progress );
 
 			if ( !ff.exists( alphabet_stable_file ) ) {
 				Files.copy( alphabet_working_file, alphabet_stable_file );
@@ -229,7 +232,8 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 
 			progress.info( "Loading tuple alignment graphs." );
 			TupleAlignmentGraphDataManager<I, O> tagdm = tagdmb.create( );
-			tagdm.load( training_data, taadm.getAlphabet( ).asEncoder( ), progress );
+			tagdm.load( training_data.getData( ), training_data.getInput( ), training_data.getOutput( ),
+					taadm.getAlphabet( ).asEncoder( ), progress );
 
 			if ( !ff.exists( graphs_stable_file ) ) {
 				Files.copy( graphs_working_file, graphs_stable_file );
@@ -244,15 +248,15 @@ public class M12BWFileTrainer<I, O> implements M12FileTrainer<I, O> {
 						.writer( ).setForcedFlush( true )
 						.build( )
 						.apply( rook, ff.open( m12core_log_file ).write( rook ) );
-				
-				if (checker != null) {
-					m12ctb.qualityControl( (core, spawn) -> checker.check(
+
+				if ( checker != null ) {
+					m12ctb.qualityControl( ( core, spawn ) -> checker.check(
 							training_logger,
 							taadm.getAlphabet( ),
 							core,
 							spawn ) );
 				}
-				
+
 				m12ctb.logger( training_logger );
 
 				progress.info( "Training M12 core." );

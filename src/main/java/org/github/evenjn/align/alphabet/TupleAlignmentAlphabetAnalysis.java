@@ -30,7 +30,6 @@ import org.github.evenjn.knit.KnittingTuple;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.knit.TupleValue;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Tuple;
@@ -272,24 +271,28 @@ public class TupleAlignmentAlphabetAnalysis<SymbolAbove, SymbolBelow> {
 		return total;
 	}
 
-	public void computeCompleteAlphabet(
+	public <K> void computeCompleteAlphabet(
 			ProgressSpawner progress_spawner,
-			Cursable<Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>>> data ) {
+			Cursable<K> data,
+			Function<K, Tuple<SymbolAbove>> get_above,
+			Function<K, Tuple<SymbolBelow>> get_below ) {
 		if ( total != 0 ) {
 			throw new IllegalStateException( "this can be compued only once" );
 		}
 
-		try ( BasicRook rook = new BasicRook() ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 
 			Progress spawn = SafeProgressSpawner.safeSpawn( rook, progress_spawner,
 					"TupleAlignmentAlphabetAnalysis::computeCompleteAlphabet" );
 			int not_aligneable = 0;
-			for ( Bi<Tuple<SymbolAbove>, Tuple<SymbolBelow>> datum : KnittingCursable
+			for ( K datum : KnittingCursable
 					.wrap( data ).pull( rook ).once( ) ) {
 				total++;
 				spawn.step( 1 );
-				KnittingTuple<SymbolAbove> ka = KnittingTuple.wrap( datum.front( ) );
-				KnittingTuple<SymbolBelow> kb = KnittingTuple.wrap( datum.back( ) );
+				KnittingTuple<SymbolAbove> ka =
+						KnittingTuple.wrap( get_above.apply( datum ) );
+				KnittingTuple<SymbolBelow> kb =
+						KnittingTuple.wrap( get_below.apply( datum ) );
 
 				try {
 

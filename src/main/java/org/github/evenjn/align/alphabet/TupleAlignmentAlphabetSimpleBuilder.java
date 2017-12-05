@@ -8,7 +8,6 @@ import org.github.evenjn.align.graph.NotAlignableException;
 import org.github.evenjn.knit.KnittingCursable;
 import org.github.evenjn.knit.SafeProgressSpawner;
 import org.github.evenjn.lang.BasicRook;
-import org.github.evenjn.lang.Bi;
 import org.github.evenjn.lang.Progress;
 import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Ring;
@@ -27,11 +26,11 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 
 	private int max_below;
 
-	public TupleAlignmentAlphabetSimpleBuilder( ) {
+	public TupleAlignmentAlphabetSimpleBuilder() {
 	}
 
 	@Override
-	public void setMinMax( 
+	public void setMinMax(
 			int min_above, int max_above,
 			int min_below, int max_below ) {
 		this.min_above = min_above;
@@ -45,16 +44,18 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 			Ring<Consumer<String>> logger,
 			Function<Above, String> a_printer,
 			Function<Below, String> b_printer ) {
-		
+
 	}
 
 	@Override
-	public TupleAlignmentAlphabet<Above, Below> build(
-			Cursable<Bi<Tuple<Above>, Tuple<Below>>> data,
+	public <K> TupleAlignmentAlphabet<Above, Below> build(
+			Cursable<K> data,
+			Function<K, Tuple<Above>> get_above,
+			Function<K, Tuple<Below>> get_below,
 			ProgressSpawner progress_spawner ) {
-		KnittingCursable<Bi<Tuple<Above>, Tuple<Below>>> kd =
+		KnittingCursable<K> kd =
 				KnittingCursable.wrap( data );
-		try ( BasicRook rook = new BasicRook() ) {
+		try ( BasicRook rook = new BasicRook( ) ) {
 
 			TupleAlignmentAlphabet<Above, Below> result =
 					new TupleAlignmentAlphabet<Above, Below>( );
@@ -64,7 +65,7 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 			spawn.info( "Computing dataset size." );
 			spawn.target( kd.count( ) );
 			spawn.info( "Collecting alphabet elements." );
-			for ( Bi<Tuple<Above>, Tuple<Below>> datum : kd.pull( rook )
+			for ( K datum : kd.pull( rook )
 					.once( ) ) {
 
 				spawn.step( 1 );
@@ -74,7 +75,8 @@ public class TupleAlignmentAlphabetSimpleBuilder<Above, Below>
 							TupleAlignmentAlphabetBuilderTools.localAlphabet(
 									min_above, max_above,
 									min_below, max_below,
-									datum.front( ), datum.back( ) );
+									get_above.apply( datum ),
+									get_below.apply( datum ) );
 					for ( Tael<Above, Below> pp : localAlphabet ) {
 						result.add( pp );
 					}
