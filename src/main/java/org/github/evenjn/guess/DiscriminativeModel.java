@@ -21,11 +21,12 @@ public interface DiscriminativeModel<I, O> {
 
 	/**
 	 * 
-	 * @param I
+	 * @param input
 	 *          an object
-	 * @param O
+	 * @param output
 	 *          an object
-	 * @return the natural logarithm of the probability of the input argument.
+	 * @return the natural logarithm of the probability of the input argument
+	 *         given the input.
 	 */
-	double weigh( I input, O output);
+	double weigh( I input, O output );
 }

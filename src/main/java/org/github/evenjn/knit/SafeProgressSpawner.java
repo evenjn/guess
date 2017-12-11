@@ -22,9 +22,9 @@ import org.github.evenjn.lang.ProgressSpawner;
 import org.github.evenjn.lang.Rook;
 
 /**
- * Provides a method to create stub {@link org.github.evenjn.yarn.Progress
+ * Provides a method to create stub {@link org.github.evenjn.lang.Progress
  * Progress} objects that can be used whenever a
- * {@link org.github.evenjn.yarn.ProgressSpawner ProgressSpawner} is not
+ * {@link org.github.evenjn.lang.ProgressSpawner ProgressSpawner} is not
  * available.
  * 
  * @since 1.0
